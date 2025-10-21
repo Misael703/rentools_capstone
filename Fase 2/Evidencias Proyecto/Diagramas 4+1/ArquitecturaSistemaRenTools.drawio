@@ -1,0 +1,71 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36" version="28.2.5">
+  <diagram name="Página-1" id="oe3F9B99gi0Sm5sWVYv9">
+    <mxGraphModel dx="1088" dy="471" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#ffffff" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="PipcmnTRqDeQD8yU2fXR-2" value="&lt;div style=&quot;text-align: center;&quot;&gt;Servidor Backend&lt;/div&gt;&lt;div style=&quot;text-align: center;&quot;&gt;NesttJS(Node.js)&lt;/div&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;Controladores (Endpoints REST)&lt;/li&gt;&lt;li&gt;Servicios (Lógica de negocio)&lt;/li&gt;&lt;li&gt;Repositorios (Acceso a Datos)&lt;/li&gt;&lt;li&gt;Módulo de integración con Bsale&lt;/li&gt;&lt;li&gt;Autenticación JWT y control de roles&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;align=left;fillColor=#fad7ac;strokeColor=#b46504;" parent="1" vertex="1">
+          <mxGeometry x="330" y="470" width="210" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="PipcmnTRqDeQD8yU2fXR-3" value="API externa BSALE&lt;br&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(Servicios REST)&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;ul&gt;&lt;li style=&quot;text-align: left;&quot;&gt;Facturación electrónica&lt;/li&gt;&lt;li style=&quot;text-align: left;&quot;&gt;Extracción de datos como productos, clientes y ventas.&amp;nbsp;&lt;/li&gt;&lt;li style=&quot;text-align: left;&quot;&gt;API REST JSON&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#b0e3e6;strokeColor=#0e8088;" parent="1" vertex="1">
+          <mxGeometry x="600" y="495" width="200" height="165" as="geometry" />
+        </mxCell>
+        <mxCell id="PipcmnTRqDeQD8yU2fXR-4" value="Base de datos&lt;div&gt;PostgreSQL&lt;/div&gt;" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#1ba1e2;fontColor=#ffffff;strokeColor=#006EAF;gradientColor=none;shadow=1;opacity=80;" parent="1" vertex="1">
+          <mxGeometry x="367.5" y="820" width="135" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="PipcmnTRqDeQD8yU2fXR-5" value="Frontend&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;(Navegador web/Angular)&lt;/span&gt;&lt;/div&gt;&lt;div style=&quot;&quot;&gt;&lt;ul&gt;&lt;li&gt;Interfaz gráfica&lt;/li&gt;&lt;li&gt;Validación formulario&lt;/li&gt;&lt;li&gt;Envio peticiones HTTPS (REST)&lt;/li&gt;&lt;li&gt;Consumo de API RenTools&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#cce5ff;strokeColor=#36393d;" parent="1" vertex="1">
+          <mxGeometry x="50" y="495" width="185" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="PipcmnTRqDeQD8yU2fXR-6" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="PipcmnTRqDeQD8yU2fXR-2" target="PipcmnTRqDeQD8yU2fXR-3" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="395" y="680" as="sourcePoint" />
+            <mxPoint x="445" y="630" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="435" y="400" />
+              <mxPoint x="700" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PipcmnTRqDeQD8yU2fXR-7" value="" style="endArrow=none;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="1" source="PipcmnTRqDeQD8yU2fXR-4" target="PipcmnTRqDeQD8yU2fXR-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="395" y="680" as="sourcePoint" />
+            <mxPoint x="445" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PipcmnTRqDeQD8yU2fXR-8" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.992;exitY=0.571;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.027;entryY=0.553;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="PipcmnTRqDeQD8yU2fXR-5" target="PipcmnTRqDeQD8yU2fXR-2" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="395" y="680" as="sourcePoint" />
+            <mxPoint x="445" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="PipcmnTRqDeQD8yU2fXR-10" value="Trabajador" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d0cee2;strokeColor=#56517e;" parent="1" vertex="1">
+          <mxGeometry x="82.5" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="PipcmnTRqDeQD8yU2fXR-11" value="" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="PipcmnTRqDeQD8yU2fXR-10" target="PipcmnTRqDeQD8yU2fXR-5" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="395" y="680" as="sourcePoint" />
+            <mxPoint x="445" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="UYrVDCSGCDwKfRM9jjo8-1" value="Administrador" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d0cee2;strokeColor=#56517e;" parent="1" vertex="1">
+          <mxGeometry x="290" y="280" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="UYrVDCSGCDwKfRM9jjo8-2" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="UYrVDCSGCDwKfRM9jjo8-1" target="PipcmnTRqDeQD8yU2fXR-10" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="395" y="680" as="sourcePoint" />
+            <mxPoint x="445" y="630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="zRzObKzlc61ijuK7d37A-1" value="Peticiones HTTPS (JSON/REST API)" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="250" y="595" width="70" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="zRzObKzlc61ijuK7d37A-2" value="Integración externa (HTTP Requests)" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="550" y="410" width="70" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="zRzObKzlc61ijuK7d37A-3" value="Acceso de datos (Consultas SQL)" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="350" y="720" width="70" height="60" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
