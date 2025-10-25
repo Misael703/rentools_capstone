@@ -3,7 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
+import { AuthModule } from './modules/auth/auth.module';
+import { UsuarioModule } from './modules/usuario/usuario.module';
+import { RolModule } from './modules/rol/rol.module';
+import { SeedModule } from './seed/seed.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,8 +27,23 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       }),
       inject: [ConfigService],
     }),
+    // JwtModule.registerAsync({
+    //   imports: [ConfigModule],
+    //   inject: [ConfigService],
+    //   useFactory: async (config: ConfigService) => ({
+    //     secret: config.get('JWT_SECRET'),
+    //     signOptions: {
+    //       expiresIn: (config.get<string>('JWT_EXPIRES_IN') || '1d') as any,
+    //     },
+    //   }),
+    // }),
+    AuthModule,
+    UsuarioModule,
+    RolModule,
+    SeedModule
   ],
   controllers: [AppController],
   providers: [AppService],
+  exports: [],
 })
 export class AppModule {}
