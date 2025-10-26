@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsuarioModule } from './modules/usuario/usuario.module';
 import { RolModule } from './modules/rol/rol.module';
 import { SeedModule } from './seed/seed.module';
+import { ClientesModule } from './modules/clientes/clientes.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -40,7 +41,8 @@ import { SeedModule } from './seed/seed.module';
     AuthModule,
     UsuarioModule,
     RolModule,
-    SeedModule
+    SeedModule,
+    ClientesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
