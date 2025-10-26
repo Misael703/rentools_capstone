@@ -12,10 +12,22 @@ export class Usuario {
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
+
+  @Column()
+  id_rol: number;
 
   @ManyToOne(() => Rol, rol => rol.usuarios, { eager: true })
   @JoinColumn({ name: 'id_rol' })
   rol: Rol;
+
+  @Column({ default: true })
+  activo: boolean;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
 }
