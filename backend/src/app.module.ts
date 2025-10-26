@@ -28,16 +28,6 @@ import { ClientesModule } from './modules/clientes/clientes.module';
       }),
       inject: [ConfigService],
     }),
-    // JwtModule.registerAsync({
-    //   imports: [ConfigModule],
-    //   inject: [ConfigService],
-    //   useFactory: async (config: ConfigService) => ({
-    //     secret: config.get('JWT_SECRET'),
-    //     signOptions: {
-    //       expiresIn: (config.get<string>('JWT_EXPIRES_IN') || '1d') as any,
-    //     },
-    //   }),
-    // }),
     AuthModule,
     UsuarioModule,
     RolModule,

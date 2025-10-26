@@ -1,4 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
+import { TipoCliente } from "../enums/tipo-cliente.enums";
 
 @Entity('clientes')
 @Index(['rut'], { unique: true })
@@ -11,9 +12,27 @@ export class Cliente {
     @Column({unique: true, length: 12})
     rut: string;
 
-    @Column({ length: 100 })
+    @Column({ type: 'enum', enum: TipoCliente, default: TipoCliente.PERSONA_NATURAL })
+    tipo_cliente: TipoCliente;
+
+    // CAMPOS PARA PERSONA NATURAL
+    @Column({ nullable: true, length: 100 })
     nombre: string;
 
+    @Column({ nullable: true, length: 100 })
+    apellido: string;
+
+    // CAMPOS PARA EMPRESA
+    @Column({ nullable: true, length: 150 })
+    razon_social: string;
+
+    @Column({ nullable: true, length: 100 })
+    nombre_fantasia: string;
+
+    @Column({ nullable: true, length: 100 })
+    giro: string;
+
+    // CAMPOS COMUNES
     @Column({ nullable: true, length: 100 })
     email: string;
 
@@ -23,12 +42,20 @@ export class Cliente {
     @Column({ nullable: true, length: 200 })
     direccion: string;
 
+    @Column({ nullable: true, length: 100 })
+    ciudad: string;
+    
+    @Column({ nullable: true, length: 100 })
+    comuna: string;
+
+    // BSALE SINCRONIZACION
     @Column({ nullable: true, unique: true })
     id_bsale: number;
 
     @Column({  nullable: true, type: 'timestamp' })
     fecha_sincronizacion: Date;
 
+    //CONTROL
     @Column({ default: true })
     activo: boolean;
 
@@ -37,6 +64,14 @@ export class Cliente {
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
     fecha_modificacion: Date;
+
+    // Método helper
+    getNombreCompleto(): string {
+    if (this.tipo_cliente === TipoCliente.PERSONA_NATURAL) {
+      return `${this.nombre || ''} ${this.apellido || ''}`.trim();
+    }
+    return this.nombre_fantasia || this.razon_social || '';
+  }
 
     // Crear Relacion con Contratos cuando se cree la entidad Contrato
     // @OneToMany(() => Contrato, contrato => contrato.cliente)

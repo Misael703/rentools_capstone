@@ -33,4 +33,11 @@ describe('RutValidator', () => {
       expect(RutValidator.calculateDV('11111111')).toBe('1');
     });
   });
+
+  describe('formatSimple', () => {
+    it('should format RUT correctly in simple format', () => {
+      expect(RutValidator.formatSimple('12.345.678-9')).toBe('12345678-9');
+      expect(RutValidator.formatSimple('1.111.111-K')).toBe('1111111-K');
+    });
+  });
 });

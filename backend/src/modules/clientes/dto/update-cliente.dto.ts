@@ -3,7 +3,7 @@ import { CreateClienteDto } from './create-cliente.dto';
 import { IsBoolean, IsOptional } from 'class-validator';
 
 export class UpdateClienteDto extends PartialType(
-    OmitType(CreateClienteDto, ['rut', 'id_bsale'] as const),
+    OmitType(CreateClienteDto, ['rut', 'tipo_cliente','id_bsale'] as const),
 ) {
     @IsOptional()
     @IsBoolean()
