@@ -1,7 +1,8 @@
-import { IsOptional, IsString, IsBoolean, IsNumber, Min } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { PaginationDto } from '../../../common/utils/dtos/pagination.dto';
 
-export class SearchClienteDto {
+export class SearchClienteDto extends PaginationDto {
   @IsOptional()
   @IsString()
   @Transform(({ value }) => value?.trim())
@@ -22,20 +23,6 @@ export class SearchClienteDto {
   @Transform(({ value }) => value?.trim())
   telefono?: string;
 
-  @IsOptional()
-  @IsBoolean()
-  @Transform(({ value }) => value === 'true' || value === true)
-  activo?: boolean;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  page?: number = 1;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(1)
-  limit?: number = 10;
+  // activo ya viene de PaginationDto si lo agregamos allí,
+  // o lo podemos dejar aquí si no todos los módulos lo necesitan
 }
