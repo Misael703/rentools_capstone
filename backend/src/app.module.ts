@@ -8,6 +8,7 @@ import { UsuarioModule } from './modules/usuario/usuario.module';
 import { RolModule } from './modules/rol/rol.module';
 import { SeedModule } from './seed/seed.module';
 import { ClientesModule } from './modules/clientes/clientes.module';
+import { HerramientasModule } from './modules/herramientas/herramientas.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,6 +34,7 @@ import { ClientesModule } from './modules/clientes/clientes.module';
     RolModule,
     SeedModule,
     ClientesModule,
+    HerramientasModule,
   ],
   controllers: [AppController],
   providers: [AppService],
