@@ -1,0 +1,12 @@
+/* Estilo encabezado de tabla */
+.table-header-columns th {
+  background-color: #ffbd59;
+  color: white;
+  font-weight: bold;
+}
+
+/* Opcional: centrar contenido y ajustar tamaño */
+.table th, .table td {
+  vertical-align: middle;
+  font-size: 1rem;
+}

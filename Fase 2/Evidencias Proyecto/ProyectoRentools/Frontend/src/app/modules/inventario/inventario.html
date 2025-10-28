@@ -1,0 +1,138 @@
+<div class="container py-4">
+
+    <!-- Título y buscador -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+        <h2 class="fw-bold">Gestión Inventario</h2>
+
+        <div class="input-group search-box">
+            <input type="text" class="form-control" placeholder="Inserte nombre o código" [(ngModel)]="terminoBusqueda"
+                (input)="aplicarFiltro()" />
+            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+        </div>
+    </div>
+
+    <!-- Botones y filtro -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+
+        <!-- Botones -->
+        <div class="btn-group gap-2">
+            <button class="btn btn-success" (click)="irCrear()">
+                <i class="bi bi-plus-lg me-1"></i> Registrar Herramienta
+            </button>
+
+            <div class="btn-group">
+                <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-file-earmark-arrow-down me-1"></i> Exportar Inventario
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf me-1"></i> Exportar PDF</a>
+                    </li>
+                    <li><a class="dropdown-item" (click)="exportarExcel()"><i class="bi bi-file-earmark-excel me-1"></i> Exportar Excel</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Filtro -->
+        <div class="d-flex align-items-center gap-2">
+            <strong>Filtro por disponibilidad:</strong>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="disponible" (change)="toggleFiltroDisponibles()"
+                    [checked]="soloDisponibles" />
+                <label class="form-check-label" for="disponible">Mostrar solo disponibles</label>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Tabla -->
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr class="table-header-title text-center">
+                <th colspan="8">Lista de Herramientas</th>
+            </tr>
+            <tr class="table-header-columns text-center">
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Disponibilidad</th>
+                <th>Stock</th>
+                <th>Precio Diario</th>
+                <th>Precio Garantía</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            <!-- Recorremos la lista -->
+            <tr *ngFor="let herramienta of listaFiltrada">
+                <td class="align-middle text-center">{{ herramienta.codigo }}</td>
+                <td class="align-middle">{{ herramienta.nombre }}</td>
+                <td class="align-middle">{{ herramienta.descripcion || '-' }}</td>
+                <td class="align-middle text-center">
+                    {{ herramienta.stock > 0 ? 'Disponible' : 'No disponible' }}
+                </td>
+                <td class="align-middle text-center">{{ herramienta.stock }}</td>
+                <td class="align-middle text-end">${{ herramienta.precioDiario }}</td>
+                <td class="align-middle text-end">${{ herramienta.precioGarantia }}</td>
+
+                <td class="actions-column text-center align-middle">
+                    <!-- Ver Detalle -->
+                    <span class="action-icon bg-info me-1" (click)="abrirDetalle(herramienta)" role="button"
+                        title="Ver detalle">
+                        <i class="bi bi-eye"></i>
+                    </span>
+
+                    <!-- Editar -->
+                    <span class="action-icon bg-warning me-1" role="button" title="Editar"
+                        (click)="irEditar(herramienta)">
+                        <i class="bi bi-pencil-square"></i>
+                    </span>
+
+                    <!-- Eliminar -->
+                    <span class="action-icon bg-danger" role="button" title="Eliminar">
+                        <i class="bi bi-trash"></i>
+                    </span>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+
+</div>
+
+
+<!-- ======================= MODAL DETALLE ======================= -->
+<div class="modal fade" id="modalDetalleHerramienta" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- Cabecera personalizada con título centrado -->
+            <div class="modal-header position-relative">
+                <h5 class="modal-title w-100 text-center fw-bold">Detalle Herramienta</h5>
+                <!-- Close button posicionado a la derecha (no afecta el centrado del título) -->
+                <button type="button" class="btn-close position-absolute end-0 me-2" data-bs-dismiss="modal"
+                    aria-label="Cerrar"></button>
+            </div>
+
+            <div class="modal-body" *ngIf="herramientaSeleccionada">
+                <!-- Código grande y centrado (sin label) -->
+                <div class="codigo-central text-center mb-3">
+                    <div class="codigo-text fw-bold">{{ herramientaSeleccionada.codigo }}</div>
+                </div>
+
+                <!-- Resto de datos ahora ALIGN LEFT -->
+                <div class="detalle-izquierda text-start">
+                    <p class="mb-1"><strong>Nombre:</strong> {{ herramientaSeleccionada.nombre }}</p>
+                    <!--
+                    <p class="mb-1"><strong>Disponibilidad:</strong> {{ herramientaSeleccionada.disponibilidad }}</p>
+                        -->
+                    <p class="mb-1"><strong>Stock:</strong> {{ herramientaSeleccionada.stock }}</p>
+                    <p class="mb-1"><strong>Precio Diario:</strong> ${{ herramientaSeleccionada.precioDiario }}</p>
+                    <p class="mb-1"><strong>Precio Garantía:</strong> ${{ herramientaSeleccionada.precioGarantia }}</p>
+                    <p class="mb-0"><strong>Descripción:</strong> {{ herramientaSeleccionada.descripcion || '-' }}</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

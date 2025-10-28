@@ -1,0 +1,46 @@
+/* Título de tabla */
+.table-header-title th {
+  background-color: #fd620e !important; /* Naranja */
+  color: white !important;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* Encabezados de columnas */
+.table-header-columns th {
+  background-color: #ffbd59 !important;
+  color: white !important;
+  font-weight: bold;
+  text-align: center;
+}
+
+
+/* Ajuste general de tabla */
+.table th, .table td {
+  vertical-align: middle;
+}
+
+/* Acción icons */
+.action-icon {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  margin: 0 4px; /* Separación entre iconos */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: black;
+  transition: transform 0.2s;
+}
+
+.action-icon:hover {
+  transform: scale(1.15);
+}
+
+/* Reducir ancho columna Acciones */
+.actions-column {
+  width: 140px;
+  white-space: nowrap;
+}

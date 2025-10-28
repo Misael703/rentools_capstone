@@ -1,0 +1,28 @@
+.editar-usuario .form-control,
+.editar-usuario .form-select {
+  border-radius: 0.5rem;
+}
+
+.mensaje-confirmacion {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 2px solid black;
+  padding: 2rem;
+  z-index: 1055;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  border-radius: 1rem;
+  display: flex;                 /* Asegura el layout flexible */
+  flex-direction: column;        /* Elementos uno debajo del otro */
+  align-items: center;           /* Centra el contenido */
+  justify-content: center;       /* Centra verticalmente */
+}
+
+.check-icon {
+  font-size: 4rem;
+  color: green;
+  margin-bottom: 1rem; /* espacio entre el ícono y el botón */
+}

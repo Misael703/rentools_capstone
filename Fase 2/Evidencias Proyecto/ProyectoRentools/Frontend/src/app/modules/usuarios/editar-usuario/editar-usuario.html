@@ -1,0 +1,63 @@
+<div class="container editar-usuario">
+
+  <!-- Título y botón volver -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Editar Usuario</h2>
+    <button class="btn btn-secondary" (click)="cancelar()">
+      <i class="bi bi-arrow-left me-1"></i> Volver
+    </button>
+  </div>
+
+  <!-- Formulario -->
+  <form [formGroup]="form" (ngSubmit)="guardar()">
+
+    <div class="row g-4">
+
+      <!-- Lado izquierdo -->
+      <div class="col-md-6 d-flex flex-column gap-3">
+        <div class="form-group">
+          <label>ID Usuario</label>
+          <input type="number" formControlName="id_usuario" class="form-control" readonly />
+        </div>
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" formControlName="nombre" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" formControlName="email" class="form-control" />
+        </div>
+      </div>
+
+      <!-- Lado derecho -->
+      <div class="col-md-6 d-flex flex-column gap-3">
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" formControlName="password" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>Rol</label>
+          <select formControlName="id_rol" class="form-select">
+            <option *ngFor="let rol of roles" [value]="rol.id_rol">{{ rol.nombre }}</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Botón Editar -->
+    <div class="d-flex justify-content-end mt-4">
+      <button type="submit" [disabled]="form.invalid" class="btn btn-warning">
+        <i class="bi bi-pencil-square me-2"></i> Guardar cambios
+      </button>
+    </div>
+
+  </form>
+
+  <!-- Mensaje de confirmación -->
+  <div *ngIf="mostrarMensaje" class="mensaje-confirmacion text-center">
+    <i class="bi bi-check-circle-fill check-icon"></i>
+    <button class="btn btn-warning mt-3" (click)="cerrarMensaje()">¡Usuario actualizado!</button>
+  </div>
+
+</div>

@@ -1,0 +1,40 @@
+<nav class="navbar navbar-expand-lg px-3" style="background-color: #01328a;">
+  <!-- Botón del menú lateral -->
+  <button class="btn btn-transparent text-white me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
+    aria-controls="sidebar">
+    &#9776; <!-- Tres palitos -->
+  </button>
+
+  <!-- Logo de la empresa -->
+  <a class="navbar-brand ms-2" href="#">
+    <img src="/images/logoRentools.png" alt="Logo">
+  </a>
+
+  <!-- Espaciador flexible -->
+  <div class="flex-grow-1"></div>
+
+  <!-- Iconos de persona y notificaciones -->
+  <div class="d-flex align-items-center me-3">
+    <i class="bi bi-person-circle fs-4 me-2 text-white"></i>
+    <i class="bi bi-bell fs-4 text-white"></i>
+  </div>
+
+  <!-- Botón cerrar sesión -->
+  <button class="btn btn-danger text-white">Cerrar sesión</button>
+</nav>
+
+<!-- Sidebar Offcanvas -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="sidebarLabel">Menú</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item d-flex align-items-center sidebar-item" *ngFor="let item of sidebarItems">
+        <i [class]="item.icon + ' me-3'"></i>
+        <a [routerLink]="item.link" class="text-decoration-none flex-grow-1">{{ item.title }}</a>
+      </li>
+    </ul>
+  </div>
+</div>

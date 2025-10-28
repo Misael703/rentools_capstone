@@ -1,0 +1,35 @@
+/* Botón de tres palitos transparente y blanco */
+.btn-transparent {
+  background-color: transparent !important;
+  border: none;
+  font-size: 1.5rem;
+}
+
+/* Sidebar items */
+.sidebar-item {
+  padding: 12px 20px;
+  border-bottom: 1px solid #ccc; /* línea separadora */
+  width: 100%;
+  cursor: pointer;
+}
+
+.sidebar-item a {
+  color: black;
+  font-weight: 500;
+}
+
+.sidebar-item i {
+  color: black;
+  font-size: 1.2rem;
+}
+
+/* Hover sobre cada item */
+.sidebar-item:hover {
+  background-color: #f0f0f0;
+}
+
+.navbar img {
+    max-height: 55px; /* tamaño máximo del logo */
+    width: auto;        /* mantiene proporción */
+    object-fit: contain;
+}

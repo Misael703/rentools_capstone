@@ -1,0 +1,96 @@
+/* Layout general */
+.login-wrapper {
+  height: 100vh;
+  display: flex;
+}
+
+/* Lado Azul */
+.login-left {
+  width: 55%;
+  background-color: #01328a;
+  text-align: center;
+  padding: 0 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-logo {
+  width: 75%; /* Aumentado */
+  max-width: 420px; /* Más grande aún */
+}
+
+.login-slogan {
+  font-size: 1.8rem; /* Más grande */
+  font-weight: 700;
+  font-style: italic;
+  margin-top: 1.5rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  opacity: 0.98;
+}
+
+/* Lado Naranja */
+.login-right {
+  width: 45%;
+  background-color: #fd620e;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Caja del Formulario (AUMENTADA EN ALTURA) */
+.login-box {
+  background: white;
+  border-radius: 20px;
+  width: 92%;
+  max-width: 500px; /* Más ancho */
+  padding: 3.8rem 3rem; /* Más alto */
+  min-height: 520px; /* ← AQUI SE AUMENTA LA ALTURA */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Título */
+.login-box h2 {
+  font-size: 2.2rem; /* Más grande */
+  font-weight: 800;
+  color: #01328a;
+  margin-bottom: 2rem;
+}
+
+/* Inputs */
+.form-label {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.input-group-text {
+  border-radius: 6px 0 0 6px;
+  font-size: 1.2rem;
+}
+
+.form-control {
+  border-radius: 0 6px 6px 0;
+  font-size: 1.1rem;
+  padding: 0.9rem;
+}
+
+/* Botón */
+.btn-login {
+  background-color: #fd620e;
+  border: none;
+  font-weight: bold;
+  padding: 15px;
+  border-radius: 10px;
+  font-size: 1.25rem;
+  color: white;
+  transition: 0.3s;
+  margin-top: 1rem;
+}
+
+.btn-login:hover {
+  background-color: #e65a09;
+  transform: scale(1.04);
+}

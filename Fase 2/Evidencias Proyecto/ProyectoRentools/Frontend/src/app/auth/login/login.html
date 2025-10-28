@@ -1,0 +1,38 @@
+<div class="login-wrapper">
+  
+  <!-- Lado Azul -->
+  <div class="login-left d-flex flex-column justify-content-center align-items-center text-white">
+    <img src="/images/logoRentools.png" alt="Logo" class="login-logo">
+    <p class="login-slogan mt-3">“Calidad y precios que construyen confianza”</p>
+  </div>
+
+  <!-- Lado Naranja -->
+  <div class="login-right d-flex justify-content-center align-items-center">
+    <div class="login-box p-4 shadow">
+
+      <h2 class="text-center mb-4 fw-bold">¡Bienvenido a RenTools!</h2>
+
+      <!-- Usuario -->
+      <label class="form-label">Correo</label>
+      <div class="input-group mb-3">
+        <span class="input-group-text bg-white border-end-0">
+          <i class="bi bi-person"></i>
+        </span>
+        <input type="text" class="form-control border-start-0" placeholder="Ingrese su correo">
+      </div>
+
+      <!-- Contraseña -->
+      <label class="form-label">Contraseña</label>
+      <div class="input-group mb-4">
+        <span class="input-group-text bg-white border-end-0">
+          <i class="bi bi-lock"></i>
+        </span>
+        <input type="password" class="form-control border-start-0" placeholder="Ingrese su contraseña">
+      </div>
+
+      <button class="btn btn-login w-100" (click)="entrar()">Entrar</button>
+
+    </div>
+  </div>
+
+</div>
