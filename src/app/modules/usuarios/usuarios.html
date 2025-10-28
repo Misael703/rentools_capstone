@@ -1,27 +1,26 @@
 <div class="container mt-4">
 
-  <!-- Fila título + botón Crear -->
-  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+  <!-- Título y botón crear -->
+  <div class="d-flex justify-content-between align-items-center mb-2">
     <h2 class="fw-bold">Gestión Usuario</h2>
-    <button class="btn btn-success" (click)="crearUsuario()">
+    <button class="btn btn-success d-flex align-items-center" (click)="crearUsuario()">
       <i class="bi bi-plus-lg me-2"></i> Crear Usuario
     </button>
   </div>
 
-  <!-- Buscador debajo del título (alineado a la izquierda) -->
-  <div class="mb-3" style="max-width: 300px;">
-    <input type="text" class="form-control form-control-sm" placeholder="Buscar por nombre o email"
-      [(ngModel)]="terminoBusqueda" (input)="aplicarFiltro()">
+  <!-- Buscador -->
+  <div class="mb-3 d-flex justify-content-start">
+    <input type="text" class="form-control w-25" [(ngModel)]="terminoBusqueda" placeholder="Buscar usuario..." />
   </div>
 
   <!-- Tabla -->
   <table class="table table-bordered table-hover text-center">
     <thead>
       <tr class="table-header-title">
-        <th colspan="6">Lista de Usuarios</th>
+        <th colspan="6">Lista de Usuario</th>
       </tr>
       <tr class="table-header-columns">
-        <th>ID Usuario</th>
+        <th>ID</th>
         <th>Nombre</th>
         <th>Email</th>
         <th>Rol</th>
@@ -30,22 +29,49 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let usuario of aplicarFiltro()">
-        <td>{{ usuario.id_usuario }}</td>
-        <td>{{ usuario.nombre }}</td>
-        <td>{{ usuario.email }}</td>
-        <td>{{ getRolNombre(usuario.id_rol) }}</td>
-        <td>{{ usuario.activo ? 'Habilitado' : 'Deshabilitado' }}</td>
+      <tr *ngFor="let u of aplicarFiltro()">
+        <td>{{ u.id_usuario }}</td>
+        <td>{{ u.nombre }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ getRolNombre(u.id_rol) }}</td>
+        <td>
+          <span [ngClass]="u.activo ? 'text-success fw-bold' : 'text-danger fw-bold'">
+            {{ u.activo ? 'Habilitado' : 'Deshabilitado' }}
+          </span>
+        </td>
         <td class="col-acciones">
-          <span class="action-icon bg-warning" (click)="editarUsuario(usuario)">
+          <!-- Editar -->
+          <span class="action-icon bg-warning" (click)="editarUsuario(u)" title="Editar">
             <i class="bi bi-pencil-square"></i>
           </span>
-          <span class="action-icon bg-danger" (click)="desactivarUsuario(usuario)">
+
+          <!-- Deshabilitar -->
+          <span class="action-icon bg-danger" *ngIf="u.activo" (click)="confirmarDeshabilitar(u)" title="Deshabilitar">
             <i class="bi bi-trash"></i>
+          </span>
+
+          <!-- Habilitar -->
+          <span class="action-icon bg-success" *ngIf="!u.activo" (click)="confirmarHabilitar(u)" title="Habilitar">
+            <i class="bi bi-check-lg"></i>
           </span>
         </td>
       </tr>
     </tbody>
   </table>
+</div>
 
+<!-- Modal de confirmación -->
+<div *ngIf="mostrarConfirmacion" class="mensaje-confirmacion text-center">
+  <i class="bi bi-exclamation-triangle-fill text-warning check-icon"></i>
+  <p class="fw-bold">{{ mensajeConfirmacion }}</p>
+  <div class="mt-3">
+    <button class="btn btn-secondary me-2" (click)="cancelarConfirmacion()">Cancelar</button>
+    <button class="btn btn-primary" (click)="aceptarConfirmacion()">Aceptar</button>
+  </div>
+</div>
+
+<!-- Mensaje de resultado -->
+<div *ngIf="mostrarMensaje" class="mensaje-confirmacion text-center">
+  <i [class]="iconoResultado + ' check-icon'"></i>
+  <button class="btn btn-warning mt-3" (click)="cerrarMensaje()">{{ mensajeResultado }}</button>
 </div>

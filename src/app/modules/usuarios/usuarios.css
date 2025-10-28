@@ -19,26 +19,66 @@
   font-size: 0.95rem;
 }
 
-/* Acciones */
-.action-icon {
-  display: inline-flex;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  margin: 0 4px; /* Separación entre iconos */
-  align-items: center;
-  justify-content: center;
-  color: black;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
 .col-acciones {
   width: 110px;   /* ajusta según cantidad de iconos */
   text-align: center;
 }
 
+/* --- Estilos del mensaje centrado --- */
+.mensaje-confirmacion {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border: 2px solid black;
+  padding: 2rem;
+  z-index: 1055;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+  border-radius: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.check-icon {
+  font-size: 4rem;
+  color: green;
+  margin-bottom: 1rem;
+}
+
+/* --- Hover para los íconos de acción --- */
+.action-icon {
+  display: inline-block;
+  padding: 6px;
+  margin: 0 4px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  position: relative;
+}
+
 .action-icon:hover {
-  transform: scale(1.08);
+  transform: scale(1.1);
+  opacity: 0.9;
+}
+
+/* --- Tooltip simple usando el atributo title (ya nativo) --- */
+.action-icon[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 125%; /* arriba del ícono */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  z-index: 999;
   opacity: 0.9;
 }
