@@ -1,0 +1,20 @@
+/* Título fila principal */
+.table-header-title th {
+  background-color: #fd620e; /* Naranja principal */
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Encabezado de columnas */
+.table-header-columns th {
+  background-color: #ffbd59;
+  color: white;
+  font-weight: bold;
+}
+
+/* Ajuste de tabla */
+.table th, .table td {
+  vertical-align: middle;
+  font-size: 0.95rem;
+}

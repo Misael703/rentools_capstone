@@ -1,0 +1,117 @@
+/* Buscador */
+.search-box {
+  max-width: 300px;
+}
+
+/* Tabla */
+.table th, .table td {
+  vertical-align: middle;
+}
+
+/* Fila de título principal */
+.table-header-title th {
+  background-color: #fd620e !important; /* Naranja */
+  color: white !important;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+/* Fila de encabezado de columnas */
+.table-header-columns th {
+  background-color: #ffbd59 !important;
+  color: white !important;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Acciones */
+.action-icon {
+  display: inline-flex; /* Horizontal */
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  margin: 0 5px;
+  align-items: center;
+  justify-content: center;
+  color: black;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.action-icon:hover {
+  transform: scale(1.1);
+}
+
+/* Colores específicos de acciones */
+.bg-info {
+  background-color: #5bc0de !important;
+}
+
+.bg-warning {
+  background-color: #f0ad4e !important;
+}
+
+.bg-danger {
+  background-color: #d9534f !important;
+}
+
+/* Botón Registrar */
+.btn-success {
+  background-color: #28a745;
+  border: none;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+.table td.actions-column {
+  width: 120px; /* Ajusta el valor según necesites */
+  text-align: center;
+  white-space: nowrap; /* Evita que el contenido se rompa de línea */
+}
+
+/* íconos de acciones */
+.action-icon {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+}
+
+/* opcional: espaciado y hover */
+.action-icon:hover { transform: translateY(-2px); }
+
+/* Modal: ajustar título centrado y close posicionado */
+.modal-header {
+  border-bottom: 0;
+  padding-top: 1rem;
+  padding-bottom: 0.25rem;
+}
+
+/* Asegura que el botón close no empuje el título */
+.modal-header .btn-close {
+  top: 8px;
+}
+
+/* Estilo para el código grande centrado */
+.codigo-central .codigo-text {
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+}
+
+/* Ajustes de apariencia del cuerpo izquierdo */
+.detalle-izquierda p {
+  margin-bottom: 0.25rem;
+  text-align: left !important;
+}
+
+/* — Opcional: mejorar tamaño del modal en pantallas grandes */
+@media (min-width: 992px) {
+  .modal-dialog { max-width: 560px; }
+}

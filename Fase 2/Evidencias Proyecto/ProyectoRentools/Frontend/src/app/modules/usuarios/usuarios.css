@@ -1,0 +1,44 @@
+/* Fila título principal */
+.table-header-title th{
+  background-color: #fd620e; /* Naranja principal */
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Encabezado columnas */
+.table-header-columns th{
+  background-color: #ffbd59;
+  color: white;
+  font-weight: bold;
+}
+
+/* Celdas */
+.table th, .table td {
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+/* Acciones */
+.action-icon {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  margin: 0 4px; /* Separación entre iconos */
+  align-items: center;
+  justify-content: center;
+  color: black;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.col-acciones {
+  width: 110px;   /* ajusta según cantidad de iconos */
+  text-align: center;
+}
+
+.action-icon:hover {
+  transform: scale(1.08);
+  opacity: 0.9;
+}

@@ -1,0 +1,65 @@
+<div class="container crear-usuario">
+
+  <!-- Título y volver -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Crear Nuevo Usuario</h2>
+    <button type="button" class="btn btn-secondary" (click)="cancelar()">
+      <i class="bi bi-arrow-left me-1"></i> Volver
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="guardar()">
+
+    <div class="row g-3">
+
+      <!-- Lado Izquierdo -->
+      <div class="col-md-6">
+        <div class="form-group mb-3">
+          <label>ID Usuario</label>
+          <input type="number" formControlName="id_usuario" class="form-control" placeholder="ID Usuario" />
+        </div>
+        <div class="form-group mb-3">
+          <label>Nombre</label>
+          <input type="text" formControlName="nombre" class="form-control" placeholder="Nombre" />
+        </div>
+        <div class="form-group mb-3">
+          <label>Email</label>
+          <input type="email" formControlName="email" class="form-control" placeholder="Correo electrónico" />
+        </div>
+      </div>
+
+      <!-- Lado Derecho -->
+      <div class="col-md-6">
+        <div class="form-group mb-3">
+          <label>Password</label>
+          <input type="password" formControlName="password" class="form-control" placeholder="Contraseña" />
+        </div>
+        <div class="form-group mb-3">
+          <label>Rol</label>
+          <select formControlName="id_rol" class="form-select">
+            <option value="">Seleccione un rol</option>
+            <option *ngFor="let rol of roles" [value]="rol.id_rol">{{ rol.nombre }}</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Botón Crear -->
+    <div class="text-end mt-3">
+      <button type="submit" class="btn btn-success">
+        <i class="bi bi-plus-lg me-1"></i> Añadir nuevo registro
+      </button>
+    </div>
+
+  </form>
+
+  <!-- Mensaje de confirmación -->
+  <div *ngIf="mostrarMensaje" class="mensaje-exito text-center border-dark p-4">
+    <div class="mb-3">
+      <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+    </div>
+    <button class="btn btn-success" (click)="cerrarMensaje()">¡Registro exitoso!</button>
+  </div>
+
+</div>
