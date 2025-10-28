@@ -9,6 +9,8 @@ import { RolModule } from './modules/rol/rol.module';
 import { SeedModule } from './seed/seed.module';
 import { ClientesModule } from './modules/clientes/clientes.module';
 import { HerramientasModule } from './modules/herramientas/herramientas.module';
+import { BsaleModule } from './modules/bsale/bsale.module';
+import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -35,6 +37,8 @@ import { HerramientasModule } from './modules/herramientas/herramientas.module';
     SeedModule,
     ClientesModule,
     HerramientasModule,
+    BsaleModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],
