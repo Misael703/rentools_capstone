@@ -1,0 +1,43 @@
+/* Título de tabla */
+.table-header-title th {
+  background-color: #fd620e !important; /* Naranja */
+  color: white !important;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+/* Encabezados de columnas */
+.table-header-columns th {
+  background-color: #ffbd59 !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+/* Ajuste tabla */
+.table th, .table td {
+  vertical-align: middle;
+}
+
+/* Iconos de acciones */
+.action-icon {
+  display: inline-flex;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  margin: 0 4px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: black;
+  transition: transform 0.2s;
+}
+
+.action-icon:hover {
+  transform: scale(1.15);
+}
+
+/* Columna más angosta */
+.actions-column {
+  width: 140px;
+  white-space: nowrap;
+}

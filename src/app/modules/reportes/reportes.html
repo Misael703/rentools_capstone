@@ -1,0 +1,32 @@
+<!-- Título general arriba -->
+<div class="reportes-header mb-3">
+    <h2 class="fw-bold text-black">Reporte</h2>
+</div>
+
+<div class="reportes-wrapper">
+    <!-- Panel lateral izquierdo -->
+    <div class="reportes-sidebar d-flex flex-column">
+        <div class="reporte-card mb-3" routerLink="contratos">
+            <i class="bi bi-clipboard reporte-icon"></i>
+            <span>Contratos</span>
+        </div>
+        <div class="reporte-card mb-3" routerLink="devoluciones">
+            <i class="bi bi-bank reporte-icon"></i>
+            <span>Devoluciones</span>
+        </div>
+        <div class="reporte-card mb-3" routerLink="ingreso-herramienta">
+            <i class="bi bi-cash-stack reporte-icon"></i>
+            <span>Ingreso por Herramienta</span>
+        </div>
+        <div class="reporte-card mb-3" routerLink="ranking-herramientas">
+            <i class="bi bi-bookmark-star reporte-icon"></i>
+            <span>Ranking de Herramientas</span>
+        </div>
+    </div>
+
+    <!-- Contenido del reporte -->
+    <div class="reportes-content flex-grow-1">
+        <router-outlet></router-outlet>
+    </div>
+
+</div>

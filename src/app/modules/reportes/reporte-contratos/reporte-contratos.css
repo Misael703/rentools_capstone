@@ -1,0 +1,11 @@
+/* Encabezado de columnas */
+.table-header-columns th {
+  background-color: #ffbd59; /* Amarillo */
+  color: white;
+  font-weight: bold;
+}
+
+/* Celdas vacías */
+.table tbody td {
+  background-color: white;
+}

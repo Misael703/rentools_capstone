@@ -1,0 +1,16 @@
+/* Todo el layout ocupa toda la pantalla */
+.layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* 100% de altura de la ventana */
+}
+
+/* El contenido principal crece y empuja el footer hacia abajo */
+.content {
+  flex: 1;
+}
+
+/* Opcional: padding para no chocar con header/footer */
+.content {
+  padding-bottom: 1rem;
+}

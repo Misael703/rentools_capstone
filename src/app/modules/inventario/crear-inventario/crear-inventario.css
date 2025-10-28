@@ -1,0 +1,29 @@
+.crear-inventario .form-control,
+.crear-inventario .form-select,
+.crear-inventario textarea {
+  border-radius: 0.5rem;
+}
+
+.descripcion-textarea {
+  min-height: 120px; /* Más grande que los demás campos */
+}
+
+.btn-success {
+  font-weight: bold;
+}
+
+.modal-content {
+  border-radius: 0.5rem;
+}
+
+.mensaje-exito {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  z-index: 1055;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}

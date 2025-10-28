@@ -1,0 +1,23 @@
+/* Encabezado de tabla */
+.table-header-columns th {
+  background-color: #ffbd59;
+  color: white;
+  font-weight: bold;
+}
+
+/* Ajuste general de tabla */
+.table th, .table td {
+  vertical-align: middle;
+  font-size: 0.95rem; /* más compacta */
+  padding: 0.5rem;
+}
+
+/* Estilo filtro por fecha */
+.filtro-fecha {
+  min-width: 200px;
+}
+
+.filtro-fecha .form-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+}

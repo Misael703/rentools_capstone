@@ -1,0 +1,51 @@
+.reportes-wrapper {
+  height: 100vh;
+  display: flex;
+}
+
+/* Panel lateral izquierdo */
+.reportes-sidebar {
+  width: 220px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tarjetas tipo rectángulo */
+.reporte-card {
+  background: #ffbd59;
+  padding: 20px;
+  text-align: center;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+
+  display: flex;
+  flex-direction: column; /* icono arriba, texto abajo */
+  align-items: center;
+  justify-content: center;
+}
+
+.reporte-card:hover {
+  background: #f5a733;
+  transform: translateY(-4px);
+}
+
+/* Icono dentro de la tarjeta */
+.reporte-icon {
+  font-size: 2rem; /* tamaño grande */
+  margin-bottom: 8px; /* espacio entre icono y texto */
+}
+
+/* Separación entre tarjetas */
+.mb-3 {
+  margin-bottom: 1.5rem;
+}
+
+/* Contenido principal */
+.reportes-content {
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+

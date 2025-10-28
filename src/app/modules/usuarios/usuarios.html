@@ -1,0 +1,51 @@
+<div class="container mt-4">
+
+  <!-- Fila título + botón Crear -->
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+    <h2 class="fw-bold">Gestión Usuario</h2>
+    <button class="btn btn-success" (click)="crearUsuario()">
+      <i class="bi bi-plus-lg me-2"></i> Crear Usuario
+    </button>
+  </div>
+
+  <!-- Buscador debajo del título (alineado a la izquierda) -->
+  <div class="mb-3" style="max-width: 300px;">
+    <input type="text" class="form-control form-control-sm" placeholder="Buscar por nombre o email"
+      [(ngModel)]="terminoBusqueda" (input)="aplicarFiltro()">
+  </div>
+
+  <!-- Tabla -->
+  <table class="table table-bordered table-hover text-center">
+    <thead>
+      <tr class="table-header-title">
+        <th colspan="6">Lista de Usuarios</th>
+      </tr>
+      <tr class="table-header-columns">
+        <th>ID Usuario</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th class="col-acciones">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuario of aplicarFiltro()">
+        <td>{{ usuario.id_usuario }}</td>
+        <td>{{ usuario.nombre }}</td>
+        <td>{{ usuario.email }}</td>
+        <td>{{ getRolNombre(usuario.id_rol) }}</td>
+        <td>{{ usuario.activo ? 'Habilitado' : 'Deshabilitado' }}</td>
+        <td class="col-acciones">
+          <span class="action-icon bg-warning" (click)="editarUsuario(usuario)">
+            <i class="bi bi-pencil-square"></i>
+          </span>
+          <span class="action-icon bg-danger" (click)="desactivarUsuario(usuario)">
+            <i class="bi bi-trash"></i>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
