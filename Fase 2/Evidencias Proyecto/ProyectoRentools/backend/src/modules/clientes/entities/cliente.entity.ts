@@ -1,5 +1,5 @@
 import { Column, Entity, Index, PrimaryGeneratedColumn } from "typeorm";
-import { TipoCliente } from "../enums/tipo-cliente.enums";
+import { TipoCliente } from "../enums/tipo-cliente.enum";
 
 @Entity('clientes')
 @Index(['rut'], { unique: true })
@@ -9,31 +9,31 @@ export class Cliente {
     @PrimaryGeneratedColumn()
     id_cliente: number;
 
-    @Column({unique: true, length: 12})
+    @Column({unique: true, length: 15})
     rut: string;
 
     @Column({ type: 'enum', enum: TipoCliente, default: TipoCliente.PERSONA_NATURAL })
     tipo_cliente: TipoCliente;
 
     // CAMPOS PARA PERSONA NATURAL
-    @Column({ nullable: true, length: 100 })
+    @Column({ nullable: true, length: 200 })
     nombre: string;
 
-    @Column({ nullable: true, length: 100 })
+    @Column({ nullable: true, length: 200 })
     apellido: string;
 
     // CAMPOS PARA EMPRESA
-    @Column({ nullable: true, length: 150 })
+    @Column({ nullable: true, length: 200 })
     razon_social: string;
 
-    @Column({ nullable: true, length: 100 })
+    @Column({ nullable: true, length: 200 })
     nombre_fantasia: string;
 
-    @Column({ nullable: true, length: 100 })
+    @Column({ nullable: true, length: 200 })
     giro: string;
 
     // CAMPOS COMUNES
-    @Column({ nullable: true, length: 100 })
+    @Column({ nullable: true, length: 200 })
     email: string;
 
     @Column({ nullable: true, length: 15 })
@@ -42,10 +42,10 @@ export class Cliente {
     @Column({ nullable: true, length: 200 })
     direccion: string;
 
-    @Column({ nullable: true, length: 100 })
+    @Column({ nullable: true, length: 200 })
     ciudad: string;
-    
-    @Column({ nullable: true, length: 100 })
+
+    @Column({ nullable: true, length: 200 })
     comuna: string;
 
     // BSALE SINCRONIZACION
@@ -60,10 +60,10 @@ export class Cliente {
     activo: boolean;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-    fecha_creacion: Date;
+    created_at: Date;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
-    fecha_modificacion: Date;
+    updated_at: Date;
 
     // Método helper
     getNombreCompleto(): string {

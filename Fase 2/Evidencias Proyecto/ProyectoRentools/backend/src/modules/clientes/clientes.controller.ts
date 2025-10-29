@@ -1,3 +1,4 @@
+// src/modules/clientes/clientes.controller.ts
 import {
   Controller,
   Get,
@@ -23,30 +24,50 @@ import { Roles } from '../rol/decorators/roles.decorator';
 export class ClientesController {
   constructor(private readonly clientesService: ClientesService) {}
 
+  /**
+   * POST /clientes
+   * Crea un cliente (busca en Bsale primero, crea si no existe)
+   */
   @Post()
   @Roles('admin', 'vendedor')
   create(@Body() createClienteDto: CreateClienteDto) {
     return this.clientesService.create(createClienteDto);
   }
 
-  @Get()  
+  /**
+   * GET /clientes
+   * Lista todos los clientes con paginación y filtros
+   */
+  @Get()
   @Roles('admin', 'vendedor')
   findAll(@Query() filters: SearchClienteDto) {
     return this.clientesService.findAll(filters);
   }
 
+  /**
+   * GET /clientes/activos
+   * Lista solo clientes activos (sin paginación)
+   */
   @Get('activos')
   @Roles('admin', 'vendedor')
   findAllActive() {
     return this.clientesService.findAllActive();
   }
 
+  /**
+   * GET /clientes/recientes
+   * Lista los últimos clientes creados
+   */
   @Get('recientes')
   @Roles('admin', 'vendedor')
   findRecent(@Query('limit') limit?: number) {
     return this.clientesService.findRecent(limit);
   }
 
+  /**
+   * GET /clientes/stats
+   * Estadísticas de clientes
+   */
   @Get('stats')
   @Roles('admin')
   async getStats() {
@@ -62,18 +83,67 @@ export class ClientesController {
     };
   }
 
+  /**
+   * POST /clientes/sync-from-bsale
+   * Sincroniza manualmente todos los clientes desde Bsale
+   */
+  @Post('sync-from-bsale')
+  @Roles('admin')
+  @HttpCode(HttpStatus.OK)
+  async syncFromBsale() {
+    const result = await this.clientesService.syncAllFromBsale();
+    
+    return {
+      message: 'Sincronización completada',
+      success: true,
+      data: {
+        total: result.nuevos + result.sincronizados,
+        nuevos: result.nuevos,
+        sincronizados: result.sincronizados,
+        errores: result.errores,
+      },
+      detalles: result.detalles,
+    };
+  }
+
+  /**
+   * GET /clientes/buscar-bsale/:rut
+   * Busca un cliente en Bsale y lo sincroniza si no existe localmente
+   */
+  @Get('buscar-bsale/:rut')
+  @Roles('admin', 'vendedor')
+  async findOrSyncFromBsale(@Param('rut') rut: string) {
+    const cliente = await this.clientesService.findOrSyncFromBsale(rut);
+    return {
+      message: 'Cliente encontrado o sincronizado desde Bsale',
+      data: cliente,
+    };
+  }
+
+  /**
+   * GET /clientes/rut/:rut
+   * Busca un cliente por RUT (solo local)
+   */
   @Get('rut/:rut')
   @Roles('admin', 'vendedor')
   findByRut(@Param('rut') rut: string) {
     return this.clientesService.findByRut(rut);
   }
 
+  /**
+   * GET /clientes/email/:email
+   * Busca un cliente por email
+   */
   @Get('email/:email')
   @Roles('admin', 'vendedor')
   findByEmail(@Param('email') email: string) {
     return this.clientesService.findByEmail(email);
   }
 
+  /**
+   * GET /clientes/existe/:rut
+   * Verifica si existe un cliente con ese RUT
+   */
   @Get('existe/:rut')
   @Roles('admin', 'vendedor')
   async existsByRut(@Param('rut') rut: string) {
@@ -85,12 +155,20 @@ export class ClientesController {
     };
   }
 
+  /**
+   * GET /clientes/:id
+   * Obtiene un cliente por ID
+   */
   @Get(':id')
   @Roles('admin', 'vendedor')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.clientesService.findById(id);
   }
 
+  /**
+   * PATCH /clientes/:id
+   * Actualiza un cliente (actualiza en Rentools y Bsale)
+   */
   @Patch(':id')
   @Roles('admin', 'vendedor')
   update(
@@ -100,7 +178,11 @@ export class ClientesController {
     return this.clientesService.update(id, updateClienteDto);
   }
 
-  @Patch('activar/:id')
+  /**
+   * PATCH /clientes/:id/activate
+   * Activa un cliente desactivado
+   */
+  @Patch(':id/activate')
   @Roles('admin')
   @HttpCode(HttpStatus.OK)
   async activate(@Param('id', ParseIntPipe) id: number) {
@@ -112,7 +194,11 @@ export class ClientesController {
     };
   }
 
-  @Patch('desactivar/:id')
+  /**
+   * PATCH /clientes/:id/deactivate
+   * Desactiva un cliente (soft delete)
+   */
+  @Patch(':id/deactivate')
   @Roles('admin')
   @HttpCode(HttpStatus.OK)
   async deactivate(@Param('id', ParseIntPipe) id: number) {
@@ -124,6 +210,11 @@ export class ClientesController {
     };
   }
 
+  /**
+   * DELETE /clientes/:id
+   * Elimina permanentemente un cliente
+   * ⚠️ Solo usar si no tiene contratos asociados
+   */
   @Delete(':id')
   @Roles('admin')
   @HttpCode(HttpStatus.OK)

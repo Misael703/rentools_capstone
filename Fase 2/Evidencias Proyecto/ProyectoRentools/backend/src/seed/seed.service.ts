@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { initialData } from './data/seed.data';
 import { Usuario } from 'src/modules/usuario/entities/usuario.entity';
 import { Rol } from 'src/modules/rol/entities/rol.entity';
@@ -13,6 +13,8 @@ export class SeedService {
 
     @InjectRepository(Rol)
     private readonly rolRepo: Repository<Rol>,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async runSeed() {
@@ -27,10 +29,12 @@ private async deleteTables() {
   await this.usuarioRepo.createQueryBuilder()
     .delete()
     .execute();
+  await this.dataSource.query('ALTER SEQUENCE usuarios_id_usuario_seq RESTART WITH 1');
 
   await this.rolRepo.createQueryBuilder()
     .delete()
     .execute();
+  await this.dataSource.query('ALTER SEQUENCE roles_id_rol_seq RESTART WITH 1');
   }
 
   private async insertRoles() {
