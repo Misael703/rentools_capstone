@@ -161,12 +161,11 @@ export class BsaleService {
       if (data.tipo_cliente === 'persona_natural') {
         payload.firstName = data.nombre || '';
         payload.lastName = data.apellido || '';
-        payload.company = 0;
+        payload.companyOrPerson = 0
       } else {
-        payload.firstName = data.nombre_fantasia || data.razon_social || '';
-        payload.lastName = data.razon_social || '';
+        payload.company = data.razon_social || '';
         payload.activity = data.giro || '';
-        payload.company = 1;
+        payload.companyOrPerson = 1;
       }
 
       const response = await firstValueFrom(
@@ -218,10 +217,11 @@ export class BsaleService {
       if (data.tipo_cliente === 'persona_natural') {
         if (data.nombre) payload.firstName = data.nombre;
         if (data.apellido) payload.lastName = data.apellido;
+        if (data.tipo_cliente) payload.companyOrPerson = 0;
       } else {
-        if (data.nombre_fantasia) payload.firstName = data.nombre_fantasia;
-        if (data.razon_social) payload.lastName = data.razon_social;
+        if (data.razon_social) payload.company = data.razon_social;
         if (data.giro) payload.activity = data.giro;
+        if (data.tipo_cliente) payload.companyOrPerson = 1;
       }
 
       const response = await firstValueFrom(
@@ -239,6 +239,31 @@ export class BsaleService {
       this.handleError(error, `updateCliente(${idBsale})`);
     }
   }
+
+  /**
+   * Actualiza solo el estado de un cliente en Bsale
+   * @param idBsale ID del cliente en Bsale
+   * @param state 0 = activo, 1 = inactivo
+   */
+  async updateClienteState(idBsale: number, state: 0 | 1): Promise<void> {
+    try {
+      this.logger.log(`📤 Actualizando estado del cliente ${idBsale} en Bsale a ${state === 0 ? 'activo' : 'inactivo'}...`);
+
+      await firstValueFrom(
+        this.httpService.put(
+          `${this.baseUrl}/clients/${idBsale}.json`,
+          { state },
+          { headers: this.getHeaders() }
+        )
+      );
+
+      this.logger.log(`✅ Estado del cliente ${idBsale} actualizado en Bsale`);
+
+    } catch (error) {
+      this.handleError(error, `updateClienteState(${idBsale}, ${state})`);
+    }
+  }
+
 
   /**
    * Obtiene un cliente por ID de Bsale

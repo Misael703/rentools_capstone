@@ -27,9 +27,6 @@ export class Cliente {
     razon_social: string;
 
     @Column({ nullable: true, length: 200 })
-    nombre_fantasia: string;
-
-    @Column({ nullable: true, length: 200 })
     giro: string;
 
     // CAMPOS COMUNES
@@ -70,7 +67,7 @@ export class Cliente {
     if (this.tipo_cliente === TipoCliente.PERSONA_NATURAL) {
       return `${this.nombre || ''} ${this.apellido || ''}`.trim();
     }
-    return this.nombre_fantasia || this.razon_social || '';
+    return this.razon_social || '';
   }
 
     // Crear Relacion con Contratos cuando se cree la entidad Contrato

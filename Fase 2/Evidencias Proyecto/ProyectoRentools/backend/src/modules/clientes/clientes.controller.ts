@@ -179,10 +179,10 @@ export class ClientesController {
   }
 
   /**
-   * PATCH /clientes/:id/activate
+   * PATCH /clientes/activar/:id
    * Activa un cliente desactivado
    */
-  @Patch(':id/activate')
+  @Patch('activar/:id')
   @Roles('admin')
   @HttpCode(HttpStatus.OK)
   async activate(@Param('id', ParseIntPipe) id: number) {
@@ -195,10 +195,10 @@ export class ClientesController {
   }
 
   /**
-   * PATCH /clientes/:id/deactivate
+   * PATCH /clientes/desactivar/:id
    * Desactiva un cliente (soft delete)
    */
-  @Patch(':id/deactivate')
+  @Patch('desactivar/:id')
   @Roles('admin')
   @HttpCode(HttpStatus.OK)
   async deactivate(@Param('id', ParseIntPipe) id: number) {

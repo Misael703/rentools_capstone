@@ -22,7 +22,7 @@ export class ClientesService {
   constructor(
     @InjectRepository(Cliente)
     private readonly clienteRepository: Repository<Cliente>,
-    private readonly bsaleService: BsaleService, // ← Inyectar
+    private readonly bsaleService: BsaleService,
   ) {}
 
   /**
@@ -127,7 +127,6 @@ export class ClientesService {
         nuevoCliente.apellido = dto.apellido;
       } else {
         nuevoCliente.razon_social = dto.razon_social;
-        nuevoCliente.nombre_fantasia = dto.nombre_fantasia;
         nuevoCliente.giro = dto.giro;
       }
 
@@ -225,9 +224,8 @@ export class ClientesService {
       clienteData.nombre = bsaleCliente.firstName || null;
       clienteData.apellido = bsaleCliente.lastName || null;
     } else {
-      // Empresa: company = razón social y nombre fantasía, activity = giro
+      // Empresa: company = razón social, activity = giro
       clienteData.razon_social = bsaleCliente.company || null;
-      clienteData.nombre_fantasia = bsaleCliente.company || null; // Bsale usa el mismo campo
       clienteData.giro = bsaleCliente.activity || null;
     }
 
@@ -293,7 +291,6 @@ export class ClientesService {
             clienteData.apellido = bsaleCliente.lastName;
           } else {
             clienteData.razon_social = bsaleCliente.company;
-            clienteData.nombre_fantasia = bsaleCliente.company;
             clienteData.giro = bsaleCliente.activity;
           }
 
@@ -397,9 +394,6 @@ export class ClientesService {
     }
   }
 
-  // ============================================
-  // Resto de métodos sin cambios
-  // ============================================
 
   async findAll(filters?: SearchClienteDto) {
     try {
@@ -547,7 +541,27 @@ export class ClientesService {
     try {
       const cliente = await this.findById(id);
       cliente.activo = false;
-      return await this.clienteRepository.save(cliente);
+      await this.clienteRepository.save(cliente);
+
+      // Actualizar estado en Bsale (state: 1 = inactivo)
+      if (cliente.id_bsale) {
+        try {
+          this.logger.log(`📤 Desactivando cliente ${cliente.rut} en Bsale...`);
+          
+          await this.bsaleService.updateClienteState(cliente.id_bsale, 1);
+          
+          // Actualizar fecha de sincronización
+          cliente.fecha_sincronizacion = new Date();
+          await this.clienteRepository.save(cliente);
+
+          this.logger.log(`✅ Cliente desactivado en Bsale`);
+
+        } catch (error) {
+          this.logger.warn(`⚠️  No se pudo desactivar en Bsale: ${error.message}`);
+        }
+      }
+
+      return cliente;
     } catch (error) {
       if (error.status) {
         throw error;
@@ -556,11 +570,32 @@ export class ClientesService {
     }
   }
 
+
   async activate(id: number): Promise<Cliente> {
     try {
       const cliente = await this.findById(id);
       cliente.activo = true;
-      return await this.clienteRepository.save(cliente);
+      await this.clienteRepository.save(cliente);
+
+      // Actualizar estado en Bsale (state: 0 = activo)
+      if (cliente.id_bsale) {
+        try {
+          this.logger.log(`📤 Activando cliente ${cliente.rut} en Bsale...`);
+          
+          await this.bsaleService.updateClienteState(cliente.id_bsale, 0);
+          
+          // Actualizar fecha de sincronización
+          cliente.fecha_sincronizacion = new Date();
+          await this.clienteRepository.save(cliente);
+
+          this.logger.log(`✅ Cliente activado en Bsale`);
+
+        } catch (error) {
+          this.logger.warn(`⚠️  No se pudo activar en Bsale: ${error.message}`);
+        }
+      }
+
+      return cliente;
     } catch (error) {
       if (error.status) {
         throw error;
