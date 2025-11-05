@@ -8,7 +8,7 @@
     </button>
   </div>
 
-  <!-- Buscador debajo del título (alineado a la izquierda) -->
+  <!-- Buscador debajo del título -->
   <div class="mb-3" style="max-width: 300px;">
     <input type="text" class="form-control form-control-sm" placeholder="Buscar por nombre o email"
       [(ngModel)]="terminoBusqueda" (input)="aplicarFiltro()">
@@ -34,18 +34,24 @@
         <td>{{ usuario.id_usuario }}</td>
         <td>{{ usuario.nombre }}</td>
         <td>{{ usuario.email }}</td>
-        <td>{{ getRolNombre(usuario.id_rol) }}</td>
+        <td>{{ usuario.rol.nombre }}</td>
         <td>{{ usuario.activo ? 'Habilitado' : 'Deshabilitado' }}</td>
         <td class="col-acciones">
           <span class="action-icon bg-warning" (click)="editarUsuario(usuario)">
             <i class="bi bi-pencil-square"></i>
           </span>
-          <span class="action-icon bg-danger" (click)="desactivarUsuario(usuario)">
-            <i class="bi bi-trash"></i>
+          <span class="action-icon" [ngClass]="usuario.activo ? 'bg-danger' : 'bg-secondary'"
+            (click)="toggleActivo(usuario)">
+            <i class="bi" [ngClass]="usuario.activo ? 'bi-trash' : 'bi-check2-circle'"></i>
           </span>
         </td>
       </tr>
     </tbody>
   </table>
+
+  <!-- Mensaje de carga -->
+  <div *ngIf="loading" class="text-center mt-3">
+    <i class="bi bi-arrow-clockwise animate-spin me-2"></i>Cargando usuarios...
+  </div>
 
 </div>

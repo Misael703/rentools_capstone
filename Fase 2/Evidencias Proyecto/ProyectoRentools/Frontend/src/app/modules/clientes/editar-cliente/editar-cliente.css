@@ -1,0 +1,94 @@
+/* Contenedor principal */
+.container {
+  max-width: 700px;
+  margin: 80px auto 40px auto; /* margen superior para que no choque con el header */
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Título */
+.form-title {
+  text-align: center;
+  color: #fd620e;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+/* Formulario */
+.cliente-form .form-group {
+  margin-bottom: 15px;
+}
+
+.cliente-form label {
+  font-weight: 500;
+}
+
+.cliente-form input,
+.cliente-form select {
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+.cliente-form input:focus,
+.cliente-form select:focus {
+  outline: none;
+  border-color: #fd620e;
+  box-shadow: 0 0 6px rgba(253, 98, 14, 0.3);
+}
+
+/* --- BOTONES --- */
+.botones-acciones {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px; /* separación entre botones */
+  margin-top: 25px;
+}
+
+/* Botón principal (Actualizar) */
+.btn-actualizar {
+  flex: 1;
+  background-color: #fd620e;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-actualizar:hover:not(:disabled) {
+  background-color: #e55a00;
+}
+
+.btn-actualizar:disabled {
+  background-color: #ccc;
+}
+
+/* Botón Cancelar */
+.btn-cancelar {
+  flex: 1;
+  background-color: #6c757d;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-cancelar:hover {
+  background-color: #5a6268;
+}
+
+/* Mensajes de error */
+.text-danger {
+  font-size: 0.85rem;
+  margin-top: 3px;
+}

@@ -2,7 +2,7 @@
   <h2 class="mb-4 text-center">Bienvenido a Rentools</h2>
 
   <div class="row g-3">
-    <div class="col-md-4" *ngFor="let card of cards">
+    <div class="col-md-4" *ngFor="let card of filteredCards">
       <div 
         class="card text-center shadow card-home clickable-card"
         [routerLink]="card.link"

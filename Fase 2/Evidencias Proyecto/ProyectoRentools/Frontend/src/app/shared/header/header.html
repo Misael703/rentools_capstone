@@ -2,28 +2,35 @@
   <!-- Botón del menú lateral -->
   <button class="btn btn-transparent text-white me-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar"
     aria-controls="sidebar">
-    &#9776; <!-- Tres palitos -->
+    &#9776;
   </button>
 
-  <!-- Logo de la empresa -->
+  <!-- Logo -->
   <a class="navbar-brand ms-2" href="#">
     <img src="/images/logoRentools.png" alt="Logo">
   </a>
 
-  <!-- Espaciador flexible -->
   <div class="flex-grow-1"></div>
 
-  <!-- Iconos de persona y notificaciones -->
-  <div class="d-flex align-items-center me-3">
-    <i class="bi bi-person-circle fs-4 me-2 text-white"></i>
+  <!-- Iconos -->
+  <div class="d-flex align-items-center me-3 position-relative">
+    <i class="bi bi-person-circle fs-4 me-2 text-white" (click)="toggleTarjeta()" style="cursor: pointer;"></i>
     <i class="bi bi-bell fs-4 text-white"></i>
+
+    <!-- Tarjeta de usuario -->
+    <div *ngIf="mostrarTarjeta" class="tarjeta-usuario shadow p-3">
+      <strong>Nombre:</strong>
+      <p>{{ user?.nombre }}</p>
+      <strong>Rol:</strong>
+      <p>{{ user?.rol?.nombre }}</p>
+    </div>
   </div>
 
   <!-- Botón cerrar sesión -->
-  <button class="btn btn-danger text-white">Cerrar sesión</button>
+  <button class="btn btn-danger text-white" (click)="cerrarSesion()">Cerrar sesión</button>
 </nav>
 
-<!-- Sidebar Offcanvas -->
+<!-- Sidebar -->
 <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
   <div class="offcanvas-header">
     <h5 class="offcanvas-title" id="sidebarLabel">Menú</h5>
@@ -31,7 +38,7 @@
   </div>
   <div class="offcanvas-body p-0">
     <ul class="list-group list-group-flush">
-      <li class="list-group-item d-flex align-items-center sidebar-item" *ngFor="let item of sidebarItems">
+      <li class="list-group-item d-flex align-items-center sidebar-item" *ngFor="let item of filteredSidebar">
         <i [class]="item.icon + ' me-3'"></i>
         <a [routerLink]="item.link" class="text-decoration-none flex-grow-1">{{ item.title }}</a>
       </li>

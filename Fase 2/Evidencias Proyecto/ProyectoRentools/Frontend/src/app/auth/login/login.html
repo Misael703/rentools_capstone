@@ -1,5 +1,5 @@
 <div class="login-wrapper">
-  
+
   <!-- Lado Azul -->
   <div class="login-left d-flex flex-column justify-content-center align-items-center text-white">
     <img src="/images/logoRentools.png" alt="Logo" class="login-logo">
@@ -12,25 +12,42 @@
 
       <h2 class="text-center mb-4 fw-bold">¡Bienvenido a RenTools!</h2>
 
-      <!-- Usuario -->
-      <label class="form-label">Correo</label>
-      <div class="input-group mb-3">
-        <span class="input-group-text bg-white border-end-0">
-          <i class="bi bi-person"></i>
-        </span>
-        <input type="text" class="form-control border-start-0" placeholder="Ingrese su correo">
-      </div>
+      <form [formGroup]="form" (ngSubmit)="entrar()">
 
-      <!-- Contraseña -->
-      <label class="form-label">Contraseña</label>
-      <div class="input-group mb-4">
-        <span class="input-group-text bg-white border-end-0">
-          <i class="bi bi-lock"></i>
-        </span>
-        <input type="password" class="form-control border-start-0" placeholder="Ingrese su contraseña">
-      </div>
+        <!-- Email -->
+        <label class="form-label">Correo</label>
+        <div class="input-group mb-3">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-person"></i>
+          </span>
+          <input type="email" class="form-control border-start-0" placeholder="Ingrese su correo" formControlName="email">
+        </div>
+        <div *ngIf="email?.invalid && email?.touched" class="text-danger mb-2">
+          Ingresa un correo válido.
+        </div>
 
-      <button class="btn btn-login w-100" (click)="entrar()">Entrar</button>
+        <!-- Contraseña -->
+        <label class="form-label">Contraseña</label>
+        <div class="input-group mb-4">
+          <span class="input-group-text bg-white border-end-0">
+            <i class="bi bi-lock"></i>
+          </span>
+          <input type="password" class="form-control border-start-0" placeholder="Ingrese su contraseña" formControlName="password">
+        </div>
+        <div *ngIf="password?.invalid && password?.touched" class="text-danger mb-2">
+          La contraseña debe tener al menos 6 caracteres.
+        </div>
+
+        <!-- Error general -->
+        <div *ngIf="error" class="alert alert-danger text-center py-2">
+          {{ error }}
+        </div>
+
+        <!-- Botón -->
+        <button type="submit" class="btn-login w-100" [disabled]="loading || form.invalid">
+          {{ loading ? 'Ingresando...' : 'Entrar' }}
+        </button>
+      </form>
 
     </div>
   </div>
