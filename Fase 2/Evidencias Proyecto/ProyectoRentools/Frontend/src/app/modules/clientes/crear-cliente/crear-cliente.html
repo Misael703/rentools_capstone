@@ -1,0 +1,102 @@
+<div class="container mt-4">
+  <h2 class="form-title">Crear Cliente</h2>
+
+  <form [formGroup]="clienteForm" (ngSubmit)="crearCliente()" class="cliente-form">
+
+    <!-- Tipo de Cliente -->
+    <div class="form-group">
+      <label for="tipo_cliente">Tipo de Cliente</label>
+      <select formControlName="tipo_cliente" id="tipo_cliente" class="form-control">
+        <option value="">-- Seleccione tipo --</option>
+        <option *ngFor="let tipo of tipos" [value]="tipo">{{ tipo === 'persona_natural' ? 'Persona Natural' : 'Empresa'
+          }}</option>
+      </select>
+      <div class="text-danger"
+        *ngIf="clienteForm.get('tipo_cliente')?.touched && clienteForm.get('tipo_cliente')?.invalid">
+        El tipo de cliente es obligatorio.
+      </div>
+    </div>
+
+    <!-- Campos Persona Natural -->
+    <div *ngIf="clienteForm.get('tipo_cliente')?.value === 'persona_natural'">
+      <div class="form-group">
+        <label for="nombre">Nombre</label>
+        <input type="text" formControlName="nombre" id="nombre" class="form-control" placeholder="Nombre">
+        <div class="text-danger" *ngIf="clienteForm.get('nombre')?.touched && clienteForm.get('nombre')?.invalid">
+          El nombre es obligatorio
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="apellido">Apellido</label>
+        <input type="text" formControlName="apellido" id="apellido" class="form-control" placeholder="Apellido">
+        <div class="text-danger" *ngIf="clienteForm.get('apellido')?.touched && clienteForm.get('apellido')?.invalid">
+          El apellido es obligatorio
+        </div>
+      </div>
+    </div>
+
+    <!-- Campos Empresa -->
+    <div *ngIf="clienteForm.get('tipo_cliente')?.value === 'empresa'">
+      <div class="form-group">
+        <label for="razon_social">Razón Social</label>
+        <input type="text" formControlName="razon_social" id="razon_social" class="form-control"
+          placeholder="Razón Social">
+        <div class="text-danger"
+          *ngIf="clienteForm.get('razon_social')?.touched && clienteForm.get('razon_social')?.invalid">
+          La razón social es obligatoria
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="nombre_fantasia">Nombre Fantasía</label>
+        <input type="text" formControlName="nombre_fantasia" id="nombre_fantasia" class="form-control"
+          placeholder="Nombre Fantasía">
+      </div>
+      <div class="form-group">
+        <label for="giro">Giro</label>
+        <input type="text" formControlName="giro" id="giro" class="form-control" placeholder="Giro">
+        <div class="text-danger" *ngIf="clienteForm.get('giro')?.touched && clienteForm.get('giro')?.invalid">
+          El giro es obligatorio
+        </div>
+      </div>
+    </div>
+
+    <!-- Campos Comunes -->
+    <div class="form-group">
+      <label for="rut">RUT</label>
+      <input type="text" formControlName="rut" id="rut" class="form-control" placeholder="12345678-9">
+      <div class="text-danger" *ngIf="clienteForm.get('rut')?.touched && clienteForm.get('rut')?.invalid">
+        RUT inválido
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" formControlName="email" id="email" class="form-control" placeholder="correo@ejemplo.com">
+    </div>
+
+    <div class="form-group">
+      <label for="telefono">Teléfono</label>
+      <input type="text" formControlName="telefono" id="telefono" class="form-control" placeholder="+56 9 1234 5678">
+    </div>
+
+    <div class="form-group">
+      <label for="direccion">Dirección</label>
+      <input type="text" formControlName="direccion" id="direccion" class="form-control" placeholder="Dirección">
+    </div>
+
+    <div class="form-group">
+      <label for="ciudad">Ciudad</label>
+      <input type="text" formControlName="ciudad" id="ciudad" class="form-control" placeholder="Ciudad">
+    </div>
+
+    <div class="form-group">
+      <label for="comuna">Comuna</label>
+      <input type="text" formControlName="comuna" id="comuna" class="form-control" placeholder="Comuna">
+    </div>
+
+    <div class="botones-acciones">
+      <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+      <button type="submit" [disabled]="clienteForm.invalid" class="btn-crear">Crear</button>
+    </div>
+  </form>
+</div>

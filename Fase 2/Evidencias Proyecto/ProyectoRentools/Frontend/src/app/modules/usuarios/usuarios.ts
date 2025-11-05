@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UsuarioService, Usuario } from './usuario';
+import { UsuarioService } from './usuario';
+import { Usuario } from './usuario.interface'; // Asegúrate de tener este archivo exportando Usuario
 import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-usuarios',
   standalone: true,
@@ -14,16 +16,25 @@ export class Usuarios implements OnInit {
 
   listaUsuarios: Usuario[] = [];
   terminoBusqueda: string = '';
+  loading: boolean = false;
 
-  constructor(private usuarioService: UsuarioService, private router: Router) { }
+  constructor(private usuarioService: UsuarioService, private router: Router) {}
 
   ngOnInit() {
     this.loadUsuarios();
   }
 
   loadUsuarios() {
-    this.usuarioService.getAll().subscribe(lista => {
-      this.listaUsuarios = lista;
+    this.loading = true;
+    this.usuarioService.getAll().subscribe({
+      next: (lista) => {
+        this.listaUsuarios = lista;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios', err);
+        this.loading = false;
+      }
     });
   }
 
@@ -36,11 +47,11 @@ export class Usuarios implements OnInit {
     );
   }
 
-  getRolNombre(id_rol: number) {
-    return this.usuarioService.getRolNombre(id_rol);
+  getRolNombre(usuario: Usuario) {
+    return usuario.rol?.nombre || 'Desconocido';
   }
 
-  // Botones de acciones por ahora solo placeholders
+  // Navegación
   crearUsuario() {
     this.router.navigate(['/usuarios/crear']);
   }
@@ -49,11 +60,26 @@ export class Usuarios implements OnInit {
     this.router.navigate(['/usuarios/editar', usuario.id_usuario]);
   }
 
-  desactivarUsuario(usuario: Usuario) {
-    // lógica de desactivar, por ahora solo alerta
-    this.usuarioService.toggleActivo(usuario.id_usuario).subscribe(() => {
-      // recargar lista después de desactivar
-      this.loadUsuarios();
+  // Activar / Desactivar usuario
+  toggleActivo(usuario: Usuario) {
+    if (usuario.activo) {
+      this.usuarioService.deactivate(usuario.id_usuario).subscribe({
+        next: () => this.loadUsuarios(),
+        error: (err) => console.error(err)
+      });
+    } else {
+      this.usuarioService.activate(usuario.id_usuario).subscribe({
+        next: () => this.loadUsuarios(),
+        error: (err) => console.error(err)
+      });
+    }
+  }
+
+  eliminarUsuario(usuario: Usuario) {
+    if (!confirm(`¿Seguro que deseas eliminar a ${usuario.nombre}?`)) return;
+    this.usuarioService.remove(usuario.id_usuario).subscribe({
+      next: () => this.loadUsuarios(),
+      error: (err) => console.error(err)
     });
   }
 }

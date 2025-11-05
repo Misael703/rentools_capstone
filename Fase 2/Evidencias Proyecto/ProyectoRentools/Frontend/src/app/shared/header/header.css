@@ -33,3 +33,19 @@
     width: auto;        /* mantiene proporción */
     object-fit: contain;
 }
+
+.tarjeta-usuario {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: white;
+  border-radius: 8px;
+  padding: 10px 15px;
+  min-width: 180px;
+  z-index: 1000;
+}
+
+.tarjeta-usuario p {
+  margin: 4px 0;
+  color: #333;
+}

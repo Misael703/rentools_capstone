@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 import { Login } from './auth/login/login';
+
+import { AuthGuard } from './auth/auth.guard';
+import { RoleGuard } from './auth/role.guard';
 import { MainLayout } from './layouts/main-layout/main-layout';
 import { Home } from './modules/dashboard/home/home';
 
@@ -18,16 +21,15 @@ import { ReporteIngresoHerramienta } from './modules/reportes/reporte-ingreso-he
 import { ReporteRankingHerramientas } from './modules/reportes/reporte-ranking-herramientas/reporte-ranking-herramientas';
 
 export const routes: Routes = [
-  // Ruta vacía → redirige al login
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
-  // Ruta del login (sin header/footer)
   { path: 'login', component: Login },
 
   // Rutas internas con layout (header + footer)
   {
     path: '',
     component: MainLayout,
+    canActivate: [AuthGuard],
     children: [
       { path: 'home', component: Home },
       { path: 'inventario', component: Inventario },
@@ -45,6 +47,8 @@ export const routes: Routes = [
       { path: 'contratos', component: Contratos },
       { path: 'devoluciones', component: Devoluciones },
       { path: 'clientes', component: Clientes },
+      { path: 'clientes/crear', loadComponent: () => import('./modules/clientes/crear-cliente/crear-cliente').then(m => m.CrearCliente) },
+      { path: 'clientes/editar/:id', loadComponent: () => import('./modules/clientes/editar-cliente/editar-cliente').then(m => m.EditarCliente) },
       {
         path: 'reportes', component: Reportes, children: [
           { path: '', redirectTo: 'contratos', pathMatch: 'full' },
@@ -55,16 +59,23 @@ export const routes: Routes = [
         ]
       },
       { path: 'pagos', component: Pagos },
-      { path: 'usuarios', component: Usuarios },
+      {
+        path: 'usuarios', component: Usuarios, canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
+      },
       {
         path: 'usuarios/crear',
         loadComponent: () =>
-          import('./modules/usuarios/crear-usuario/crear-usuario').then(m => m.CrearUsuario)
+          import('./modules/usuarios/crear-usuario/crear-usuario').then(m => m.CrearUsuario),
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
       },
       {
         path: 'usuarios/editar/:id_usuario',
         loadComponent: () =>
-          import('./modules/usuarios/editar-usuario/editar-usuario').then(m => m.EditarUsuario)
+          import('./modules/usuarios/editar-usuario/editar-usuario').then(m => m.EditarUsuario),
+        canActivate: [RoleGuard],
+        data: { roles: ['admin'] }
       }
     ]
   },
