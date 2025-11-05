@@ -2,72 +2,130 @@
 
   <!-- Título y botón -->
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="fw-bold">Gestión Clientes</h2>
-
-    <button class="btn btn-success d-flex align-items-center">
+    <h2 class="fw-bold">Gestión de Clientes</h2>
+    <button class="btn btn-success d-flex align-items-center" (click)="crearCliente()">
       <i class="bi bi-plus-lg me-2"></i> Crear Cliente
     </button>
   </div>
+  <!-- Filtros -->
+  <div class="filtros-container">
+    <!--  Búsqueda general -->
+    <input type="text" placeholder="Buscar por nombre, razón social o RUT" [(ngModel)]="filtroBusqueda"
+      (input)="aplicarFiltros()" />
+
+    <!-- Filtro específico por RUT -->
+    <input type="text" placeholder="Buscar por RUT" [(ngModel)]="filtroRut" (input)="aplicarFiltros()" />
+
+    <!-- Filtro por estado -->
+    <select [(ngModel)]="filtroActivo" (change)="aplicarFiltros()">
+      <option value="">Todos</option>
+      <option value="true">Activos</option>
+      <option value="false">Inactivos</option>
+    </select>
+
+    <!-- 🧹 Botón para limpiar -->
+    <button class="btn btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
+  </div>
+
 
   <!-- Tabla -->
-  <table class="table table-bordered table-hover text-center">
+  <table class="table table-bordered table-hover text-center align-middle">
     <thead>
-      <!-- Título -->
       <tr class="table-header-title">
-        <th colspan="5">Lista de Clientes</th>
+        <th colspan="7">Lista de Clientes</th>
       </tr>
-
-      <!-- Encabezados -->
       <tr class="table-header-columns">
         <th>RUT</th>
-        <th>Nombre</th>
+        <th>Nombre Completo</th>
+        <th>Tipo Cliente</th>
         <th>Email</th>
         <th>Teléfono</th>
-        <th class="actions-column">Acciones</th>
+        <th>Disponibilidad</th>
+        <th>Acciones</th>
       </tr>
     </thead>
-
     <tbody>
-      <!-- FILA 1 -->
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+      <tr *ngFor="let cliente of clientes">
+        <td>{{ cliente.rut }}</td>
+        <td>{{ nombreCompleto(cliente) }}</td>
+        <td>{{ cliente.tipo_cliente === 'persona_natural' ? 'Persona' : 'Empresa' }}</td>
+        <td>{{ cliente.email || '-' }}</td>
+        <td>{{ cliente.telefono || '-' }}</td>
+        <td [ngClass]="cliente.activo ? 'text-success' : 'text-danger'">
+          {{ cliente.activo ? 'Habilitado' : 'Deshabilitado' }}
+        </td>
         <td class="actions-column">
-          <span class="action-icon bg-info"><i class="bi bi-clock-history"></i></span>
-          <span class="action-icon bg-warning"><i class="bi bi-pencil-square"></i></span>
-          <span class="action-icon bg-danger"><i class="bi bi-trash"></i></span>
+          <!-- Ver detalles -->
+          <span class="action-icon bg-primary text-white" (click)="verDetalles(cliente)">
+            <i class="bi bi-eye"></i>
+          </span>
+          <!-- Editar -->
+          <span class="action-icon bg-warning text-white" (click)="editarCliente(cliente.id_cliente)">
+            <i class="bi bi-pencil-square"></i>
+          </span>
+          <!-- Activar / Desactivar -->
+          <span class="action-icon text-white" [ngClass]="cliente.activo ? 'bg-danger' : 'bg-success'"
+            (click)="toggleActivo(cliente)">
+            <i class="bi" [ngClass]="cliente.activo ? 'bi-slash-circle' : 'bi-check2-circle'"></i>
+          </span>
+          <!-- Eliminar -->
+          <span class="action-icon bg-dark text-white" (click)="eliminarCliente(cliente)">
+            <i class="bi bi-trash"></i>
+          </span>
         </td>
       </tr>
-
-      <!-- FILA 2 -->
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td class="actions-column">
-          <span class="action-icon bg-info"><i class="bi bi-clock-history"></i></span>
-          <span class="action-icon bg-warning"><i class="bi bi-pencil-square"></i></span>
-          <span class="action-icon bg-danger"><i class="bi bi-trash"></i></span>
-        </td>
-      </tr>
-
-      <!-- FILA 3 -->
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td class="actions-column">
-          <span class="action-icon bg-info"><i class="bi bi-clock-history"></i></span>
-          <span class="action-icon bg-warning"><i class="bi bi-pencil-square"></i></span>
-          <span class="action-icon bg-danger"><i class="bi bi-trash"></i></span>
-        </td>
-      </tr>
-
     </tbody>
   </table>
+
+  <div class="text-center mt-3">
+    <button class="btn btn-secondary me-2" [disabled]="paginaActual === 1" (click)="cambiarPagina('anterior')">
+      Anterior
+    </button>
+
+    <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
+
+    <button class="btn btn-secondary ms-2" [disabled]="paginaActual === totalPaginas"
+      (click)="cambiarPagina('siguiente')">
+      Siguiente
+    </button>
+  </div>
+
+  <div *ngIf="cargando" class="text-center mt-3">
+    <i class="bi bi-arrow-repeat spin"></i> Cargando clientes...
+  </div>
+
+  <div *ngIf="!cargando && clientes.length === 0" class="text-center mt-3">
+    No hay clientes registrados.
+  </div>
+
+  <!-- Modal Detalles de Cliente -->
+  <div class="modal-backdrop" *ngIf="mostrarModal">
+    <div class="modal-content-custom">
+      <h4 class="text-center mb-3">Detalles de Cliente</h4>
+
+      <div *ngIf="clienteSeleccionado">
+        <p><strong>RUT:</strong> {{ clienteSeleccionado.rut }}</p>
+        <ng-container *ngIf="clienteSeleccionado.tipo_cliente === 'persona_natural'; else empresaInfo">
+          <p><strong>Nombre:</strong> {{ clienteSeleccionado.nombre }}</p>
+          <p><strong>Apellido:</strong> {{ clienteSeleccionado.apellido }}</p>
+        </ng-container>
+        <ng-template #empresaInfo>
+          <p><strong>Razón Social:</strong> {{ clienteSeleccionado.razon_social }}</p>
+          <p><strong>Giro:</strong> {{ clienteSeleccionado.giro }}</p>
+          <p><strong>Nombre Fantasía:</strong> {{ clienteSeleccionado.nombre_fantasia }}</p>
+        </ng-template>
+
+        <p><strong>Email:</strong> {{ clienteSeleccionado.email }}</p>
+        <p><strong>Teléfono:</strong> {{ clienteSeleccionado.telefono }}</p>
+        <p><strong>Dirección:</strong> {{ clienteSeleccionado.direccion }}</p>
+        <p><strong>Comuna:</strong> {{ clienteSeleccionado.comuna }}</p>
+        <p><strong>Ciudad:</strong> {{ clienteSeleccionado.ciudad }}</p>
+      </div>
+
+      <button class="btn btn-secondary w-100 mt-3" (click)="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <router-outlet></router-outlet>
 
 </div>

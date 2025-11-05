@@ -17,12 +17,12 @@
 }
 
 .login-logo {
-  width: 75%; /* Aumentado */
-  max-width: 420px; /* Más grande aún */
+  width: 75%;
+  max-width: 420px;
 }
 
 .login-slogan {
-  font-size: 1.8rem; /* Más grande */
+  font-size: 1.8rem;
   font-weight: 700;
   font-style: italic;
   margin-top: 1.5rem;
@@ -39,14 +39,13 @@
   align-items: center;
 }
 
-/* Caja del Formulario (AUMENTADA EN ALTURA) */
+/* Caja del Formulario */
 .login-box {
   background: white;
   border-radius: 20px;
   width: 92%;
-  max-width: 500px; /* Más ancho */
-  padding: 3.8rem 3rem; /* Más alto */
-  min-height: 520px; /* ← AQUI SE AUMENTA LA ALTURA */
+  max-width: 450px;
+  padding: 3.5rem 2.5rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -54,7 +53,7 @@
 
 /* Título */
 .login-box h2 {
-  font-size: 2.2rem; /* Más grande */
+  font-size: 2.2rem;
   font-weight: 800;
   color: #01328a;
   margin-bottom: 2rem;
@@ -82,7 +81,7 @@
   background-color: #fd620e;
   border: none;
   font-weight: bold;
-  padding: 15px;
+  padding: 12px;
   border-radius: 10px;
   font-size: 1.25rem;
   color: white;
@@ -92,5 +91,5 @@
 
 .btn-login:hover {
   background-color: #e65a09;
-  transform: scale(1.04);
+  transform: scale(1.03);
 }

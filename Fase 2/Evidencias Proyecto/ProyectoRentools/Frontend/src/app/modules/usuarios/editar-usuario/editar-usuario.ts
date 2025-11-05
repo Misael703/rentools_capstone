@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsuarioService, Usuario } from '../usuario';
 import { switchMap, take } from 'rxjs';
+
 @Component({
   selector: 'app-editar-usuario',
   standalone: true,
@@ -29,11 +30,12 @@ export class EditarUsuario {
     private router: Router,
     private usuarioService: UsuarioService
   ) {
+    // Inicializar el formulario dentro del constructor
     this.form = this.fb.group({
       id_usuario: [{ value: '', disabled: true }, Validators.required],
       nombre: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      password: ['', Validators.minLength(6)],
       id_rol: ['', Validators.required]
     });
 
@@ -51,7 +53,13 @@ export class EditarUsuario {
         this.router.navigate(['/usuarios']);
         return;
       }
-      this.form.patchValue(u);
+      // Parchar valores, convertir números a string para el formulario
+      this.form.patchValue({
+        id_usuario: String(u.id_usuario),
+        nombre: u.nombre,
+        email: u.email,
+        id_rol: String(u.id_rol)
+      });
     });
   }
 
@@ -60,21 +68,32 @@ export class EditarUsuario {
       this.form.markAllAsTouched();
       return;
     }
+
     this.loading = true;
 
-    const usuarioActualizado: Usuario = {
-      id_usuario: this.id_usuario,
-      nombre: this.form.get('nombre')!.value,
-      email: this.form.get('email')!.value,
-      password: this.form.get('password')!.value,
-      id_rol: Number(this.form.get('id_rol')!.value),
-      activo: true // se mantiene activo, solo se puede desactivar desde la lista
+    // Crear objeto compatible con UpdateUsuarioDto
+    const usuarioActualizado: Partial<Usuario> & { password?: string } = {
+      nombre: this.form.get('nombre')?.value || undefined,
+      email: this.form.get('email')?.value || undefined,
+      id_rol: Number(this.form.get('id_rol')?.value),
     };
 
-    this.usuarioService.update(usuarioActualizado).pipe(take(1)).subscribe(() => {
-      this.loading = false;
-      this.mostrarMensaje = true;
-    });
+    const passwordValue = this.form.get('password')?.value;
+    if (passwordValue) {
+      usuarioActualizado.password = passwordValue;
+    }
+
+    this.usuarioService.update(this.id_usuario, usuarioActualizado).pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.loading = false;
+          this.mostrarMensaje = true;
+        },
+        error: (err) => {
+          this.loading = false;
+          alert('Error al actualizar usuario: ' + err.message);
+        }
+      });
   }
 
   cerrarMensaje() {

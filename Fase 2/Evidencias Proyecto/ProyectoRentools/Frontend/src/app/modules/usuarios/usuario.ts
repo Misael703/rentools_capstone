@@ -1,75 +1,47 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-
-export interface Usuario {
-  id_usuario: number;
-  nombre: string;
-  email: string;
-  password: string;
-  id_rol: number;
-  activo: boolean;
-}
-
-export interface Rol {
-  id_rol: number;
-  nombre: string;
-}
-
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Usuario, Rol } from './usuario.interface';
 @Injectable({
   providedIn: 'root'
 })
-
 export class UsuarioService {
-  private roles: Rol[] = [
-    { id_rol: 1, nombre: 'Admin' },
-    { id_rol: 2, nombre: 'Bodeguero' },
-    { id_rol: 3, nombre: 'Vendedor' }
-  ];
+  private apiUrl = 'http://localhost:3000/api/usuario';
 
-  private usuariosIniciales: Usuario[] = [
-    { id_usuario: 1, nombre: 'Carlos', email: 'carlos@test.com', password: '1234', id_rol: 1, activo: true },
-    { id_usuario: 2, nombre: 'Ana', email: 'ana@test.com', password: 'abcd', id_rol: 2, activo: true },
-    { id_usuario: 3, nombre: 'Luis', email: 'luis@test.com', password: 'qwerty', id_rol: 3, activo: false }
-  ];
-
-  private data$ = new BehaviorSubject<Usuario[]>(this.usuariosIniciales);
+  constructor(private http: HttpClient) {}
 
   getAll(): Observable<Usuario[]> {
-    return this.data$.asObservable();
+    return this.http.get<Usuario[]>(this.apiUrl);
   }
 
-  getById(id_usuario: number): Observable<Usuario | undefined> {
-    const user = this.data$.getValue().find(u => u.id_usuario === id_usuario);
-    return of(user);
+  getById(id: number): Observable<Usuario> {
+    return this.http.get<Usuario>(`${this.apiUrl}/id/${id}`);
   }
 
-  create(usuario: Usuario): Observable<boolean> {
-    const arr = this.data$.getValue();
-    if (arr.find(u => u.id_usuario === usuario.id_usuario)) {
-      return of(false);
-    }
-    arr.push(usuario);
-    this.data$.next(arr);
-    return of(true);
+  create(usuario: Partial<Usuario> & { password: string }): Observable<Usuario> {
+    return this.http.post<Usuario>(this.apiUrl, usuario);
   }
 
-  update(usuarioActualizado: Usuario): Observable<boolean> {
-    const arr = this.data$.getValue().map(u => u.id_usuario === usuarioActualizado.id_usuario ? usuarioActualizado : u);
-    this.data$.next(arr);
-    return of(true);
+  update(id: number, usuario: Partial<Usuario>): Observable<Usuario> {
+    return this.http.patch<Usuario>(`${this.apiUrl}/${id}`, usuario);
   }
 
-  toggleActivo(id_usuario: number): Observable<boolean> {
-    const arr = this.data$.getValue().map(u => {
-      if (u.id_usuario === id_usuario) u.activo = !u.activo;
-      return u;
-    });
-    this.data$.next(arr);
-    return of(true);
+  activate(id: number): Observable<{ message: string; success: boolean; data: Usuario }> {
+    return this.http.patch<{ message: string; success: boolean; data: Usuario }>(`${this.apiUrl}/activar/${id}`, {});
   }
 
-  getRolNombre(id_rol: number): string {
-    return this.roles.find(r => r.id_rol === id_rol)?.nombre || 'Desconocido';
+  deactivate(id: number): Observable<{ message: string; success: boolean; data: Usuario }> {
+    return this.http.patch<{ message: string; success: boolean; data: Usuario }>(`${this.apiUrl}/desactivar/${id}`, {});
+  }
+
+  remove(id: number): Observable<{ message: string; success: boolean }> {
+    return this.http.delete<{ message: string; success: boolean }>(`${this.apiUrl}/${id}`);
+  }
+
+  getRolNombre(usuario: Usuario): string {
+    return usuario.rol?.nombre || 'Desconocido';
   }
 }
 
+// Exportar los tipos para otros módulos
+export type { Usuario, Rol };
