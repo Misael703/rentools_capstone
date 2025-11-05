@@ -9,6 +9,7 @@ export class BsaleService {
   private readonly logger = new Logger(BsaleService.name);
   private readonly baseUrl: string;
   private readonly token: string;
+  private readonly productIdsArriendo: number[];
 
   constructor(
     private readonly httpService: HttpService,
@@ -16,6 +17,13 @@ export class BsaleService {
   ) {
     this.baseUrl = this.configService.get<string>('BSALE_BASE_URL')!;
     this.token = this.configService.get<string>('BSALE_API_KEY')!;
+
+    // Leer IDs de productos de arriendo desde .env
+    const productIdsString = this.configService.get<string>('BSALE_PRODUCT_IDS_ARRIENDO', '');
+    this.productIdsArriendo = productIdsString
+      .split(',')
+      .map(id => parseInt(id.trim()))
+      .filter(id => !isNaN(id));
 
     if (!this.baseUrl || !this.token) {
       this.logger.warn('⚠️  Credenciales de Bsale no configuradas');
@@ -290,6 +298,98 @@ export class BsaleService {
     }
   }
 
+    // ============================================
+  // MÉTODOS PARA HERRAMIENTAS / PRODUCTOS
+  // ============================================
+
+  /**
+   * Obtiene todas las variantes de productos de arriendo
+   * Filtra por los product_ids configurados en BSALE_PRODUCT_IDS_ARRIENDO
+   * NOTA: Solo trae info básica (SKU, nombre, descripción, barcode)
+   * Stock y precios se agregarán después cuando tengamos los endpoints
+   */
+  async getAllVariantsArriendo(): Promise<any[]> {
+    try {
+      if (this.productIdsArriendo.length === 0) {
+        this.logger.warn('⚠️  No hay product IDs configurados. Retornando array vacío.');
+        return [];
+      }
+
+      const allVariants: any[] = [];
+
+      this.logger.log(`📦 Obteniendo variantes de productos: [${this.productIdsArriendo.join(', ')}]`);
+
+      // Iterar sobre cada product_id configurado
+      for (const productId of this.productIdsArriendo) {
+        try {
+          this.logger.log(`📦 Obteniendo variantes del producto ${productId}...`);
+
+          const response = await firstValueFrom(
+            this.httpService.get<BsaleApiResponse<any>>(
+              `${this.baseUrl}/products/${productId}/variants.json`,
+              { headers: this.getHeaders() }
+            )
+          );
+
+          const variants = response.data.items || [];
+          allVariants.push(...variants);
+
+          this.logger.log(`✅ Producto ${productId}: ${variants.length} variantes obtenidas`);
+
+        } catch (error) {
+          if (error.response?.status === 404) {
+            this.logger.warn(`⚠️  Producto ${productId} no encontrado en Bsale`);
+          } else {
+            this.logger.error(`❌ Error obteniendo variantes del producto ${productId}:`, error.message);
+          }
+          // Continuar con el siguiente producto
+        }
+      }
+
+      this.logger.log(`✅ Total: ${allVariants.length} variantes de arriendo obtenidas`);
+      return allVariants;
+
+    } catch (error) {
+      this.handleError(error, 'getAllVariantsArriendo');
+    }
+  }
+
+  /**
+   * Busca una variante específica por SKU
+   * Útil para verificar si existe antes de crear
+   */
+  async findVariantBySku(sku: string): Promise<any | null> {
+    try {
+      this.logger.log(`🔍 Buscando variante ${sku} en Bsale...`);
+
+      const response = await firstValueFrom(
+        this.httpService.get<BsaleApiResponse<any>>(
+          `${this.baseUrl}/variants.json`,
+          {
+            headers: this.getHeaders(),
+            params: { code: sku },
+          }
+        )
+      );
+
+      const variants = response.data.items || [];
+      
+      if (variants.length === 0) {
+        this.logger.log(`❌ Variante ${sku} no encontrada en Bsale`);
+        return null;
+      }
+
+      this.logger.log(`✅ Variante ${sku} encontrada en Bsale`);
+      return variants[0];
+
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      this.handleError(error, `findVariantBySku(${sku})`);
+    }
+  }
+  
   /**
    * Verifica conexión con Bsale
    */
