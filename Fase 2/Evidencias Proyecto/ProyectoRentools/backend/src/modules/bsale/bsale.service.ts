@@ -9,6 +9,7 @@ export class BsaleService {
   private readonly logger = new Logger(BsaleService.name);
   private readonly baseUrl: string;
   private readonly token: string;
+  private readonly productIdsArriendo: number[];
 
   constructor(
     private readonly httpService: HttpService,
@@ -16,6 +17,13 @@ export class BsaleService {
   ) {
     this.baseUrl = this.configService.get<string>('BSALE_BASE_URL')!;
     this.token = this.configService.get<string>('BSALE_API_KEY')!;
+
+    // Leer IDs de productos de arriendo desde .env
+    const productIdsString = this.configService.get<string>('BSALE_PRODUCT_IDS_ARRIENDO', '');
+    this.productIdsArriendo = productIdsString
+      .split(',')
+      .map(id => parseInt(id.trim()))
+      .filter(id => !isNaN(id));
 
     if (!this.baseUrl || !this.token) {
       this.logger.warn('⚠️  Credenciales de Bsale no configuradas');
@@ -161,12 +169,11 @@ export class BsaleService {
       if (data.tipo_cliente === 'persona_natural') {
         payload.firstName = data.nombre || '';
         payload.lastName = data.apellido || '';
-        payload.company = 0;
+        payload.companyOrPerson = 0
       } else {
-        payload.firstName = data.nombre_fantasia || data.razon_social || '';
-        payload.lastName = data.razon_social || '';
+        payload.company = data.razon_social || '';
         payload.activity = data.giro || '';
-        payload.company = 1;
+        payload.companyOrPerson = 1;
       }
 
       const response = await firstValueFrom(
@@ -218,10 +225,11 @@ export class BsaleService {
       if (data.tipo_cliente === 'persona_natural') {
         if (data.nombre) payload.firstName = data.nombre;
         if (data.apellido) payload.lastName = data.apellido;
+        if (data.tipo_cliente) payload.companyOrPerson = 0;
       } else {
-        if (data.nombre_fantasia) payload.firstName = data.nombre_fantasia;
-        if (data.razon_social) payload.lastName = data.razon_social;
+        if (data.razon_social) payload.company = data.razon_social;
         if (data.giro) payload.activity = data.giro;
+        if (data.tipo_cliente) payload.companyOrPerson = 1;
       }
 
       const response = await firstValueFrom(
@@ -239,6 +247,31 @@ export class BsaleService {
       this.handleError(error, `updateCliente(${idBsale})`);
     }
   }
+
+  /**
+   * Actualiza solo el estado de un cliente en Bsale
+   * @param idBsale ID del cliente en Bsale
+   * @param state 0 = activo, 1 = inactivo
+   */
+  async updateClienteState(idBsale: number, state: 0 | 1): Promise<void> {
+    try {
+      this.logger.log(`📤 Actualizando estado del cliente ${idBsale} en Bsale a ${state === 0 ? 'activo' : 'inactivo'}...`);
+
+      await firstValueFrom(
+        this.httpService.put(
+          `${this.baseUrl}/clients/${idBsale}.json`,
+          { state },
+          { headers: this.getHeaders() }
+        )
+      );
+
+      this.logger.log(`✅ Estado del cliente ${idBsale} actualizado en Bsale`);
+
+    } catch (error) {
+      this.handleError(error, `updateClienteState(${idBsale}, ${state})`);
+    }
+  }
+
 
   /**
    * Obtiene un cliente por ID de Bsale
@@ -265,6 +298,98 @@ export class BsaleService {
     }
   }
 
+    // ============================================
+  // MÉTODOS PARA HERRAMIENTAS / PRODUCTOS
+  // ============================================
+
+  /**
+   * Obtiene todas las variantes de productos de arriendo
+   * Filtra por los product_ids configurados en BSALE_PRODUCT_IDS_ARRIENDO
+   * NOTA: Solo trae info básica (SKU, nombre, descripción, barcode)
+   * Stock y precios se agregarán después cuando tengamos los endpoints
+   */
+  async getAllVariantsArriendo(): Promise<any[]> {
+    try {
+      if (this.productIdsArriendo.length === 0) {
+        this.logger.warn('⚠️  No hay product IDs configurados. Retornando array vacío.');
+        return [];
+      }
+
+      const allVariants: any[] = [];
+
+      this.logger.log(`📦 Obteniendo variantes de productos: [${this.productIdsArriendo.join(', ')}]`);
+
+      // Iterar sobre cada product_id configurado
+      for (const productId of this.productIdsArriendo) {
+        try {
+          this.logger.log(`📦 Obteniendo variantes del producto ${productId}...`);
+
+          const response = await firstValueFrom(
+            this.httpService.get<BsaleApiResponse<any>>(
+              `${this.baseUrl}/products/${productId}/variants.json`,
+              { headers: this.getHeaders() }
+            )
+          );
+
+          const variants = response.data.items || [];
+          allVariants.push(...variants);
+
+          this.logger.log(`✅ Producto ${productId}: ${variants.length} variantes obtenidas`);
+
+        } catch (error) {
+          if (error.response?.status === 404) {
+            this.logger.warn(`⚠️  Producto ${productId} no encontrado en Bsale`);
+          } else {
+            this.logger.error(`❌ Error obteniendo variantes del producto ${productId}:`, error.message);
+          }
+          // Continuar con el siguiente producto
+        }
+      }
+
+      this.logger.log(`✅ Total: ${allVariants.length} variantes de arriendo obtenidas`);
+      return allVariants;
+
+    } catch (error) {
+      this.handleError(error, 'getAllVariantsArriendo');
+    }
+  }
+
+  /**
+   * Busca una variante específica por SKU
+   * Útil para verificar si existe antes de crear
+   */
+  async findVariantBySku(sku: string): Promise<any | null> {
+    try {
+      this.logger.log(`🔍 Buscando variante ${sku} en Bsale...`);
+
+      const response = await firstValueFrom(
+        this.httpService.get<BsaleApiResponse<any>>(
+          `${this.baseUrl}/variants.json`,
+          {
+            headers: this.getHeaders(),
+            params: { code: sku },
+          }
+        )
+      );
+
+      const variants = response.data.items || [];
+      
+      if (variants.length === 0) {
+        this.logger.log(`❌ Variante ${sku} no encontrada en Bsale`);
+        return null;
+      }
+
+      this.logger.log(`✅ Variante ${sku} encontrada en Bsale`);
+      return variants[0];
+
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      this.handleError(error, `findVariantBySku(${sku})`);
+    }
+  }
+  
   /**
    * Verifica conexión con Bsale
    */

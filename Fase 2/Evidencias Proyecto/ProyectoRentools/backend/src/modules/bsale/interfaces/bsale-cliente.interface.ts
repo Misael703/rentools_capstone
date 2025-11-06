@@ -9,7 +9,8 @@ export interface BsaleCliente {
   city: string;
   municipality: string;
   activity: string; // Giro para empresas
-  company: number; // 0 = persona natural, 1 = empresa
+  companyOrPerson: number; // 0 = persona natural, 1 = empresa
+  company: string; // Nombre de la empresa (si aplica)
 }
 
 export interface BsaleApiResponse<T> {

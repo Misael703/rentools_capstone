@@ -11,7 +11,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
-import { TipoCliente } from '../enums/tipo-cliente.enums';
+import { TipoCliente } from '../enums/tipo-cliente.enum';
 
 export class CreateClienteDto {
   @IsNotEmpty({ message: 'El RUT es obligatorio' })
