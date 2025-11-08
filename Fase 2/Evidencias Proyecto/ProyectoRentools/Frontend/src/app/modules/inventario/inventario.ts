@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Inventory, Herramienta } from './inventory';
+import { Inventory, Herramienta } from './Services/inventory';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 

@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UsuarioService, Usuario } from '../usuario';
+import { UsuarioService, Usuario } from '../Services/usuario';
 import { switchMap, take } from 'rxjs';
 
 @Component({

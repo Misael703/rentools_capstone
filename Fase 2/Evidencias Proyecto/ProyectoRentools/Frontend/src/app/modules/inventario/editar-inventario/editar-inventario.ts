@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Inventory, Herramienta } from '../inventory';
+import { Inventory, Herramienta } from '../Services/inventory';
 import { switchMap, take } from 'rxjs';
 
 @Component({

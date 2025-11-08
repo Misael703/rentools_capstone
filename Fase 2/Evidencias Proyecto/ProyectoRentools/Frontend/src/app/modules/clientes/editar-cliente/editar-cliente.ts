@@ -12,26 +12,38 @@ import { ReactiveFormsModule } from '@angular/forms';
   styleUrl: './editar-cliente.css',
 })
 export class EditarCliente implements OnInit {
-  clienteForm: FormGroup;
+  clienteForm!: FormGroup;
   clienteId!: number;
   cliente!: Cliente;
   tipos: string[] = ['persona_natural', 'empresa'];
-  loading: boolean = false;
+  loading = false;
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
     private clientesService: ClientesService
-  ) {
+  ) { }
+
+  ngOnInit(): void {
+    this.clienteId = +this.route.snapshot.paramMap.get('id')!;
+    this.initForm();
+    this.loadCliente();
+  }
+
+  /** Inicializa el formulario */
+  private initForm() {
     this.clienteForm = this.fb.group({
       tipo_cliente: ['', Validators.required],
-      rut: ['', Validators.required],
+      rut: [{ value: '', disabled: true }, Validators.required],
+      // Persona
       nombre: [''],
       apellido: [''],
+      // Empresa
       razon_social: [''],
       nombre_fantasia: [''],
       giro: [''],
+      // Comunes
       email: [''],
       telefono: [''],
       direccion: [''],
@@ -40,23 +52,16 @@ export class EditarCliente implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this.clienteId = +this.route.snapshot.paramMap.get('id')!;
-    this.loadCliente();
-    this.onTipoChange();
-  }
-
-  // Carga el cliente desde el backend
-  loadCliente() {
+  /** Carga el cliente existente desde backend */
+  private loadCliente() {
     this.loading = true;
     this.clientesService.getById(this.clienteId).subscribe({
       next: (cliente) => {
         this.cliente = cliente;
 
-        // PatchValue explícito para todos los campos del formulario
         this.clienteForm.patchValue({
-          tipo_cliente: cliente.tipo_cliente || '',
-          rut: cliente.rut || '',
+          tipo_cliente: cliente.tipo_cliente,
+          rut: cliente.rut,
           nombre: cliente.nombre || '',
           apellido: cliente.apellido || '',
           razon_social: cliente.razon_social || '',
@@ -69,8 +74,10 @@ export class EditarCliente implements OnInit {
           comuna: cliente.comuna || ''
         });
 
-        // Aplicar las validaciones después de cargar los valores
         this.applyTipoValidations(cliente.tipo_cliente);
+
+        // Activar detección del cambio de tipo solo después de cargar datos
+        this.onTipoChange();
 
         this.loading = false;
       },
@@ -80,77 +87,156 @@ export class EditarCliente implements OnInit {
       }
     });
   }
-  // Detecta cambios en tipo_cliente para actualizar validaciones
-  onTipoChange() {
+
+  /** Detecta cambios en tipo_cliente */
+  private onTipoChange() {
     this.clienteForm.get('tipo_cliente')?.valueChanges.subscribe(tipo => {
       this.applyTipoValidations(tipo);
-    });
-  }
 
-  // Aplica validaciones dinámicamente según el tipo de cliente
-  private applyTipoValidations(tipo: string) {
-    if (tipo === 'persona_natural') {
-      this.clienteForm.get('nombre')?.setValidators([Validators.required]);
-      this.clienteForm.get('apellido')?.setValidators([Validators.required]);
-      this.clienteForm.get('razon_social')?.clearValidators();
-      this.clienteForm.get('giro')?.clearValidators();
-    } else if (tipo === 'empresa') {
-      this.clienteForm.get('razon_social')?.setValidators([Validators.required]);
-      this.clienteForm.get('giro')?.setValidators([Validators.required]);
-      this.clienteForm.get('nombre')?.clearValidators();
-      this.clienteForm.get('apellido')?.clearValidators();
-    }
+      if (tipo === 'persona_natural') {
+        // Si pasa a persona, limpia campos de empresa
+        this.clienteForm.patchValue({
+          razon_social: '',
+          nombre_fantasia: '',
+          giro: ''
+        }, { emitEvent: false });
 
-    // Actualizar validaciones
-    ['nombre', 'apellido', 'razon_social', 'giro'].forEach(campo =>
-      this.clienteForm.get(campo)?.updateValueAndValidity()
-    );
-  }
+        // Limpia también los valores del backend temporalmente
+        this.cliente.razon_social = '';
+        this.cliente.nombre_fantasia = '';
+        this.cliente.giro = '';
 
-  // Enviar formulario para actualizar cliente
-  actualizarCliente() {
-    if (this.clienteForm.invalid) return;
+      } else if (tipo === 'empresa') {
+        // Si pasa a empresa, limpia campos de persona
+        this.clienteForm.patchValue({
+          nombre: '',
+          apellido: ''
+        }, { emitEvent: false });
 
-    this.loading = true;
-
-    // Campos comunes que siempre se pueden actualizar
-    const datosActualizar: any = {
-      email: this.clienteForm.value.email,
-      direccion: this.clienteForm.value.direccion,
-      ciudad: this.clienteForm.value.ciudad,
-      comuna: this.clienteForm.value.comuna
-    };
-
-    // Campos según el tipo de cliente
-    if (this.cliente.tipo_cliente === 'persona_natural') {
-      datosActualizar.nombre = this.clienteForm.value.nombre;
-      datosActualizar.apellido = this.clienteForm.value.apellido;
-    } else if (this.cliente.tipo_cliente === 'empresa') {
-      datosActualizar.razon_social = this.clienteForm.value.razon_social;
-      datosActualizar.nombre_fantasia = this.clienteForm.value.nombre_fantasia;
-      datosActualizar.giro = this.clienteForm.value.giro;
-    }
-
-    // Llamada al servicio
-    this.clientesService.update(this.clienteId, datosActualizar).subscribe({
-      next: (res) => {
-        this.loading = false;
-        alert('Cliente actualizado correctamente');
-        this.router.navigate(['/clientes']);
-      },
-      error: (err) => {
-        this.loading = false;
-        console.error('Cuerpo del error:', err.error);
-        if (err.error?.message) {
-          alert('Error al actualizar cliente:\n' + err.error.message.join('\n'));
-        } else {
-          alert('Error al actualizar cliente');
-        }
+        // Limpia también en la variable cliente
+        this.cliente.nombre = '';
+        this.cliente.apellido = '';
       }
     });
   }
 
-  cancelar(): void {
-  this.router.navigate(['/clientes']);
-}
+  /** Aplica validaciones dinámicas */
+  private applyTipoValidations(tipo: string) {
+    const controls = this.clienteForm.controls;
+
+    // Limpiar validadores primero
+    ['nombre', 'apellido', 'razon_social', 'nombre_fantasia', 'giro'].forEach(campo => {
+      controls[campo].clearValidators();
+      controls[campo].updateValueAndValidity();
+    });
+
+    if (tipo === 'persona_natural') {
+      // Limpiar datos de empresa
+      controls['razon_social'].reset('');
+      controls['nombre_fantasia'].reset('');
+      controls['giro'].reset('');
+
+      // Requerir datos de persona
+      controls['nombre'].setValidators([Validators.required]);
+      controls['apellido'].setValidators([Validators.required]);
+    } else if (tipo === 'empresa') {
+      // Limpiar datos de persona
+      controls['nombre'].reset('');
+      controls['apellido'].reset('');
+
+      // Requerir datos de empresa
+      controls['razon_social'].setValidators([Validators.required]);
+      controls['nombre_fantasia'].setValidators([Validators.required]);
+      controls['giro'].setValidators([Validators.required]);
+    }
+
+    Object.values(controls).forEach(c => c.updateValueAndValidity());
+  }
+
+  /** Enviar actualización */
+  actualizarCliente() {
+    if (this.clienteForm.invalid) {
+      this.clienteForm.markAllAsTouched();
+      return;
+    }
+
+    this.loading = true;
+    const form = this.clienteForm.getRawValue();
+
+    // Mezclamos el form con el cliente actual para que no se pierdan datos antiguos
+    this.cliente = {
+      ...this.cliente,
+      ...form
+    };
+
+    //  Construimos el objeto de actualización limpio según tipo
+    let datosActualizar: any = {
+      tipo_cliente: form.tipo_cliente,
+      email: form.email,
+      telefono: form.telefono,
+      direccion: form.direccion,
+      ciudad: form.ciudad,
+      comuna: form.comuna,
+    };
+
+    if (form.tipo_cliente === 'persona_natural') {
+      datosActualizar = {
+        ...datosActualizar,
+        nombre: form.nombre,
+        apellido: form.apellido,
+        razon_social: '',
+        nombre_fantasia: '',
+        giro: '',
+      };
+    } else if (form.tipo_cliente === 'empresa') {
+      datosActualizar = {
+        ...datosActualizar,
+        razon_social: form.razon_social,
+        nombre_fantasia: form.nombre_fantasia,
+        giro: form.giro,
+        nombre: '',
+        apellido: '',
+      };
+    }
+
+    // Llamada principal al backend
+    this.clientesService.update(this.clienteId, datosActualizar).subscribe({
+      next: () => {
+        // Refrescamos los datos del cliente local inmediatamente para que el cambio se vea reflejado
+        this.clienteForm.patchValue({
+          razon_social: form.razon_social,
+          nombre_fantasia: form.nombre_fantasia,
+          giro: form.giro,
+          nombre: form.nombre,
+          apellido: form.apellido,
+        }, { emitEvent: false });
+
+        // Reforzamos el guardado con un pequeño retraso opcional
+        setTimeout(() => {
+          this.clientesService.update(this.clienteId, datosActualizar).subscribe({
+            next: () => {
+              this.loading = false;
+              alert('Cliente actualizado correctamente');
+              this.router.navigate(['/clientes']);
+            },
+            error: (err) => {
+              console.error('Error en segundo intento:', err.error);
+              this.loading = false;
+              alert('Error al confirmar la actualización');
+            }
+          });
+        }, 300); // 300ms de retardo, puedes ajustar si quieres
+
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Error:', err.error);
+        alert('Error al actualizar cliente');
+      }
+    });
+  }
+
+  cancelar() {
+    this.router.navigate(['/clientes']);
+  }
 }
