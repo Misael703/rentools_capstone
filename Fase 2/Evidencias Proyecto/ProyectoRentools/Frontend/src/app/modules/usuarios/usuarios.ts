@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UsuarioService } from './usuario';
-import { Usuario } from './usuario.interface'; // Asegúrate de tener este archivo exportando Usuario
+import { UsuarioService } from './Services/usuario';
+import { Usuario } from './Interfaces/usuario.interface'; // Asegúrate de tener este archivo exportando Usuario
 import { Router } from '@angular/router';
 
 @Component({

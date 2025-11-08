@@ -1,104 +1,96 @@
 <div class="container" *ngIf="cliente">
-    <h2 class="form-title">Editar Cliente</h2>
+  <h2 class="form-title">Editar Cliente</h2>
 
-    <!-- Datos fijos: tipo de cliente y RUT -->
+  <form [formGroup]="clienteForm" (ngSubmit)="actualizarCliente()" class="cliente-form">
+
+    <!-- Tipo de cliente -->
     <div class="form-group">
-        <label>Tipo de Cliente</label>
-        <input type="text" [value]="cliente.tipo_cliente === 'persona_natural' ? 'Persona' : 'Empresa'"
-            class="form-control" readonly />
+      <label>Tipo de Cliente</label>
+      <select formControlName="tipo_cliente" class="form-control">
+        <option value="">-- Seleccione tipo --</option>
+        <option *ngFor="let tipo of tipos" [value]="tipo">
+          {{ tipo === 'persona_natural' ? 'Persona Natural' : 'Empresa' }}
+        </option>
+      </select>
+      <div class="text-danger"
+        *ngIf="clienteForm.get('tipo_cliente')?.touched && clienteForm.get('tipo_cliente')?.invalid">
+        El tipo de cliente es obligatorio.
+      </div>
+    </div>
+
+    <!-- RUT (no editable) -->
+    <div class="form-group">
+      <label>RUT</label>
+      <input type="text" formControlName="rut" class="form-control" readonly />
+    </div>
+
+    <!-- Persona natural -->
+    <div *ngIf="clienteForm.get('tipo_cliente')?.value === 'persona_natural'">
+      <div class="form-group">
+        <label>Nombre</label>
+        <input type="text" formControlName="nombre" class="form-control" />
+      </div>
+
+      <div class="form-group">
+        <label>Apellido</label>
+        <input type="text" formControlName="apellido" class="form-control" />
+      </div>
+    </div>
+
+    <!-- Empresa -->
+    <div *ngIf="clienteForm.get('tipo_cliente')?.value === 'empresa'">
+      <div class="form-group">
+        <label>Razón Social</label>
+        <input type="text" formControlName="razon_social" class="form-control" />
+      </div>
+
+      <div class="form-group">
+        <label>Nombre Fantasía</label>
+        <input type="text" formControlName="nombre_fantasia" class="form-control" />
+      </div>
+
+      <div class="form-group">
+        <label>Giro</label>
+        <input type="text" formControlName="giro" class="form-control" />
+      </div>
+    </div>
+
+    <!-- Comunes -->
+    <div class="form-group">
+      <label>Email</label>
+      <input type="email" formControlName="email" class="form-control" />
     </div>
 
     <div class="form-group">
-        <label>RUT</label>
-        <input type="text" [value]="cliente.rut" class="form-control" readonly />
+      <label>Teléfono</label>
+      <input type="text" formControlName="telefono" class="form-control" />
     </div>
 
-    <!-- Formulario -->
-    <form [formGroup]="clienteForm" (ngSubmit)="actualizarCliente()" class="cliente-form">
+    <div class="form-group">
+      <label>Dirección</label>
+      <input type="text" formControlName="direccion" class="form-control" />
+    </div>
 
-        <!-- 🔹 Campos para persona -->
-        <div *ngIf="cliente.tipo_cliente === 'persona_natural'">
-            <div class="form-group">
-                <label>Nombre</label>
-                <input type="text" formControlName="nombre" class="form-control" />
-                <div class="text-danger"
-                    *ngIf="clienteForm.get('nombre')?.invalid && clienteForm.get('nombre')?.touched">
-                    Nombre es requerido
-                </div>
-            </div>
+    <div class="form-group">
+      <label>Ciudad</label>
+      <input type="text" formControlName="ciudad" class="form-control" />
+    </div>
 
-            <div class="form-group">
-                <label>Apellido</label>
-                <input type="text" formControlName="apellido" class="form-control" />
-                <div class="text-danger"
-                    *ngIf="clienteForm.get('apellido')?.invalid && clienteForm.get('apellido')?.touched">
-                    Apellido es requerido
-                </div>
-            </div>
-        </div>
+    <div class="form-group">
+      <label>Comuna</label>
+      <input type="text" formControlName="comuna" class="form-control" />
+    </div>
 
-        <!-- 🔹 Campos para empresa -->
-        <div *ngIf="cliente.tipo_cliente === 'empresa'">
-            <div class="form-group">
-                <label>Razón Social</label>
-                <input type="text" formControlName="razon_social" class="form-control" />
-                <div class="text-danger"
-                    *ngIf="clienteForm.get('razon_social')?.invalid && clienteForm.get('razon_social')?.touched">
-                    Razón social es requerida
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Nombre Fantasía</label>
-                <input type="text" formControlName="nombre_fantasia" class="form-control" />
-                <div class="text-danger"
-                    *ngIf="clienteForm.get('nombre_fantasia')?.invalid && clienteForm.get('nombre_fantasia')?.touched">
-                    Nombre fantasía es requerido
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Giro</label>
-                <input type="text" formControlName="giro" class="form-control" />
-                <div class="text-danger" *ngIf="clienteForm.get('giro')?.invalid && clienteForm.get('giro')?.touched">
-                    Giro es requerido
-                </div>
-            </div>
-        </div>
-
-        <!-- 🔹 Campos comunes -->
-        <div class="form-group">
-            <label>Email</label>
-            <input type="email" formControlName="email" class="form-control" />
-            <div class="text-danger" *ngIf="clienteForm.get('email')?.invalid && clienteForm.get('email')?.touched">
-                Email inválido
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label>Dirección</label>
-            <input type="text" formControlName="direccion" class="form-control" />
-        </div>
-
-        <div class="form-group">
-            <label>Ciudad</label>
-            <input type="text" formControlName="ciudad" class="form-control" />
-        </div>
-
-        <div class="form-group">
-            <label>Comuna</label>
-            <input type="text" formControlName="comuna" class="form-control" />
-        </div>
-
-        <!-- Botones -->
-        <div class="botones-acciones">
-            <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
-            <button type="submit" [disabled]="clienteForm.invalid" class="btn-actualizar">Actualizar</button>
-        </div>
-    </form>
+    <!-- Botones -->
+    <div class="botones-acciones">
+      <button type="button" class="btn-cancelar" (click)="cancelar()">Cancelar</button>
+      <button type="submit" [disabled]="clienteForm.invalid || loading" class="btn-actualizar">
+        {{ loading ? 'Guardando...' : 'Actualizar' }}
+      </button>
+    </div>
+  </form>
 </div>
 
-<!-- Mientras carga -->
-<div *ngIf="!cliente" class="text-center mt-5">
-    <p>Cargando datos del cliente...</p>
+<div *ngIf="!cliente && !loading" class="text-center mt-5">
+  <p>Cargando datos del cliente...</p>
 </div>

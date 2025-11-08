@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { UsuarioService, Usuario } from '../usuario';
+import { UsuarioService, Usuario } from '../Services/usuario';
 import { take } from 'rxjs';
 @Component({
   selector: 'app-crear-usuario',
