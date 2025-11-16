@@ -324,17 +324,34 @@ export class BsaleService {
         try {
           this.logger.log(`📦 Obteniendo variantes del producto ${productId}...`);
 
-          const response = await firstValueFrom(
-            this.httpService.get<BsaleApiResponse<any>>(
-              `${this.baseUrl}/products/${productId}/variants.json`,
-              { headers: this.getHeaders() }
-            )
-          );
+          // Paginación para obtener todas las variantes del producto
+          let offset = 0;
+          const limit = 50;
+          let hasMore = true;
+          let variantsCount = 0;
 
-          const variants = response.data.items || [];
-          allVariants.push(...variants);
+          while (hasMore) {
+            const response = await firstValueFrom(
+              this.httpService.get<BsaleApiResponse<any>>(
+                `${this.baseUrl}/products/${productId}/variants.json`,
+                {
+                  headers: this.getHeaders(),
+                  params: { limit, offset },
+                }
+              )
+            );
 
-          this.logger.log(`✅ Producto ${productId}: ${variants.length} variantes obtenidas`);
+            const variants = response.data.items || [];
+            allVariants.push(...variants);
+            variantsCount += variants.length;
+
+            hasMore = variants.length === limit;
+            offset += limit;
+
+            this.logger.debug(`📦 Producto ${productId}: ${variantsCount} variantes obtenidas hasta ahora...`);
+          }
+
+          this.logger.log(`✅ Producto ${productId}: ${variantsCount} variantes obtenidas en total`);
 
         } catch (error) {
           if (error.response?.status === 404) {
@@ -373,7 +390,7 @@ export class BsaleService {
       );
 
       const variants = response.data.items || [];
-      
+
       if (variants.length === 0) {
         this.logger.log(`❌ Variante ${sku} no encontrada en Bsale`);
         return null;
@@ -389,7 +406,159 @@ export class BsaleService {
       this.handleError(error, `findVariantBySku(${sku})`);
     }
   }
-  
+
+  /**
+   * Busca una variante por código de barras
+   * Retorna null si no existe
+   */
+  async findVariantByBarcode(barcode: string): Promise<any | null> {
+    try {
+      if (!barcode || barcode.trim() === '') {
+        return null;
+      }
+
+      this.logger.log(`🔍 Buscando variante con barcode ${barcode} en Bsale...`);
+
+      const response = await firstValueFrom(
+        this.httpService.get<BsaleApiResponse<any>>(
+          `${this.baseUrl}/variants.json`,
+          {
+            headers: this.getHeaders(),
+            params: { barcode: barcode },
+          }
+        )
+      );
+
+      const variants = response.data.items || [];
+
+      if (variants.length === 0) {
+        this.logger.log(`❌ Variante con barcode ${barcode} no encontrada`);
+        return null;
+      }
+
+      this.logger.log(`✅ Variante con barcode ${barcode} encontrada en Bsale (SKU: ${variants[0].code})`);
+      return variants[0];
+
+    } catch (error) {
+      if (error.response?.status === 404) {
+        return null;
+      }
+      this.handleError(error, `findVariantByBarcode(${barcode})`);
+    }
+  }
+
+  /**
+   * Crea una nueva variante en Bsale
+   * @param data Datos de la variante a crear
+   */
+  async createVariant(data: {
+    sku: string;
+    nombre: string;
+    descripcion?: string;
+    barcode?: string;
+  }): Promise<any> {
+    try {
+      if (this.productIdsArriendo.length === 0) {
+        throw new BadGatewayException('No hay product IDs configurados para arriendo');
+      }
+
+      // Usar el primer productId de la lista (o podrías parametrizarlo)
+      const productId = this.productIdsArriendo[0];
+
+      this.logger.log(`📤 Creando variante ${data.sku} en Bsale (producto ${productId})...`);
+
+      const payload: any = {
+        productId: productId,
+        description: data.nombre,
+        unlimitedStock: 0,
+        allowNegativeStock: 0,
+        code: data.sku,
+      };
+
+      // Agregar barcode solo si viene
+      if (data.barcode) {
+        payload.barCode = data.barcode;
+      }
+
+      const response = await firstValueFrom(
+        this.httpService.post<any>(
+          `${this.baseUrl}/variants.json`,
+          payload,
+          { headers: this.getHeaders() }
+        )
+      );
+
+      this.logger.log(`✅ Variante ${data.sku} creada en Bsale con ID ${response.data.id}`);
+      return response.data;
+
+    } catch (error) {
+      this.handleError(error, `createVariant(${data.sku})`);
+    }
+  }
+
+  /**
+   * Actualiza una variante existente en Bsale
+   * @param idBsale ID de la variante en Bsale (va en la URL y en el payload como "id")
+   * @param data Datos a actualizar
+   */
+  async updateVariant(
+    idBsale: number,
+    data: {
+      sku?: string;
+      nombre?: string;
+      barcode?: string;
+    }
+  ): Promise<any> {
+    try {
+      const url = `${this.baseUrl}/variants/${idBsale}.json`;
+
+      this.logger.log(`📤 Actualizando variante ${idBsale} en Bsale...`);
+      this.logger.debug(`🔍 URL: ${url}`);
+
+      const payload: any = {
+        id: idBsale, // OBLIGATORIO: debe ser el id_bsale
+      };
+
+      // Solo incluir campos que vienen
+      if (data.sku) {
+        payload.code = data.sku;
+      }
+
+      if (data.nombre) {
+        payload.description = data.nombre;
+      }
+
+      if (data.barcode !== undefined) {
+        payload.barCode = data.barcode || ''; // Permite limpiar el barcode
+      }
+
+      this.logger.debug(`🔍 Payload que se enviará a Bsale:`);
+      this.logger.debug(JSON.stringify(payload, null, 2));
+
+      const response = await firstValueFrom(
+        this.httpService.put<any>(
+          url,
+          payload,
+          { headers: this.getHeaders() }
+        )
+      );
+
+      this.logger.log(`✅ Variante ${idBsale} actualizada en Bsale`);
+      return response.data;
+
+    } catch (error) {
+      this.logger.error(`❌ Error actualizando variante ${idBsale}:`);
+      this.logger.error(`   URL: ${this.baseUrl}/variants/${idBsale}.json`);
+      this.logger.error(`   Payload enviado: ${JSON.stringify({
+        id: idBsale,
+        code: data.sku,
+        description: data.nombre,
+        barCode: data.barcode,
+      }, null, 2)}`);
+      this.handleError(error, `updateVariant(${idBsale})`);
+    }
+  }
+
   /**
    * Verifica conexión con Bsale
    */
