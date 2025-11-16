@@ -18,7 +18,11 @@ export class Usuarios implements OnInit {
   terminoBusqueda: string = '';
   loading: boolean = false;
 
-  constructor(private usuarioService: UsuarioService, private router: Router) {}
+  modalVisible: boolean = false;
+  modalAccion: 'activar' | 'desactivar' | 'eliminar' | null = null;
+  usuarioSeleccionado: Usuario | null = null;
+
+  constructor(private usuarioService: UsuarioService, private router: Router) { }
 
   ngOnInit() {
     this.loadUsuarios();
@@ -60,26 +64,46 @@ export class Usuarios implements OnInit {
     this.router.navigate(['/usuarios/editar', usuario.id_usuario]);
   }
 
-  // Activar / Desactivar usuario
-  toggleActivo(usuario: Usuario) {
-    if (usuario.activo) {
-      this.usuarioService.deactivate(usuario.id_usuario).subscribe({
-        next: () => this.loadUsuarios(),
-        error: (err) => console.error(err)
-      });
-    } else {
-      this.usuarioService.activate(usuario.id_usuario).subscribe({
+
+  abrirModal(accion: 'activar' | 'desactivar' | 'eliminar', usuario: Usuario) {
+    this.modalAccion = accion;
+    this.usuarioSeleccionado = usuario;
+    this.modalVisible = true;
+  }
+
+
+  confirmarAccion() {
+    if (!this.usuarioSeleccionado || !this.modalAccion) return;
+
+    const id = this.usuarioSeleccionado.id_usuario;
+
+    if (this.modalAccion === 'activar') {
+      this.usuarioService.activate(id).subscribe({
         next: () => this.loadUsuarios(),
         error: (err) => console.error(err)
       });
     }
+
+    if (this.modalAccion === 'desactivar') {
+      this.usuarioService.deactivate(id).subscribe({
+        next: () => this.loadUsuarios(),
+        error: (err) => console.error(err)
+      });
+    }
+
+    if (this.modalAccion === 'eliminar') {
+      this.usuarioService.remove(id).subscribe({
+        next: () => this.loadUsuarios(),
+        error: (err) => console.error(err)
+      });
+    }
+
+    this.cerrarModal();
   }
 
-  eliminarUsuario(usuario: Usuario) {
-    if (!confirm(`¿Seguro que deseas eliminar a ${usuario.nombre}?`)) return;
-    this.usuarioService.remove(usuario.id_usuario).subscribe({
-      next: () => this.loadUsuarios(),
-      error: (err) => console.error(err)
-    });
+  cerrarModal() {
+    this.modalVisible = false;
+    this.modalAccion = null;
+    this.usuarioSeleccionado = null;
   }
 }

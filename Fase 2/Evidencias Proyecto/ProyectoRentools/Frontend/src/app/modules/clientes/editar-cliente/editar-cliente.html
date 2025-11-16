@@ -29,11 +29,17 @@
       <div class="form-group">
         <label>Nombre</label>
         <input type="text" formControlName="nombre" class="form-control" />
+        <div class="text-danger" *ngIf="isInvalid('nombre')">
+          El nombre es obligatorio.
+        </div>
       </div>
 
       <div class="form-group">
         <label>Apellido</label>
         <input type="text" formControlName="apellido" class="form-control" />
+        <div class="text-danger" *ngIf="isInvalid('apellido')">
+          El apellido es obligatorio.
+        </div>
       </div>
     </div>
 
@@ -42,6 +48,9 @@
       <div class="form-group">
         <label>Razón Social</label>
         <input type="text" formControlName="razon_social" class="form-control" />
+        <div class="text-danger" *ngIf="isInvalid('razon_social')">
+          Razón social es obligatoria.
+        </div>
       </div>
 
       <div class="form-group">
@@ -52,6 +61,9 @@
       <div class="form-group">
         <label>Giro</label>
         <input type="text" formControlName="giro" class="form-control" />
+        <div class="text-danger" *ngIf="isInvalid('giro')">
+          El giro es obligatorio.
+        </div>
       </div>
     </div>
 
@@ -59,11 +71,17 @@
     <div class="form-group">
       <label>Email</label>
       <input type="email" formControlName="email" class="form-control" />
+      <div class="text-danger" *ngIf="isInvalid('email')">
+        Ingrese un email válido.
+      </div>
     </div>
 
     <div class="form-group">
       <label>Teléfono</label>
       <input type="text" formControlName="telefono" class="form-control" />
+      <div class="text-danger" *ngIf="isInvalid('telefono')">
+        Ingrese un teléfono válido (9 dígitos).
+      </div>
     </div>
 
     <div class="form-group">
@@ -93,4 +111,13 @@
 
 <div *ngIf="!cliente && !loading" class="text-center mt-5">
   <p>Cargando datos del cliente...</p>
+</div>
+
+<!-- Modal de éxito -->
+<div *ngIf="mostrarModal" class="modal-exito">
+  <div class="modal-contenido">
+    <i class="bi bi-check-circle-fill icono-exito"></i>
+    <p>{{ mensajeExito }}</p>
+    <button class="btn-aceptar" (click)="cerrarModal()">Aceptar</button>
+  </div>
 </div>

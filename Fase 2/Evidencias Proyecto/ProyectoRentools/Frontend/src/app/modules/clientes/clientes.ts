@@ -29,6 +29,11 @@ export class Clientes implements OnInit {
   mostrarModal = false;
   clienteSeleccionado: Cliente | null = null;
 
+  // Modales de confirmación
+  mostrarModalConfirmar = false;
+  tipoAccion: 'activar' | 'desactivar' | 'eliminar' | null = null;
+  clienteAccion: Cliente | null = null;
+
   constructor(
     private clientesService: ClientesService,
     private router: Router
@@ -100,23 +105,15 @@ export class Clientes implements OnInit {
   }
 
   toggleActivo(cliente: Cliente): void {
-    const accion = cliente.activo
-      ? this.clientesService.deactivate(cliente.id_cliente)
-      : this.clientesService.activate(cliente.id_cliente);
-
-    accion.subscribe({
-      next: () => this.obtenerClientes(),
-      error: (err) => console.error('Error al cambiar estado del cliente:', err),
-    });
+    this.tipoAccion = cliente.activo ? 'desactivar' : 'activar';
+    this.clienteAccion = cliente;
+    this.mostrarModalConfirmar = true;
   }
 
   eliminarCliente(cliente: Cliente): void {
-    if (confirm(`¿Estás seguro de eliminar al cliente ${this.nombreCompleto(cliente)}?`)) {
-      this.clientesService.remove(cliente.id_cliente).subscribe({
-        next: () => this.obtenerClientes(),
-        error: (err) => console.error('Error al eliminar cliente:', err),
-      });
-    }
+    this.tipoAccion = 'eliminar';
+    this.clienteAccion = cliente;
+    this.mostrarModalConfirmar = true;
   }
 
   verDetalles(cliente: Cliente): void {
@@ -127,5 +124,34 @@ export class Clientes implements OnInit {
   cerrarModal(): void {
     this.mostrarModal = false;
     this.clienteSeleccionado = null;
+  }
+
+  confirmarAccion(): void {
+    if (!this.tipoAccion || !this.clienteAccion) return;
+
+    const id = this.clienteAccion.id_cliente;
+
+    let peticion;
+
+    if (this.tipoAccion === 'activar') {
+      peticion = this.clientesService.activate(id);
+    } else if (this.tipoAccion === 'desactivar') {
+      peticion = this.clientesService.deactivate(id);
+    } else if (this.tipoAccion === 'eliminar') {
+      peticion = this.clientesService.remove(id);
+    }
+
+    peticion!.subscribe({
+      next: () => {
+        this.cerrarModalConfirmacion();
+        this.obtenerClientes();
+      },
+      error: (err) => console.error('Error al procesar acción:', err),
+    });
+  }
+  cerrarModalConfirmacion(): void {
+    this.mostrarModalConfirmar = false;
+    this.tipoAccion = null;
+    this.clienteAccion = null;
   }
 }

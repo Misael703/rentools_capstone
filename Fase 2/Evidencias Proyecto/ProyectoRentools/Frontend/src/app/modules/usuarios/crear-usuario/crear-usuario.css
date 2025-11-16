@@ -1,12 +1,99 @@
-.crear-usuario .form-control,
-.crear-usuario .form-select {
-  border-radius: 0.5rem;
+/* Contenedor del formulario */
+.form-usuario {
+  max-width: 650px;
+  margin: 80px auto 40px auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
 }
 
-.btn-success {
+/* Título */
+.form-title {
+  text-align: center;
+  color: #fd620e;
+  margin-bottom: 20px;
+  font-size: 1.8rem;
   font-weight: bold;
 }
 
+/* Formulario */
+.usuario-form .form-group {
+  margin-bottom: 15px;
+}
+
+.usuario-form label {
+  font-weight: 500;
+}
+
+.usuario-form input,
+.usuario-form select {
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+.usuario-form input:focus,
+.usuario-form select:focus {
+  outline: none;
+  border-color: #fd620e;
+  box-shadow: 0 0 6px rgba(253, 98, 14, 0.3);
+}
+
+/* Botón Volver arriba a la derecha */
+.volver-btn {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
+
+/* Botones */
+.botones-acciones {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.btn-crear {
+  flex: 1;
+  background-color: #fd620e;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-crear:hover:not(:disabled) {
+  background-color: #e55a00;
+}
+
+.btn-crear:disabled {
+  background-color: #ccc;
+}
+
+.btn-cancelar {
+  flex: 1;
+  background-color: #6c757d;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-cancelar:hover {
+  background-color: #5a6268;
+}
+
+/* MODAL DE ÉXITO */
 .mensaje-exito {
   position: fixed;
   top: 50%;
@@ -14,7 +101,13 @@
   transform: translate(-50%, -50%);
   background: white;
   z-index: 1055;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  width: 350px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.35);
+}
+
+.icono-exito {
+  font-size: 4rem;
+  color: #28a745;
 }

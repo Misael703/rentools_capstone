@@ -22,6 +22,8 @@ export class CrearCliente implements OnInit {
   clienteForm!: FormGroup;
   tipos = Object.values(TipoCliente); // ['persona_natural', 'empresa']
 
+  mostrarModal = false;
+
   constructor(private fb: FormBuilder, private clienteService: ClientesService, private router: Router) { }
 
   ngOnInit(): void {
@@ -37,8 +39,8 @@ export class CrearCliente implements OnInit {
       nombre_fantasia: [''],
       giro: [''],
       // Campos comunes
-      email: [''],
-      telefono: [''],
+      email: ['', Validators.email],
+      telefono: ['', Validators.pattern(/^\d+$/)],
       direccion: [''],
       ciudad: [''],
       comuna: [''],
@@ -69,6 +71,9 @@ export class CrearCliente implements OnInit {
     this.clienteForm.get('apellido')?.updateValueAndValidity();
     this.clienteForm.get('razon_social')?.updateValueAndValidity();
     this.clienteForm.get('giro')?.updateValueAndValidity();
+
+    this.clienteForm.get('email')?.updateValueAndValidity();
+    this.clienteForm.get('telefono')?.updateValueAndValidity();
   }
 
   crearCliente() {
@@ -110,7 +115,7 @@ export class CrearCliente implements OnInit {
     this.clienteService.create(nuevoCliente).subscribe({
       next: cliente => {
         console.log('Cliente creado exitosamente:', cliente);
-        this.router.navigate(['/clientes']);
+        this.mostrarModal = true;
       },
       error: err => {
         console.error('Error creando cliente:', err);
@@ -119,6 +124,10 @@ export class CrearCliente implements OnInit {
   }
 
   cancelar(): void {
+    this.router.navigate(['/clientes']);
+  }
+  cerrarModal() {
+    this.mostrarModal = false;
     this.router.navigate(['/clientes']);
   }
 }
