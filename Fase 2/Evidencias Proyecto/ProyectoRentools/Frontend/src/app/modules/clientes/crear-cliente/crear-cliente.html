@@ -72,11 +72,19 @@
     <div class="form-group">
       <label for="email">Email</label>
       <input type="email" formControlName="email" id="email" class="form-control" placeholder="correo@ejemplo.com">
+
+      <div class="text-danger" *ngIf="clienteForm.get('email')?.touched && clienteForm.get('email')?.invalid">
+        Ingrese un correo válido.
+      </div>
     </div>
 
     <div class="form-group">
       <label for="telefono">Teléfono</label>
-      <input type="text" formControlName="telefono" id="telefono" class="form-control" placeholder="+56 9 1234 5678">
+      <input type="text" formControlName="telefono" id="telefono" class="form-control">
+
+      <div class="text-danger" *ngIf="clienteForm.get('telefono')?.touched && clienteForm.get('telefono')?.invalid">
+        El teléfono debe contener solo números.
+      </div>
     </div>
 
     <div class="form-group">
@@ -99,4 +107,13 @@
       <button type="submit" [disabled]="clienteForm.invalid" class="btn-crear">Crear</button>
     </div>
   </form>
+</div>
+
+<!-- Modal de éxito -->
+<div *ngIf="mostrarModal" class="modal-exito">
+  <div class="modal-contenido">
+    <i class="bi bi-check-circle-fill icono-exito"></i>
+    <p>Cliente creado correctamente</p>
+    <button class="btn-aceptar" (click)="cerrarModal()">Aceptar</button>
+  </div>
 </div>

@@ -126,6 +126,45 @@
     </div>
   </div>
 
+  <!-- Modal de Confirmación (Activar / Desactivar / Eliminar) -->
+  <div class="modal-confirm-backdrop" *ngIf="mostrarModalConfirmar">
+    <div class="modal-confirm-box">
+
+      <!-- Ícono dinámico -->
+      <i class="bi modal-icon" [ngClass]="{
+          'eliminar bi-trash-fill': tipoAccion === 'eliminar',
+          'activar bi-check-circle-fill': tipoAccion === 'activar',
+          'desactivar bi-slash-circle-fill': tipoAccion === 'desactivar'
+        }">
+      </i>
+
+      <!-- Título dinámico -->
+      <h3 class="modal-title">
+        {{ tipoAccion === 'eliminar' ? 'Eliminar Cliente'
+        : tipoAccion === 'activar' ? 'Activar Cliente'
+        : 'Desactivar Cliente' }}
+      </h3>
+
+      <!-- Texto descriptivo dinámico -->
+      <p class="modal-text">
+        ¿Estás seguro de que deseas
+        <strong>{{ tipoAccion }}</strong>
+        al cliente
+        <strong>{{ nombreCompleto(clienteAccion!) }}</strong>?
+      </p>
+
+      <!-- Botones -->
+      <div class="modal-btns">
+        <button class="btn-cancelar" (click)="cerrarModalConfirmacion()">
+          Cancelar
+        </button>
+        <button class="btn-confirmar" (click)="confirmarAccion()">
+          Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <router-outlet></router-outlet>
 
 </div>

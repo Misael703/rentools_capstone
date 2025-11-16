@@ -40,9 +40,12 @@
           <span class="action-icon bg-warning" (click)="editarUsuario(usuario)">
             <i class="bi bi-pencil-square"></i>
           </span>
-          <span class="action-icon" [ngClass]="usuario.activo ? 'bg-danger' : 'bg-secondary'"
-            (click)="toggleActivo(usuario)">
-            <i class="bi" [ngClass]="usuario.activo ? 'bi-trash' : 'bi-check2-circle'"></i>
+          <span class="action-icon" [ngClass]="usuario.activo ? 'bg-danger' : 'bg-success'"
+            (click)="abrirModal(usuario.activo ? 'desactivar' : 'activar', usuario)">
+            <i class="bi" [ngClass]="usuario.activo ? 'bi-slash-circle' : 'bi-check2-circle'"></i>
+          </span>
+          <span class="action-icon bg-black" (click)="abrirModal('eliminar', usuario)">
+            <i class="bi bi-trash-fill"></i>
           </span>
         </td>
       </tr>
@@ -54,4 +57,26 @@
     <i class="bi bi-arrow-clockwise animate-spin me-2"></i>Cargando usuarios...
   </div>
 
+</div>
+
+<!-- Modal de Confirmación -->
+<div *ngIf="modalVisible" class="modal-overlay">
+  <div class="modal-box">
+
+    <h5>
+      {{ modalAccion === 'activar' ? '¿Desea activar este usuario?' : '' }}
+      {{ modalAccion === 'desactivar' ? '¿Desea desactivar este usuario?' : '' }}
+      {{ modalAccion === 'eliminar' ? '¿Desea eliminar este usuario?' : '' }}
+    </h5>
+
+    <p *ngIf="usuarioSeleccionado">
+      Usuario: <strong>{{ usuarioSeleccionado.nombre }}</strong>
+    </p>
+
+    <div class="modal-buttons">
+      <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+      <button class="btn btn-primary" (click)="confirmarAccion()">Aceptar</button>
+    </div>
+
+  </div>
 </div>

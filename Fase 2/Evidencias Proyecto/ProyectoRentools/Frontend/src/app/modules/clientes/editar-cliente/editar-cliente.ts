@@ -18,6 +18,9 @@ export class EditarCliente implements OnInit {
   tipos: string[] = ['persona_natural', 'empresa'];
   loading = false;
 
+  mostrarModal = false;
+  mensajeExito = '';
+
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -44,8 +47,8 @@ export class EditarCliente implements OnInit {
       nombre_fantasia: [''],
       giro: [''],
       // Comunes
-      email: [''],
-      telefono: [''],
+      email: ['', [Validators.email]],
+      telefono: ['', [Validators.pattern(/^\d{9}$/)]],
       direccion: [''],
       ciudad: [''],
       comuna: ['']
@@ -153,6 +156,11 @@ export class EditarCliente implements OnInit {
     Object.values(controls).forEach(c => c.updateValueAndValidity());
   }
 
+  isInvalid(field: string) {
+    const control = this.clienteForm.get(field);
+    return control?.touched && control.invalid;
+  }
+
   /** Enviar actualización */
   actualizarCliente() {
     if (this.clienteForm.invalid) {
@@ -216,8 +224,8 @@ export class EditarCliente implements OnInit {
           this.clientesService.update(this.clienteId, datosActualizar).subscribe({
             next: () => {
               this.loading = false;
-              alert('Cliente actualizado correctamente');
-              this.router.navigate(['/clientes']);
+              this.mensajeExito = 'Cliente actualizado correctamente';
+              this.mostrarModal = true;
             },
             error: (err) => {
               console.error('Error en segundo intento:', err.error);
@@ -237,6 +245,11 @@ export class EditarCliente implements OnInit {
   }
 
   cancelar() {
+    this.router.navigate(['/clientes']);
+  }
+
+  cerrarModal() {
+    this.mostrarModal = false;
     this.router.navigate(['/clientes']);
   }
 }
