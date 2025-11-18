@@ -39,7 +39,7 @@ export const routes: Routes = [
           import('./modules/inventario/crear-inventario/crear-inventario').then(m => m.CrearInventario)
       },
       {
-        path: 'inventario/editar/:codigo',
+        path: 'inventario/editar/:id',
         loadComponent: () =>
           import('./modules/inventario/editar-inventario/editar-inventario')
             .then(m => m.EditarInventario)

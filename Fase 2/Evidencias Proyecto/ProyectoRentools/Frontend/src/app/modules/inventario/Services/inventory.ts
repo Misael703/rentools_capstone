@@ -1,57 +1,167 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, of } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
-export interface Herramienta {
-  codigo: string;
-  nombre: string;
-  descripcion?: string;
-  stock: number;
-  precioDiario: number;
-  precioGarantia: number;
-}
+import { Herramienta, CreateHerramientaForm, UpdateHerramientaForm } from '../Interfaces/inventario.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class Inventory {
-  //Datos Iniciales Simulados
-  private initial: Herramienta[] = [
-    { codigo: 'H001', nombre: 'Taladro', descripcion: 'Taladro percutro 800w', stock: 10, precioDiario: 5000, precioGarantia: 2000 },
-    { codigo: 'H002', nombre: 'Sierra Circular', descripcion: 'Sierra 7 pulgadas', stock: 5, precioDiario: 7000, precioGarantia: 25000 }
-  ];
+  private apiUrl = 'http://localhost:3000/api/herramientas';
 
-  private data$ = new BehaviorSubject<Herramienta[]>(this.initial); 
+  constructor(private http: HttpClient) { }
 
-  //Obtener todas las herramientas
-  getAll(): Observable<Herramienta[]>{
-    return this.data$.asObservable();
+  // ============================================================
+  // 1. Verificar SKU
+  // GET /herramientas/verificar-sku/:sku
+  // ============================================================
+  verificarSku(sku: string): Observable<{ existe: boolean }> {
+    return this.http.get<{ existe: boolean }>(`${this.apiUrl}/verificar-sku/${sku}`);
   }
 
-  //Obtener herramienta por código
-  getByCodigo(codigo:string):Observable<Herramienta | undefined> {
-    const item = this.data$.getValue().find( h => h.codigo === codigo );
-    return of(item); 
-  } 
-
-  //Actualizar herramienta
-  update(herramientaActualizada:Herramienta): Observable<boolean>{
-    const arr = this.data$.getValue().map(h=>h.codigo === herramientaActualizada.codigo ? herramientaActualizada: h);
-    this.data$.next(arr);
-    return of(true); 
+  // ============================================================
+  // 2. Verificar Barcode
+  // GET /herramientas/verificar-barcode/:barcode
+  // ============================================================
+  verificarBarcode(barcode: string): Observable<{ existe: boolean; sku?: string }> {
+    return this.http.get<{ existe: boolean; sku?: string }>(
+      `${this.apiUrl}/verificar-barcode/${barcode}`
+    );
   }
 
-  //Crear nueva Herramienta
-  create(nueva: Herramienta): Observable<boolean>{
-    const arr = this.data$.getValue(); 
+  // ============================================================
+  // 3. Importar desde Bsale
+  // POST /herramientas/importar-desde-bsale
+  // ============================================================
+  importarDesdeBsale(data: { sku_bsale: string }): Observable<Herramienta> {
+    return this.http.post<Herramienta>(`${this.apiUrl}/importar-desde-bsale`, data);
+  }
 
-    //Verificamos que no ecitse el código
-    if (arr.find(h => h.codigo === nueva.codigo)){
-      return of(false); //Ya existe, no se puede crear
-    }
+  // ============================================================
+  // 4. Crear manualmente
+  // POST /herramientas
+  // ============================================================
+  create(data: CreateHerramientaForm): Observable<Herramienta> {
+    return this.http.post<Herramienta>(`${this.apiUrl}`, data);
+  }
 
-    arr.push(nueva); //Agregamos la nueva herramienta
-    this.data$.next(arr); 
-    return of(true); 
+  // ============================================================
+  // 5. Lista completa con filtros y paginación
+  // GET /herramientas
+  // Query: search, activo, page, limit
+  // ============================================================
+  findAll(params: {
+    search?: string;
+    activo?: boolean;
+    page?: number;
+    limit?: number;
+  }): Observable<{ data: Herramienta[]; total: number; page: number; limit: number }> {
+
+    let queryParams = new HttpParams();
+    if (params.search) queryParams = queryParams.set('search', params.search);
+    if (params.activo !== undefined) queryParams = queryParams.set('activo', params.activo);
+    if (params.page) queryParams = queryParams.set('page', params.page);
+    if (params.limit) queryParams = queryParams.set('limit', params.limit);
+
+    return this.http.get<{ data: Herramienta[]; total: number; page: number; limit: number }>(
+      this.apiUrl,
+      { params: queryParams }
+    );
+  }
+
+  // ============================================================
+  // 6. Herramientas disponibles
+  // GET /herramientas/disponibles
+  // ============================================================
+  findDisponibles(params?: {
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Observable<{ data: Herramienta[]; total: number; page: number; limit: number }> {
+
+    let queryParams = new HttpParams();
+    if (params?.search) queryParams = queryParams.set('search', params.search);
+    if (params?.page) queryParams = queryParams.set('page', params.page);
+    if (params?.limit) queryParams = queryParams.set('limit', params.limit);
+
+    return this.http.get<{ data: Herramienta[]; total: number; page: number; limit: number }>(
+      `${this.apiUrl}/disponibles`,
+      { params: queryParams }
+    );
+  }
+
+  // ============================================================
+  // 7. Stats generales
+  // GET /herramientas/stats
+  // ============================================================
+  getStats(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/stats`);
+  }
+
+  // ============================================================
+  // 8. Sincronizar TODO desde Bsale
+  // POST /herramientas/sync-from-bsale
+  // ============================================================
+  syncFromBsale(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sync-from-bsale`, {});
+  }
+
+  // ============================================================
+  // 9. Buscar por SKU
+  // GET /herramientas/sku/:sku
+  // ============================================================
+  findBySku(sku: string): Observable<Herramienta> {
+    return this.http.get<Herramienta>(`${this.apiUrl}/sku/${sku}`);
+  }
+
+  // ============================================================
+  // 10. Sincronizar una herramienta específica por SKU
+  // POST /herramientas/sync-sku/:sku
+  // ============================================================
+  syncOneBySku(sku: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/sync-sku/${sku}`, {});
+  }
+
+  // ============================================================
+  // 11. Obtener una herramienta por ID
+  // GET /herramientas/:id
+  // ============================================================
+  getById(id: number): Observable<Herramienta> {
+    return this.http.get<Herramienta>(`${this.apiUrl}/${id}`);
+  }
+
+  // ============================================================
+  // 12. Disponibilidad por ID
+  // GET /herramientas/:id/disponibilidad?cantidad=
+  // ============================================================
+  checkDisponibilidad(id: number, cantidad: number = 1): Observable<any> {
+    const params = new HttpParams().set('cantidad', cantidad);
+    return this.http.get<any>(`${this.apiUrl}/${id}/disponibilidad`, { params });
+  }
+
+  // ============================================================
+  // 13. Editar herramienta
+  // PATCH /herramientas/:id
+  // ============================================================
+  update(id: number, data: UpdateHerramientaForm): Observable<Herramienta> {
+    return this.http.patch<Herramienta>(`${this.apiUrl}/${id}`, data);
+  }
+
+  // ============================================================
+  // 14. Activar herramienta
+  // PATCH /herramientas/:id/activate
+  // ============================================================
+  activar(id: number): Observable<Herramienta> {
+    return this.http.patch<Herramienta>(`${this.apiUrl}/${id}/activate`, {});
+  }
+
+  // ============================================================
+  // 15. Eliminar (soft delete)
+  // DELETE /herramientas/:id
+  // ============================================================
+  remove(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
 }

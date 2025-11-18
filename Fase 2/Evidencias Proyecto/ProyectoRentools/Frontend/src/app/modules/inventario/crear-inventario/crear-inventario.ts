@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {FormBuilder, ReactiveFormsModule, Validators} from '@angular/forms'; 
+import { FormBuilder, ReactiveFormsModule, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Inventory, Herramienta } from '../Services/inventory';
+import { Inventory } from '../Services/inventory';
+import { Herramienta, CreateHerramientaForm, UpdateHerramientaForm } from '../Interfaces/inventario.interface';
 import { take } from 'rxjs';
+
 
 @Component({
   selector: 'app-crear-inventario',
@@ -14,64 +16,117 @@ import { take } from 'rxjs';
 })
 export class CrearInventario {
 
-  form: any; 
-  loading = false; 
-  mostrarMensaje = false;
-  
+  form!: FormGroup;
+  loading = false;
+  serverError = '';
+
+  mostrarMensaje = false; // Modal de éxito
+
   constructor(
     private fb: FormBuilder,
-    private router: Router,
-    private inventory: Inventory,
-  ) {
-    //Inicializamos el formulario
+    private herramientasService: Inventory,
+    private router: Router
+  ) { }
+
+  ngOnInit(): void {
     this.form = this.fb.group({
-      codigo: ['', Validators.required],
-      nombre: ['',Validators.required],
+      sku_bsale: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(100)]],
+      id_bsale: [null],
+      barcode: [''],
+      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(200)]],
       descripcion: [''],
-      stock: [0,[Validators.required, Validators.min(0)]],
-      precioDiario: [0,[Validators.required, Validators.min(0)]],
-      precioGarantia: [0,[Validators.required, Validators.min(0)]],
+      precio_diario: [null, [Validators.min(0)]],
+      garantia: [null, [Validators.min(0)]],
+      dias_minimo: [null, [Validators.min(1)]],
+      stock: [null, [Validators.min(0)]],
     });
   }
 
-  //Guardar nueva Herramienta
-  guardar() {
-    if (this.form.invalid){
-      this.form.markAllAsTouched();
-      return; 
-    }
-
-    this.loading = true; 
-
-    const nuevaHerramienta: Herramienta = {
-      codigo: this.form.get('codigo')!.value,
-      nombre: this.form.get('nombre')!.value,
-      descripcion: this.form.get('descripcion')!.value || '',
-      stock: Number(this.form.get('stock')!.value),
-      precioDiario: Number(this.form.get('precioDiario')!.value),
-      precioGarantia: Number(this.form.get('precioGarantia')!.value),
-    };
-
-    //Simulamos agregar la herramienta al servicio
-    this.inventory.create(nuevaHerramienta).pipe(take(1)).subscribe(exito => {
-      this.loading = false; 
-      if (exito) {
-        this.mostrarMensaje = true; 
-      } else {
-        alert('Ya existe una herramienta con ese código');
-      }
-    }); 
-
+  // ---------------------------------------
+  // Getters para validación visual en HTML
+  // ---------------------------------------
+  get f() {
+    return this.form.controls;
   }
 
-  //Cerrar mensaje de confirmación y volver al inventario
-  cerrarMensaje(){
-    this.mostrarMensaje = false; 
+  campoInvalido(campo: string): boolean {
+    return this.f[campo].invalid && (this.f[campo].dirty || this.f[campo].touched);
+  }
+
+  mensajeError(campo: string): string {
+    const errors = this.f[campo].errors;
+    if (!errors) return '';
+
+    if (errors['required']) return 'Este campo es obligatorio';
+    if (errors['min']) return `El mínimo permitido es ${errors['min'].min}`;
+    if (errors['maxlength']) return `Máximo ${errors['maxlength'].requiredLength} caracteres`;
+    if (errors['minlength']) return `Mínimo ${errors['minlength'].requiredLength} caracteres`;
+
+    return 'Campo inválido';
+  }
+
+  // ---------------------------------------
+  // Enviar formulario
+  // ---------------------------------------
+  onSubmit(): void {
+    this.serverError = '';
+
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const cleanedPayload = this.limpiarPayload(this.form.value);
+
+    this.loading = true;
+
+    this.herramientasService.create(cleanedPayload).subscribe({
+      next: () => {
+        this.loading = false;
+        this.mostrarMensaje = true; // Mostrar modal de éxito
+        this.form.reset();
+      },
+      error: (err) => {
+        this.loading = false;
+
+        if (err.error?.message) {
+          this.serverError = err.error.message;
+        } else {
+          this.serverError = 'Error inesperado. Intenta nuevamente.';
+        }
+      }
+    });
+  }
+
+  // ---------------------------------------
+  // Limpia valores vacíos
+  // ---------------------------------------
+  private limpiarPayload(data: any) {
+    const cleaned: any = {};
+    Object.keys(data).forEach(key => {
+      const value = data[key];
+
+      if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (trimmed !== '') cleaned[key] = trimmed;
+      } else if (typeof value === 'number' && value !== null) {
+        cleaned[key] = value;
+      }
+    });
+
+    return cleaned;
+  }
+
+  // ---------------------------------------
+  // Modal: cerrar y redirigir
+  // ---------------------------------------
+  cerrarMensaje() {
+    this.mostrarMensaje = false;
     this.router.navigate(['/inventario']);
   }
 
   cancelar() {
-    this.router.navigate(['/inventario']); 
+    this.router.navigate(['/inventario']);
   }
 
 }

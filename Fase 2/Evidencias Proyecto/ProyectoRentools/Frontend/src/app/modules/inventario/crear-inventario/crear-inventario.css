@@ -1,29 +1,140 @@
-.crear-inventario .form-control,
-.crear-inventario .form-select,
-.crear-inventario textarea {
-  border-radius: 0.5rem;
+/* Contenedor principal */
+.container.crear-inventario {
+  max-width: 700px;
+  margin: 80px auto 40px auto;
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.descripcion-textarea {
-  min-height: 120px; /* Más grande que los demás campos */
-}
-
-.btn-success {
+/* Título */
+.form-title {
+  text-align: center;
+  color: #fd620e;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
   font-weight: bold;
 }
 
-.modal-content {
-  border-radius: 0.5rem;
+/* Formulario */
+.herramienta-form .form-group {
+  margin-bottom: 15px;
 }
 
-.mensaje-exito {
+.herramienta-form label {
+  font-weight: 500;
+}
+
+.herramienta-form input,
+.herramienta-form select,
+.herramienta-form textarea {
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  font-size: 0.95rem;
+}
+
+.herramienta-form input:focus,
+.herramienta-form select:focus,
+.herramienta-form textarea:focus {
+  outline: none;
+  border-color: #fd620e;
+  box-shadow: 0 0 6px rgba(253, 98, 14, 0.3);
+}
+
+/* Área de descripción más grande */
+.descripcion-textarea {
+  min-height: 120px;
+}
+
+/* --- BOTONES --- */
+.botones-acciones {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+/* Botón principal (Crear) */
+.btn-crear {
+  flex: 1;
+  background-color: #fd620e;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-crear:hover:not(:disabled) {
+  background-color: #e55a00;
+}
+
+.btn-crear:disabled {
+  background-color: #ccc;
+}
+
+/* Botón Cancelar */
+.btn-cancelar {
+  flex: 1;
+  background-color: #6c757d;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-cancelar:hover {
+  background-color: #5a6268;
+}
+
+/* Mensajes de error */
+.text-danger {
+  font-size: 0.85rem;
+  margin-top: 3px;
+}
+
+/* Modal de éxito */
+.modal-exito {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  z-index: 1055;
-  border-radius: 10px;
-  padding: 2rem;
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-exito .modal-contenido {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  width: 300px;
+  border: 2px solid #000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.modal-exito .icono-exito {
+  font-size: 4rem;
+  color: green;
+  margin-bottom: 15px;
+}
+
+.modal-exito .btn-aceptar {
+  background-color: #fd620e;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  margin-top: 15px;
 }
