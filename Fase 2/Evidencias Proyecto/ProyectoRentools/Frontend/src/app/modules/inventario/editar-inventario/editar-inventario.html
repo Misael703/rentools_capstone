@@ -1,79 +1,89 @@
-<div class="container py-4">
+<div class="container mt-4 editar-inventario">
+  <h2 class="form-title">Editar Herramienta</h2>
 
-  <!-- Título y botón volver -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="fw-bold">Editar Herramienta</h2>
-    <button class="btn btn-secondary d-flex align-items-center" (click)="onCancel()">
-      <i class="bi bi-arrow-left me-1"></i> Volver
-    </button>
-  </div>
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="herramienta-form">
 
-  <!-- Formulario -->
-  <form [formGroup]="form" (ngSubmit)="guardar()">
+    <div class="row g-3">
 
-    <div class="row g-4">
+      <!-- LADO IZQUIERDO -->
+      <div class="col-md-4">
 
-      <!-- Lado izquierdo -->
-      <div class="col-md-4 d-flex flex-column gap-3">
-
-        <!-- Código (solo lectura) -->
+        <!-- SKU -->
         <div class="form-group">
-          <label for="codigo">Código</label>
-          <input id="codigo" type="text" formControlName="codigo" readonly class="form-control rounded" />
+          <label for="sku_bsale">SKU Bsale</label>
+          <input id="sku_bsale" type="text" formControlName="sku_bsale" class="form-control" />
+          <div class="text-danger" *ngIf="campoInvalido('sku_bsale')">
+            {{ mensajeError('sku_bsale') }}
+          </div>
         </div>
 
         <!-- Precio Diario -->
         <div class="form-group">
-          <label for="precioDiario">Precio Unitario</label>
-          <input id="precioDiario" type="number" formControlName="precioDiario" class="form-control rounded" />
+          <label for="precio_diario">Precio Diario</label>
+          <input id="precio_diario" type="number" formControlName="precio_diario" class="form-control" />
+          <div class="text-danger" *ngIf="campoInvalido('precio_diario')">
+            {{ mensajeError('precio_diario') }}
+          </div>
         </div>
 
-        <!-- Precio Garantía -->
+        <!-- Garantía -->
         <div class="form-group">
-          <label for="precioGarantia">Precio Garantía</label>
-          <input id="precioGarantia" type="number" formControlName="precioGarantia" class="form-control rounded" />
+          <label for="garantia">Garantía</label>
+          <input id="garantia" type="number" formControlName="garantia" class="form-control" />
+          <div class="text-danger" *ngIf="campoInvalido('garantia')">
+            {{ mensajeError('garantia') }}
+          </div>
         </div>
 
       </div>
 
-      <!-- Lado derecho -->
-      <div class="col-md-8 d-flex flex-column gap-3">
+      <!-- LADO DERECHO -->
+      <div class="col-md-8">
 
         <!-- Nombre -->
         <div class="form-group">
           <label for="nombre">Nombre</label>
-          <input id="nombre" type="text" formControlName="nombre" class="form-control rounded" />
+          <input id="nombre" type="text" formControlName="nombre" class="form-control" />
+          <div class="text-danger" *ngIf="campoInvalido('nombre')">
+            {{ mensajeError('nombre') }}
+          </div>
         </div>
 
-        <!-- Descripción (más grande) -->
+        <!-- Descripción -->
         <div class="form-group">
           <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" formControlName="descripcion" class="form-control rounded descripcion-textarea"></textarea>
+          <textarea id="descripcion" formControlName="descripcion" class="form-control descripcion-textarea"></textarea>
         </div>
 
-        <!-- Stock -->
+        <!-- Días mínimo -->
         <div class="form-group">
-          <label for="stock">Stock</label>
-          <input id="stock" type="number" formControlName="stock" class="form-control rounded" />
+          <label for="dias_minimo">Días mínimo</label>
+          <input id="dias_minimo" type="number" formControlName="dias_minimo" class="form-control" />
+          <div class="text-danger" *ngIf="campoInvalido('dias_minimo')">
+            {{ mensajeError('dias_minimo') }}
+          </div>
         </div>
 
       </div>
-
     </div>
 
-    <!-- Botón de editar -->
-    <div class="d-flex justify-content-end mt-4">
-      <button type="submit" [disabled]="form.invalid" class="btn btn-warning d-flex align-items-center">
-        <i class="bi bi-pencil-square me-2"></i> Editar registro
+    <!-- Botones -->
+    <div class="botones-acciones mt-3">
+      <button type="button" class="btn-cancelar" (click)="onCancel()">
+        <i class="bi bi-arrow-left me-1"></i> Cancelar
+      </button>
+      <button type="submit" [disabled]="form.invalid" class="btn-crear">
+        <i class="bi bi-pencil-square me-1"></i> Guardar Cambios
       </button>
     </div>
-
   </form>
-
 </div>
 
-<!-- Mensaje de confirmación -->
-<div *ngIf="mostrarMensaje" class="mensaje-confirmacion d-flex flex-column align-items-center justify-content-center">
-  <i class="bi bi-check-circle-fill check-icon"></i>
-  <button class="btn btn-warning mt-3" (click)="cerrarMensaje()">¡Herramienta actualizada!</button>
+<!-- Modal de éxito -->
+<div *ngIf="mostrarMensaje" class="modal-exito">
+  <div class="modal-contenido">
+    <i class="bi bi-check-circle-fill icono-exito"></i>
+    <p>¡Herramienta actualizada!</p>
+    <button class="btn-aceptar" (click)="cerrarMensaje()">Aceptar</button>
+  </div>
 </div>

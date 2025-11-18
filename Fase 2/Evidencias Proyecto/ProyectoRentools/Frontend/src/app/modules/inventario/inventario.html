@@ -1,138 +1,231 @@
 <div class="container py-4">
 
-    <!-- Título y buscador -->
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-        <h2 class="fw-bold">Gestión Inventario</h2>
+  <!-- Título y buscador -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+    <h2 class="fw-bold">Gestión de Herramientas</h2>
 
-        <div class="input-group search-box">
-            <input type="text" class="form-control" placeholder="Inserte nombre o código" [(ngModel)]="terminoBusqueda"
-                (input)="aplicarFiltro()" />
-            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
-        </div>
+    <div class="input-group search-box">
+      <input type="text" class="form-control" placeholder="Buscar por nombre o SKU" [(ngModel)]="terminoBusqueda"
+        (input)="aplicarFiltro()" />
+      <span class="input-group-text bg-white">
+        <i class="bi bi-search"></i>
+      </span>
+    </div>
+  </div>
+
+  <!-- Botones y filtro -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+
+    <!-- Botones -->
+    <div class="btn-group gap-2">
+      <button class="btn btn-success" (click)="irCrear()">
+        <i class="bi bi-plus-lg me-1"></i> Registrar Herramienta
+      </button>
+
+      <div class="btn-group">
+        <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown">
+          <i class="bi bi-file-earmark-arrow-down me-1"></i> Exportar
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="dropdown-item" (click)="exportarExcel()">
+              <i class="bi bi-file-earmark-excel me-1"></i> Exportar Excel
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
 
-    <!-- Botones y filtro -->
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-
-        <!-- Botones -->
-        <div class="btn-group gap-2">
-            <button class="btn btn-success" (click)="irCrear()">
-                <i class="bi bi-plus-lg me-1"></i> Registrar Herramienta
-            </button>
-
-            <div class="btn-group">
-                <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="bi bi-file-earmark-arrow-down me-1"></i> Exportar Inventario
-                </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-file-earmark-pdf me-1"></i> Exportar PDF</a>
-                    </li>
-                    <li><a class="dropdown-item" (click)="exportarExcel()"><i class="bi bi-file-earmark-excel me-1"></i> Exportar Excel</a></li>
-                </ul>
-            </div>
-        </div>
-
-        <!-- Filtro -->
-        <div class="d-flex align-items-center gap-2">
-            <strong>Filtro por disponibilidad:</strong>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="disponible" (change)="toggleFiltroDisponibles()"
-                    [checked]="soloDisponibles" />
-                <label class="form-check-label" for="disponible">Mostrar solo disponibles</label>
-            </div>
-        </div>
-
+    <!-- Filtro Activo/Inactivo -->
+    <div class="d-flex align-items-center gap-2">
+      <strong>Mostrar solo activos:</strong>
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" (change)="toggleFiltroActivos()" [checked]="soloActivos" />
+        <label class="form-check-label">Activos</label>
+      </div>
     </div>
 
-    <!-- Tabla -->
-    <table class="table table-bordered table-hover">
-        <thead>
-            <tr class="table-header-title text-center">
-                <th colspan="8">Lista de Herramientas</th>
-            </tr>
-            <tr class="table-header-columns text-center">
-                <th>Código</th>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Disponibilidad</th>
-                <th>Stock</th>
-                <th>Precio Diario</th>
-                <th>Precio Garantía</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
+  </div>
 
-            <!-- Recorremos la lista -->
-            <tr *ngFor="let herramienta of listaFiltrada">
-                <td class="align-middle text-center">{{ herramienta.codigo }}</td>
-                <td class="align-middle">{{ herramienta.nombre }}</td>
-                <td class="align-middle">{{ herramienta.descripcion || '-' }}</td>
-                <td class="align-middle text-center">
-                    {{ herramienta.stock > 0 ? 'Disponible' : 'No disponible' }}
-                </td>
-                <td class="align-middle text-center">{{ herramienta.stock }}</td>
-                <td class="align-middle text-end">${{ herramienta.precioDiario }}</td>
-                <td class="align-middle text-end">${{ herramienta.precioGarantia }}</td>
+  <!-- Tabla -->
+  <table class="table table-bordered table-hover">
+    <thead>
+      <tr class="table-header-title text-center">
+        <th colspan="8">Listado de Herramientas</th>
+      </tr>
+      <tr class="table-header-columns text-center">
+        <th>SKU Bsale</th>
+        <th>Nombre</th>
+        <th>Días mínimo</th>
+        <th>Garantía</th>
+        <th>Precio Diario</th>
+        <th>Activo</th>
+        <th>Descripción</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
 
-                <td class="actions-column text-center align-middle">
-                    <!-- Ver Detalle -->
-                    <span class="action-icon bg-info me-1" (click)="abrirDetalle(herramienta)" role="button"
-                        title="Ver detalle">
-                        <i class="bi bi-eye"></i>
-                    </span>
+    <tbody>
+      <tr *ngFor="let herramienta of listaFiltrada">
+        <td class="align-middle text-center">{{ herramienta.sku_bsale }}</td>
+        <td class="align-middle">{{ herramienta.nombre }}</td>
+        <td class="align-middle text-center">{{ herramienta.dias_minimo }}</td>
+        <td class="align-middle text-end">${{ herramienta.garantia }}</td>
+        <td class="align-middle text-end">${{ herramienta.precio_diario }}</td>
 
-                    <!-- Editar -->
-                    <span class="action-icon bg-warning me-1" role="button" title="Editar"
-                        (click)="irEditar(herramienta)">
-                        <i class="bi bi-pencil-square"></i>
-                    </span>
+        <td class="align-middle text-center">
+          <span class="badge" [ngClass]="herramienta.activo ? 'bg-success' : 'bg-danger'">
+            {{ herramienta.activo ? 'Activo' : 'Inactivo' }}
+          </span>
+        </td>
 
-                    <!-- Eliminar -->
-                    <span class="action-icon bg-danger" role="button" title="Eliminar">
-                        <i class="bi bi-trash"></i>
-                    </span>
-                </td>
-            </tr>
+        <td class="align-middle">{{ herramienta.descripcion || '-' }}</td>
 
-        </tbody>
-    </table>
+        <td class="acciones d-flex justify-content-center align-items-center gap-2">
+          <span class="action-icon bg-info me-1" (click)="abrirDetalle(herramienta)" title="Ver detalle">
+            <i class="bi bi-eye"></i>
+          </span>
+
+          <span class="action-icon bg-warning me-1" (click)="irEditar(herramienta.id_herramienta)" title="Editar">
+            <i class="bi bi-pencil-square"></i>
+          </span>
+
+          <span class="action-icon bg-primary me-1" (click)="abrirModalDisponibilidad(herramienta)"
+            title="Disponibilidad">
+            <i class="bi bi-calendar-check"></i>
+          </span>
+
+          <span class="action-icon" role="button" [ngClass]="herramienta.activo ? 'bg-danger' : 'bg-success'"
+            (click)="herramienta.activo ? abrirModalDesactivar(herramienta) : abrirModalActivar(herramienta)"
+            title="Cambiar estado">
+            <i class="bi" [ngClass]="herramienta.activo ? 'bi-x-circle' : 'bi-check-circle'"></i>
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ====================== PAGINACIÓN ======================= -->
+  <nav class="d-flex justify-content-center" *ngIf="total > limit">
+    <ul class="pagination">
+      <li class="page-item" [class.disabled]="page === 1">
+        <button class="page-link" (click)="cambiarPagina(page - 1)">Anterior</button>
+      </li>
+
+      <li class="page-item" *ngFor="let p of paginas" [class.active]="page === p">
+        <button class="page-link" (click)="cambiarPagina(p)">{{ p }}</button>
+      </li>
+
+      <li class="page-item" [class.disabled]="page === paginas.length">
+        <button class="page-link" (click)="cambiarPagina(page + 1)">Siguiente</button>
+      </li>
+    </ul>
+  </nav>
 
 </div>
 
 
-<!-- ======================= MODAL DETALLE ======================= -->
-<div class="modal fade" id="modalDetalleHerramienta" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+<!-- ======================= MODAL DETALLE HERRAMIENTA ======================= -->
+<div class="modal-backdrop" *ngIf="selectedDetalle">
+  <div class="modal-content-custom">
 
-            <!-- Cabecera personalizada con título centrado -->
-            <div class="modal-header position-relative">
-                <h5 class="modal-title w-100 text-center fw-bold">Detalle Herramienta</h5>
-                <!-- Close button posicionado a la derecha (no afecta el centrado del título) -->
-                <button type="button" class="btn-close position-absolute end-0 me-2" data-bs-dismiss="modal"
-                    aria-label="Cerrar"></button>
-            </div>
+    <!-- Título -->
+    <h4 class="text-center mb-3 fw-bold">Detalles de Herramienta</h4>
 
-            <div class="modal-body" *ngIf="herramientaSeleccionada">
-                <!-- Código grande y centrado (sin label) -->
-                <div class="codigo-central text-center mb-3">
-                    <div class="codigo-text fw-bold">{{ herramientaSeleccionada.codigo }}</div>
-                </div>
+    <!-- Contenido -->
+    <div *ngIf="selectedDetalle">
 
-                <!-- Resto de datos ahora ALIGN LEFT -->
-                <div class="detalle-izquierda text-start">
-                    <p class="mb-1"><strong>Nombre:</strong> {{ herramientaSeleccionada.nombre }}</p>
-                    <!--
-                    <p class="mb-1"><strong>Disponibilidad:</strong> {{ herramientaSeleccionada.disponibilidad }}</p>
-                        -->
-                    <p class="mb-1"><strong>Stock:</strong> {{ herramientaSeleccionada.stock }}</p>
-                    <p class="mb-1"><strong>Precio Diario:</strong> ${{ herramientaSeleccionada.precioDiario }}</p>
-                    <p class="mb-1"><strong>Precio Garantía:</strong> ${{ herramientaSeleccionada.precioGarantia }}</p>
-                    <p class="mb-0"><strong>Descripción:</strong> {{ herramientaSeleccionada.descripcion || '-' }}</p>
-                </div>
-            </div>
+      <p><strong>Nombre:</strong> {{ selectedDetalle.nombre }}</p>
 
-        </div>
+      <p><strong>SKU Bsale:</strong> {{ selectedDetalle.sku_bsale }}</p>
+
+      <p><strong>Días mínimo:</strong> {{ selectedDetalle.dias_minimo }}</p>
+
+      <p><strong>Garantía:</strong> ${{ selectedDetalle.garantia }}</p>
+
+      <p><strong>Precio diario:</strong> ${{ selectedDetalle.precio_diario }}</p>
+
+      <p><strong>Activo:</strong> {{ selectedDetalle.activo ? 'Sí' : 'No' }}</p>
+
+      <p><strong>Descripción:</strong> {{ selectedDetalle.descripcion || '-' }}</p>
+
     </div>
+
+    <!-- Botón cerrar -->
+    <button class="btn btn-secondary w-100 mt-3" (click)="cerrarDetalle()">Cerrar</button>
+
+  </div>
+</div>
+
+<!-- ======================= MODAL ACTIVAR ======================= -->
+<div class="modal fade" id="modalActivarHerramienta" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Activar Herramienta</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        ¿Deseas activar la herramienta <strong>{{ selectedAccion?.nombre }}</strong>?
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-success" (click)="confirmarActivar()">Activar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= MODAL DESACTIVAR ======================= -->
+<div class="modal fade" id="modalDesactivarHerramienta" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Desactivar Herramienta</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        ¿Deseas desactivar la herramienta <strong>{{ selectedAccion?.nombre }}</strong>?
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmarDesactivar()">Desactivar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= MODAL DISPONIBILIDAD ======================= -->
+<div class="modal fade" id="modalDisponibilidad" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">Consultar disponibilidad</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="selectedDisponibilidad">
+          <p><strong>Herramienta:</strong> {{ selectedDisponibilidad.nombre }}</p>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Cantidad requerida:</label>
+          <input type="number" min="1" class="form-control" [(ngModel)]="cantidadSolicitada" />
+        </div>
+
+        <button class="btn btn-primary w-100" (click)="consultarDisponibilidad()">Consultar</button>
+
+        <div class="mt-3" *ngIf="disponibilidadInfo">
+          <div class="alert" [ngClass]="disponibilidadInfo.disponible ? 'alert-success' : 'alert-danger'">
+            {{ disponibilidadInfo.mensaje }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

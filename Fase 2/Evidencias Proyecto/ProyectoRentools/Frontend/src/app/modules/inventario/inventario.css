@@ -1,23 +1,25 @@
-/* Buscador */
+/* ===================== BUSCADOR ===================== */
 .search-box {
   max-width: 300px;
 }
 
-/* Tabla */
-.table th, .table td {
+/* ===================== TABLA ===================== */
+.table th,
+.table td {
   vertical-align: middle;
 }
 
 /* Fila de título principal */
 .table-header-title th {
-  background-color: #fd620e !important; /* Naranja */
+  background-color: #fd620e !important;
+  /* Naranja */
   color: white !important;
   font-weight: bold;
   font-size: 1.1rem;
   text-align: center;
 }
 
-/* Fila de encabezado de columnas */
+/* Encabezado de columnas */
 .table-header-columns th {
   background-color: #ffbd59 !important;
   color: white !important;
@@ -25,25 +27,33 @@
   text-align: center;
 }
 
-/* Acciones */
+/* ===================== COLUMNA ACCIONES ===================== */
+.table td.actions-column {
+  width: 120px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Íconos de acciones */
 .action-icon {
-  display: inline-flex; /* Horizontal */
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  margin: 0 5px;
-  align-items: center;
+  display: inline-flex;
   justify-content: center;
-  color: black;
+  align-items: center;
+  width: 34px;
+  height: 34px;
   cursor: pointer;
+  border-radius: 6px;
+  color: white;
+  font-size: 1rem;
+  margin: 0 5px;
   transition: transform 0.2s;
 }
 
 .action-icon:hover {
-  transform: scale(1.1);
+  transform: translateY(-2px);
 }
 
-/* Colores específicos de acciones */
+/* Colores personalizados */
 .bg-info {
   background-color: #5bc0de !important;
 }
@@ -56,7 +66,7 @@
   background-color: #d9534f !important;
 }
 
-/* Botón Registrar */
+/* ===================== BOTÓN REGISTRAR ===================== */
 .btn-success {
   background-color: #28a745;
   border: none;
@@ -65,53 +75,92 @@
 .btn-success:hover {
   background-color: #218838;
 }
-.table td.actions-column {
-  width: 120px; /* Ajusta el valor según necesites */
-  text-align: center;
-  white-space: nowrap; /* Evita que el contenido se rompa de línea */
-}
 
-/* íconos de acciones */
-.action-icon {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 34px;
-  height: 34px;
-  cursor: pointer;
-  border-radius: 6px;
-  color: white;
-  font-size: 1rem;
-}
+/* ===================== MODALES ===================== */
 
-/* opcional: espaciado y hover */
-.action-icon:hover { transform: translateY(-2px); }
-
-/* Modal: ajustar título centrado y close posicionado */
+/* Modal header */
 .modal-header {
   border-bottom: 0;
   padding-top: 1rem;
   padding-bottom: 0.25rem;
+  position: relative;
 }
 
-/* Asegura que el botón close no empuje el título */
+/* Botón Cerrar */
 .modal-header .btn-close {
-  top: 8px;
+  position: absolute;
+  right: 15px;
+  top: 10px;
 }
 
-/* Estilo para el código grande centrado */
+/* Código grande centrado */
 .codigo-central .codigo-text {
   font-size: 1.4rem;
   letter-spacing: 0.06em;
 }
 
-/* Ajustes de apariencia del cuerpo izquierdo */
+/* Texto del detalle */
 .detalle-izquierda p {
   margin-bottom: 0.25rem;
   text-align: left !important;
 }
 
-/* — Opcional: mejorar tamaño del modal en pantallas grandes */
+/* Modal más ancho en pantallas grandes */
 @media (min-width: 992px) {
-  .modal-dialog { max-width: 560px; }
+  .modal-dialog {
+    max-width: 560px;
+  }
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+.modal-content-custom {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.modal-content-custom {
+  animation: modalFadeIn 0.25s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Forzar que los botones siempre estén en una misma línea */
+td.acciones {
+  white-space: nowrap;     /* Evita que los botones bajen de línea */
+}
+
+td.acciones button,
+td.acciones i {
+  flex-shrink: 0;          /* Impide que se encojan o suban/bajen */
+}
+
+td.acciones {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
 }
