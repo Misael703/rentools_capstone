@@ -20,6 +20,12 @@ export class Herramienta {
   @Column({ nullable: true, unique: true })
   id_bsale: number;
 
+  @Column({ nullable: false })
+  product_id_bsale: number; // ID del producto (categoría) en Bsale
+
+  @Column({ nullable: true, length: 200 })
+  product_name_bsale: string; // Nombre del producto (categoría) en Bsale
+
   @Column({ nullable: true, length: 100 })
   barcode: string;
 
