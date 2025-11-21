@@ -18,6 +18,11 @@ export class CreateHerramientaDto {
   @Transform(({ value }) => value?.trim())
   sku_bsale: string;
 
+  @IsNotEmpty({ message: 'El ID del producto Bsale (categoría) es obligatorio' })
+  @IsInt()
+  @Min(1)
+  product_id_bsale: number;
+
   @IsOptional()
   @IsInt()
   id_bsale?: number;

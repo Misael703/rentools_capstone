@@ -4,6 +4,8 @@ import {
   Injectable,
   NotFoundException,
   Logger,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Like } from 'typeorm';
@@ -24,6 +26,7 @@ export class HerramientasService {
   constructor(
     @InjectRepository(Herramienta)
     private readonly herramientaRepository: Repository<Herramienta>,
+    @Inject(forwardRef(() => BsaleService))
     private readonly bsaleService: BsaleService,
   ) {}
 
@@ -109,6 +112,25 @@ export class HerramientasService {
         );
       }
 
+      // Extraer product_id_bsale de la variante
+      const productIdBsale = variantEnBsale.product?.id || variantEnBsale.productId;
+
+      if (!productIdBsale) {
+        throw new BadRequestException(
+          `La variante '${dto.sku_bsale}' en Bsale no tiene un productId asociado`
+        );
+      }
+
+      // Validar que el producto esté en la configuración y obtener su nombre
+      const productConfig = await this.bsaleService.getProductConfigByProductId(productIdBsale);
+
+      if (!productConfig) {
+        throw new BadRequestException(
+          `El producto ${productIdBsale} no está configurado para arriendo. ` +
+          `Agrega el producto a la configuración primero con POST /bsale/products-config/${productIdBsale}`
+        );
+      }
+
       // Mapear state de Bsale a activo
       const activoSegunBsale = variantEnBsale.state === 0;
 
@@ -116,6 +138,8 @@ export class HerramientasService {
       const datosParaGuardar: Partial<Herramienta> = {
         sku_bsale: variantEnBsale.code,
         id_bsale: variantEnBsale.id,
+        product_id_bsale: productIdBsale,
+        product_name_bsale: productConfig.product_name,
         nombre: variantEnBsale.description || variantEnBsale.code,
         barcode: variantEnBsale.barCode || null,
         descripcion: variantEnBsale.note || null,
@@ -132,7 +156,7 @@ export class HerramientasService {
       const herramienta = this.herramientaRepository.create(datosParaGuardar);
       const saved = await this.herramientaRepository.save(herramienta);
 
-      this.logger.log(`✅ Herramienta importada desde Bsale: ${saved.nombre} (ID Bsale: ${saved.id_bsale})`);
+      this.logger.log(`✅ Herramienta importada desde Bsale: ${saved.nombre} (ID Bsale: ${saved.id_bsale}, Producto: ${saved.product_id_bsale})`);
 
       return saved;
 
@@ -148,11 +172,22 @@ export class HerramientasService {
    * Crea una herramienta manualmente
    * IMPORTANTE: Retorna 409 Conflict con mensaje simple si el SKU ya existe
    * El SKU debe ser único tanto en sistema local como en Bsale
+   * Requiere product_id_bsale (categoría) que debe estar en bsale_config
    * Nota: Para sincronización masiva desde Bsale, usar syncAllFromBsale()
    */
   async create(dto: CreateHerramientaDto): Promise<Herramienta> {
     try {
-      // Verificar que el SKU no exista localmente
+      // 1. Validar que el product_id_bsale esté en la configuración y obtener su nombre
+      const productConfig = await this.bsaleService.getProductConfigByProductId(dto.product_id_bsale);
+
+      if (!productConfig) {
+        throw new BadRequestException(
+          `El producto ${dto.product_id_bsale} no está configurado para arriendo. ` +
+          `Agrega el producto a la configuración primero con POST /bsale/products-config/${dto.product_id_bsale}`
+        );
+      }
+
+      // 2. Verificar que el SKU no exista localmente
       const existeLocal = await this.herramientaRepository.findOne({
         where: { sku_bsale: dto.sku_bsale },
       });
@@ -163,7 +198,7 @@ export class HerramientasService {
         );
       }
 
-      // Verificar si ya existe en Bsale por SKU
+      // 3. Verificar si ya existe en Bsale por SKU
       const variantEnBsale = await this.bsaleService.findVariantBySku(dto.sku_bsale);
 
       if (variantEnBsale) {
@@ -172,7 +207,7 @@ export class HerramientasService {
         );
       }
 
-      // Verificar si el barcode ya existe en Bsale (si viene barcode)
+      // 4. Verificar si el barcode ya existe en Bsale (si viene barcode)
       if (dto.barcode && dto.barcode.trim() !== '') {
         const variantConBarcode = await this.bsaleService.findVariantByBarcode(dto.barcode);
 
@@ -183,10 +218,11 @@ export class HerramientasService {
         }
       }
 
-      // No existe en ningún lado, crear nueva variante en Bsale
-      this.logger.log(`📤 Creando nueva variante en Bsale: ${dto.sku_bsale}`);
+      // 5. No existe en ningún lado, crear nueva variante en Bsale
+      this.logger.log(`📤 Creando nueva variante en Bsale: ${dto.sku_bsale} (producto: ${dto.product_id_bsale})`);
 
       const nuevaVariante = await this.bsaleService.createVariant({
+        productId: dto.product_id_bsale,
         sku: dto.sku_bsale,
         nombre: dto.nombre,
         descripcion: dto.descripcion,
@@ -197,6 +233,8 @@ export class HerramientasService {
       const datosParaGuardar: Partial<Herramienta> = {
         sku_bsale: dto.sku_bsale,
         id_bsale: nuevaVariante.id,
+        product_id_bsale: dto.product_id_bsale,
+        product_name_bsale: productConfig.product_name,
         nombre: dto.nombre,
         descripcion: dto.descripcion,
         barcode: nuevaVariante.barCode || dto.barcode,
@@ -367,18 +405,13 @@ export class HerramientasService {
 
   /**
    * Actualiza una herramienta
-   * IMPORTANTE: También actualiza la variante en Bsale automáticamente
+   * IMPORTANTE: Solo sincroniza con Bsale si se modifican campos compartidos
+   * Campos compartidos: sku_bsale, nombre, barcode
+   * Campos locales: descripcion, garantia, dias_minimo, stock, activo
    */
   async update(id: number, dto: UpdateHerramientaDto): Promise<Herramienta> {
     try {
       const herramienta = await this.findOne(id);
-
-      // Verificar que tenga id_bsale para poder actualizar en Bsale
-      if (!herramienta.id_bsale) {
-        throw new BadRequestException(
-          'Esta herramienta no tiene id_bsale. No se puede sincronizar con Bsale.'
-        );
-      }
 
       // Verificar unicidad de SKU si se está actualizando
       if (dto.sku_bsale && dto.sku_bsale !== herramienta.sku_bsale) {
@@ -393,29 +426,50 @@ export class HerramientasService {
         }
       }
 
-      // Actualizar en Bsale primero (solo campos que Bsale soporta)
+      // Verificar si el barcode ya existe en Bsale (si se está modificando y no está vacío)
+      if (dto.barcode !== undefined && dto.barcode !== herramienta.barcode && dto.barcode?.trim() !== '') {
+        const variantConBarcode = await this.bsaleService.findVariantByBarcode(dto.barcode);
+
+        if (variantConBarcode && variantConBarcode.id !== herramienta.id_bsale) {
+          throw new ConflictException(
+            `Ya existe una variante en Bsale con el código de barras '${dto.barcode}' (SKU: ${variantConBarcode.code})`
+          );
+        }
+      }
+
+      // Detectar campos compartidos con Bsale que se están modificando
       const camposParaBsale: any = {};
+      let requiereSincronizacionBsale = false;
 
-      if (dto.sku_bsale) {
+      if (dto.sku_bsale !== undefined && dto.sku_bsale !== herramienta.sku_bsale) {
         camposParaBsale.sku = dto.sku_bsale;
+        requiereSincronizacionBsale = true;
       }
 
-      if (dto.nombre) {
+      if (dto.nombre !== undefined && dto.nombre !== herramienta.nombre) {
         camposParaBsale.nombre = dto.nombre;
+        requiereSincronizacionBsale = true;
       }
 
-      if (dto.barcode !== undefined) {
+      if (dto.barcode !== undefined && dto.barcode !== herramienta.barcode) {
         camposParaBsale.barcode = dto.barcode;
+        requiereSincronizacionBsale = true;
       }
 
-      // Solo actualizar en Bsale si hay campos para actualizar
-      if (Object.keys(camposParaBsale).length > 0) {
+      // Solo actualizar en Bsale si hay campos compartidos que cambiar
+      if (requiereSincronizacionBsale) {
+        if (!herramienta.id_bsale) {
+          throw new BadRequestException(
+            'Esta herramienta no tiene id_bsale. No se puede sincronizar con Bsale.'
+          );
+        }
+
         try {
           await this.bsaleService.updateVariant(
             herramienta.id_bsale,
             camposParaBsale
           );
-          this.logger.log(`✅ Variante ${herramienta.id_bsale} actualizada en Bsale`);
+          this.logger.log(`✅ Variante ${herramienta.id_bsale} actualizada en Bsale (campos: ${Object.keys(camposParaBsale).join(', ')})`);
         } catch (error) {
           this.logger.error(`❌ Error actualizando en Bsale: ${error.message}`);
           throw new BadRequestException(
@@ -427,10 +481,19 @@ export class HerramientasService {
       // Actualizar campos localmente
       Object.assign(herramienta, dto);
       herramienta.updated_at = new Date();
-      herramienta.fecha_sincronizacion = new Date();
+
+      // Solo actualizar fecha_sincronizacion si se sincronizó con Bsale
+      if (requiereSincronizacionBsale) {
+        herramienta.fecha_sincronizacion = new Date();
+      }
 
       const updated = await this.herramientaRepository.save(herramienta);
-      this.logger.log(`✅ Herramienta ID ${id} actualizada localmente y en Bsale`);
+
+      if (requiereSincronizacionBsale) {
+        this.logger.log(`✅ Herramienta ID ${id} actualizada localmente y sincronizada con Bsale`);
+      } else {
+        this.logger.log(`✅ Herramienta ID ${id} actualizada localmente (solo campos locales)`);
+      }
 
       return updated;
 
@@ -468,19 +531,30 @@ export class HerramientasService {
 
   /**
    * Reactiva una herramienta
-   * NOTA: El estado activo/inactivo se maneja SOLO localmente.
-   * Bsale no soporta reactivación de variantes, por lo que no sincronizamos el estado.
+   * NOTA: Valida que Bsale permita la activación (state !== 1)
    */
   async activate(id: number): Promise<Herramienta> {
     try {
       const herramienta = await this.findOne(id);
+
+      // Verificar estado en Bsale antes de activar
+      if (herramienta.id_bsale) {
+        const variantEnBsale = await this.bsaleService.findVariantBySku(herramienta.sku_bsale);
+
+        if (variantEnBsale && variantEnBsale.state === 1) {
+          throw new BadRequestException(
+            `No puedes activar esta herramienta porque está inactiva en Bsale (state=1). ` +
+            `Contacta al administrador de Bsale para reactivarla primero.`
+          );
+        }
+      }
 
       // Activar localmente
       herramienta.activo = true;
       herramienta.updated_at = new Date();
 
       const updated = await this.herramientaRepository.save(herramienta);
-      this.logger.log(`✅ Herramienta ID ${id} reactivada (solo local)`);
+      this.logger.log(`✅ Herramienta ID ${id} reactivada`);
 
       return updated;
 
@@ -489,6 +563,49 @@ export class HerramientasService {
         throw error;
       }
       DatabaseErrorHandler.handle(error, 'herramienta');
+    }
+  }
+
+  /**
+   * Desactiva todas las herramientas de un producto específico
+   * Se usa cuando se elimina un producto de la configuración
+   */
+  async deactivateByProductId(productIdBsale: number): Promise<{ desactivadas: number }> {
+    try {
+      const herramientas = await this.herramientaRepository.find({
+        where: {
+          product_id_bsale: productIdBsale,
+          activo: true, // Solo las que están activas
+        },
+      });
+
+      if (herramientas.length === 0) {
+        this.logger.log(`ℹ️  No hay herramientas activas para desactivar del producto ${productIdBsale}`);
+        return { desactivadas: 0 };
+      }
+
+      // Desactivar todas
+      for (const herramienta of herramientas) {
+        herramienta.activo = false;
+        herramienta.updated_at = new Date();
+      }
+
+      await this.herramientaRepository.save(herramientas);
+
+      this.logger.log(
+        `✅ ${herramientas.length} herramientas desactivadas del producto ${productIdBsale}`
+      );
+
+      return { desactivadas: herramientas.length };
+
+    } catch (error) {
+      this.logger.error(
+        `❌ Error desactivando herramientas del producto ${productIdBsale}:`,
+        error.message
+      );
+      throw new BadRequestException(
+        `Error al desactivar herramientas del producto ${productIdBsale}`
+      );
     }
   }
 
@@ -572,9 +689,9 @@ export class HerramientasService {
    * IMPORTANTE: Solo sincroniza info básica (SKU, nombre, descripción, barcode)
    * Stock y precios quedan en 0 hasta que tengamos los endpoints
    */
-  async syncAllFromBsale(): Promise<{ 
-    total: number; 
-    nuevas: number; 
+  async syncAllFromBsale(): Promise<{
+    total: number;
+    nuevas: number;
     actualizadas: number;
     errors: string[];
   }> {
@@ -595,31 +712,13 @@ export class HerramientasService {
 
       for (const variant of variants) {
         try {
-          await this.syncVariantFromBsale(variant);
-          
-          // Verificar si es nueva o actualizada
-          const herramienta = await this.herramientaRepository.findOne({
-            where: { sku_bsale: variant.code },
-          });
+          const resultado = await this.syncVariantFromBsale(variant);
 
-          if (herramienta) {
-            // Si tenemos fecha_sincronizacion y created_at, compararlas
-            if (herramienta.fecha_sincronizacion && herramienta.created_at) {
-              const tiempoDesdeCreacion = herramienta.fecha_sincronizacion.getTime() - herramienta.created_at.getTime();
-              if (tiempoDesdeCreacion < 1000) { // Menos de 1 segundo = nueva
-                nuevas++;
-              } else {
-                actualizadas++;
-              }
-            } else {
-              // No se pudieron comparar fechas, contar como actualizada por seguridad
-              actualizadas++;
-            }
+          // Contar según lo que retornó syncVariantFromBsale
+          if (resultado.esNueva) {
+            nuevas++;
           } else {
-            // Si por alguna razón no existe la herramienta, registrar error
-            const errorMsg = `SKU ${variant.code}: herramienta no encontrada tras sincronizar`;
-            errors.push(errorMsg);
-            this.logger.error(`❌ ${errorMsg}`);
+            actualizadas++;
           }
 
         } catch (error) {
@@ -654,14 +753,32 @@ export class HerramientasService {
    * Crea si no existe, actualiza si existe
    * NOTA: El campo 'state' de Bsale se mapea a 'activo' (0=true, 1=false)
    */
-  private async syncVariantFromBsale(variant: any): Promise<Herramienta> {
+  private async syncVariantFromBsale(
+    variant: any,
+    productIdBsale?: number
+  ): Promise<{ herramienta: Herramienta; esNueva: boolean }> {
     try {
       const sku = variant.code;
 
+      // Extraer product_id_bsale (desde parámetro, objeto variant, o campo directo)
+      const productId = productIdBsale || variant.product?.id || variant.productId;
+
+      if (!productId) {
+        throw new BadRequestException(
+          `La variante '${sku}' no tiene un productId asociado y no se proporcionó uno`
+        );
+      }
+
+      // Obtener el nombre del producto desde la configuración
+      const productConfig = await this.bsaleService.getProductConfigByProductId(productId);
+      const productName = productConfig?.product_name || `Producto ${productId}`;
+
       // Buscar si ya existe
-      let herramienta = await this.herramientaRepository.findOne({
+      const herramientaExistente = await this.herramientaRepository.findOne({
         where: { sku_bsale: sku },
       });
+
+      const esNueva = !herramientaExistente;
 
       // Mapear state de Bsale a activo (0 = activo, 1 = inactivo en Bsale)
       const activoSegunBsale = variant.state === 0;
@@ -669,6 +786,8 @@ export class HerramientasService {
       const datosSync = {
         sku_bsale: variant.code,
         id_bsale: variant.id,
+        product_id_bsale: productId,
+        product_name_bsale: productName,
         barcode: variant.barCode || null,
         nombre: variant.description || variant.code,
         descripcion: variant.note || null,
@@ -683,30 +802,32 @@ export class HerramientasService {
         dias_minimo: 1,
       };
 
-      if (herramienta) {
+      let herramienta: Herramienta;
+
+      if (herramientaExistente) {
         // Actualizar existente
         // IMPORTANTE: Solo actualizar 'activo' si la herramienta está inactiva en Bsale
         // Si está activa en tu sistema pero inactiva en Bsale, respetamos Bsale
         // Si está activa en tu sistema y activa en Bsale, mantenemos activa
         const debeSincronizarActivo = variant.state === 1; // Solo forzar inactivo si Bsale dice inactivo
 
-        Object.assign(herramienta, {
+        Object.assign(herramientaExistente, {
           ...datosSync,
-          activo: debeSincronizarActivo ? false : herramienta.activo, // Preservar estado local si Bsale está activo
+          activo: debeSincronizarActivo ? false : herramientaExistente.activo, // Preservar estado local si Bsale está activo
           updated_at: new Date(),
         });
 
-        herramienta = await this.herramientaRepository.save(herramienta);
-        this.logger.debug(`📝 Actualizada: ${herramienta.nombre} (activo: ${herramienta.activo}, state Bsale: ${variant.state})`);
+        herramienta = await this.herramientaRepository.save(herramientaExistente);
+        this.logger.debug(`📝 Actualizada: ${herramienta.nombre} (activo: ${herramienta.activo}, state Bsale: ${variant.state}, producto: ${productId})`);
 
       } else {
         // Crear nueva: usar el estado de Bsale directamente
         herramienta = this.herramientaRepository.create(datosSync);
         herramienta = await this.herramientaRepository.save(herramienta);
-        this.logger.debug(`🆕 Creada: ${herramienta.nombre} (activo: ${herramienta.activo}, state Bsale: ${variant.state})`);
+        this.logger.debug(`🆕 Creada: ${herramienta.nombre} (activo: ${herramienta.activo}, state Bsale: ${variant.state}, producto: ${productId})`);
       }
 
-      return herramienta;
+      return { herramienta, esNueva };
 
     } catch (error) {
       throw new BadRequestException(
@@ -730,7 +851,7 @@ export class HerramientasService {
         );
       }
 
-      const herramienta = await this.syncVariantFromBsale(variant);
+      const { herramienta } = await this.syncVariantFromBsale(variant);
       this.logger.log(`✅ Herramienta ${sku} sincronizada exitosamente`);
 
       return herramienta;
