@@ -1,51 +1,85 @@
-<div class="container mt-4 d-flex">
+<div class="container mt-4">
 
-  <!-- Filtro por Fecha (lado izquierdo) -->
-  <div class="filtro-fecha me-4">
-    <h5 class="fw-bold mb-3">Filtro por Fecha:</h5>
-    <div class="mb-3">
-      <label class="form-label">Desde</label>
-      <input type="date" class="form-control">
+  <!-- Fila de KPIs -->
+  <div class="row g-3 mb-4">
+
+    <!-- Total Herramientas -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card text-white bg-primary h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Total</h5>
+          <p class="card-text fs-3">{{ total }}</p>
+        </div>
+      </div>
     </div>
-    <div>
-      <label class="form-label">Hasta</label>
-      <input type="date" class="form-control">
+
+    <!-- Activas -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card text-white bg-success h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Activas</h5>
+          <p class="card-text fs-3">{{ activas }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Inactivas -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card text-white bg-danger h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Inactivas</h5>
+          <p class="card-text fs-3">{{ inactivas }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Con Stock -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card text-white" style="background-color: #0d6efd; height: 100%;">
+        <div class="card-body text-center">
+          <h5 class="card-title">Con Stock</h5>
+          <p class="card-text fs-3">{{ conStock }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sin Stock -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card text-white bg-warning h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Sin Stock</h5>
+          <p class="card-text fs-3">{{ sinStock }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Valor Inventario -->
+    <div class="col-md-4 col-lg-2">
+      <div class="card text-white bg-dark h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Valor Inventario</h5>
+          <p class="card-text fs-4">$ {{ valorInventario }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+    <!-- GRÁFICO DE TORTA -->
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm border rounded p-3">
+        <h5 class="card-title text-center mb-3">Stock Disponible vs No Disponible</h5>
+
+        <div class="chart-container">
+          <canvas
+            baseChart
+            [data]="pieStockData"
+            [options]="pieStockOptions"
+            [type]="'pie'">
+          </canvas>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Tabla de Ingresos (lado derecho) -->
-  <div class="table-responsive flex-grow-1">
-    <table class="table table-bordered table-hover text-center">
-      <thead class="table-header-columns">
-        <tr>
-          <th>Id Contrato</th>
-          <th>Cliente</th>
-          <th>Monto Final</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-        </tr>
-        <!-- Última fila: total -->
-        <tr>
-          <td colspan="2" class="fw-bold">Total de ganancias</td>
-          <td></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
 
 </div>

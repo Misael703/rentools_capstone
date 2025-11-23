@@ -1,0 +1,58 @@
+<div class="container mt-4">
+  <!-- Fila de KPI -->
+  <div class="row g-3 mb-4">
+    <!-- Total Clientes -->
+    <div class="col-md-3">
+      <div class="card text-white bg-primary h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Total Clientes</h5>
+          <p class="card-text fs-3">{{ estadisticas?.total || 0 }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clientes Activos -->
+    <div class="col-md-3">
+      <div class="card text-white bg-success h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Clientes Activos (%)</h5>
+          <p class="card-text fs-3">{{ estadisticas?.porcentajeActivos || 0 }}%</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clientes Persona Natural -->
+    <div class="col-md-3">
+      <div class="card text-white" style="background-color: #5bc0de; height: 100%;">
+        <div class="card-body text-center">
+          <h5 class="card-title">Persona Natural (%)</h5>
+          <p class="card-text fs-3">{{ porcentajePersona | number:'1.0-2' }}%</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Clientes Empresa -->
+    <div class="col-md-3">
+      <div class="card text-white" style="background-color: #f0ad4e; height: 100%;">
+        <div class="card-body text-center">
+          <h5 class="card-title">Empresas (%)</h5>
+          <p class="card-text fs-3">{{ porcentajeEmpresa | number:'1.0-2' }}%</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráfico de dona -->
+  <div class="row mt-4">
+    <!-- Card para el gráfico de clientes activos/inactivos -->
+    <div class="col-md-6">
+      <div class="card shadow-sm border rounded p-3">
+        <h5 class="card-title text-center mb-3">Clientes Activos vs Inactivos</h5>
+        <div class="chart-container">
+          <canvas baseChart [data]="doughnutChartData" [options]="doughnutChartOptions" [type]="'doughnut'">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

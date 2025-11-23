@@ -164,4 +164,24 @@ export class Inventory {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
+  // ============================================================
+  // 16. Obtener configuraciones de productos Bsale (para combo box)
+  // GET /bsale/products-config
+  // ============================================================
+  getBsaleProductConfigs(): Observable<Array<{
+    id: number;
+    product_id_bsale: number;
+    product_name: string;
+    created_at: string;
+    updated_at: string;
+  }>> {
+    return this.http.get<Array<{
+      id: number;
+      product_id_bsale: number;
+      product_name: string;
+      created_at: string;
+      updated_at: string;
+    }>>('http://localhost:3000/api/bsale/products-config');
+  }
+
 }

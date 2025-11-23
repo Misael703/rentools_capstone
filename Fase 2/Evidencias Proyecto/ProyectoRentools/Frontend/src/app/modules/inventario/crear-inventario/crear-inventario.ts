@@ -20,7 +20,14 @@ export class CrearInventario {
   loading = false;
   serverError = '';
 
-  mostrarMensaje = false; // Modal de éxito
+  mostrarMensaje = false;
+
+  // Lista para el combo box
+  listaProductosBsale: {
+    id: number;
+    product_id_bsale: number;
+    product_name: string;
+  }[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -29,9 +36,12 @@ export class CrearInventario {
   ) { }
 
   ngOnInit(): void {
+
+    // 1️⃣ Inicializar formulario
     this.form = this.fb.group({
-      sku_bsale: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(100)]],
+      sku_bsale: ['', [Validators.required]],
       id_bsale: [null],
+      product_id_bsale: ['', [Validators.required]],
       barcode: [''],
       nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(200)]],
       descripcion: [''],
@@ -40,14 +50,27 @@ export class CrearInventario {
       dias_minimo: [null, [Validators.min(1)]],
       stock: [null, [Validators.min(0)]],
     });
+
+    // 2️⃣ Cargar productos desde Bsale
+    this.cargarProductosBsale();
   }
 
-  // ---------------------------------------
-  // Getters para validación visual en HTML
-  // ---------------------------------------
-  get f() {
-    return this.form.controls;
+  // ================================================================
+  //  Método para cargar el combo box
+  // ================================================================
+  cargarProductosBsale() {
+    this.herramientasService.getBsaleProductConfigs().subscribe({
+      next: (data) => {
+        this.listaProductosBsale = data;
+      },
+      error: (err) => {
+        console.error('Error cargando productos Bsale', err);
+      }
+    });
   }
+
+  // Getters para validación
+  get f() { return this.form.controls; }
 
   campoInvalido(campo: string): boolean {
     return this.f[campo].invalid && (this.f[campo].dirty || this.f[campo].touched);
@@ -65,9 +88,9 @@ export class CrearInventario {
     return 'Campo inválido';
   }
 
-  // ---------------------------------------
+  // ================================================================
   // Enviar formulario
-  // ---------------------------------------
+  // ================================================================
   onSubmit(): void {
     this.serverError = '';
 
@@ -83,24 +106,16 @@ export class CrearInventario {
     this.herramientasService.create(cleanedPayload).subscribe({
       next: () => {
         this.loading = false;
-        this.mostrarMensaje = true; // Mostrar modal de éxito
+        this.mostrarMensaje = true;
         this.form.reset();
       },
       error: (err) => {
         this.loading = false;
-
-        if (err.error?.message) {
-          this.serverError = err.error.message;
-        } else {
-          this.serverError = 'Error inesperado. Intenta nuevamente.';
-        }
+        this.serverError = err.error?.message || 'Error inesperado. Intenta nuevamente.';
       }
     });
   }
 
-  // ---------------------------------------
-  // Limpia valores vacíos
-  // ---------------------------------------
   private limpiarPayload(data: any) {
     const cleaned: any = {};
     Object.keys(data).forEach(key => {
@@ -109,7 +124,7 @@ export class CrearInventario {
       if (typeof value === 'string') {
         const trimmed = value.trim();
         if (trimmed !== '') cleaned[key] = trimmed;
-      } else if (typeof value === 'number' && value !== null) {
+      } else if (value !== null && value !== undefined) {
         cleaned[key] = value;
       }
     });
@@ -117,9 +132,6 @@ export class CrearInventario {
     return cleaned;
   }
 
-  // ---------------------------------------
-  // Modal: cerrar y redirigir
-  // ---------------------------------------
   cerrarMensaje() {
     this.mostrarMensaje = false;
     this.router.navigate(['/inventario']);

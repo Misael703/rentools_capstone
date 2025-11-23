@@ -8,6 +8,25 @@
       <!-- LADO IZQUIERDO -->
       <div class="col-md-4">
 
+        <!-- PRODUCTO BSALE -->
+        <div class="form-group select-wrapper">
+          <label>Producto Bsale *</label>
+
+          <div class="select-container">
+            <select class="form-control" formControlName="product_id_bsale">
+              <option value="" disabled>Seleccione el producto</option>
+              <option *ngFor="let item of listaProductosBsale" [value]="item.product_id_bsale">
+                {{ item.product_name }} (ID: {{ item.product_id_bsale }})
+              </option>
+            </select>
+
+            <i class="bi bi-caret-down-fill select-icon"></i>
+          </div>
+
+          <div class="text-danger" *ngIf="campoInvalido('product_id_bsale')">
+            Debes seleccionar un producto
+          </div>
+        </div>
         <!-- SKU -->
         <div class="form-group">
           <label>SKU Bsale *</label>

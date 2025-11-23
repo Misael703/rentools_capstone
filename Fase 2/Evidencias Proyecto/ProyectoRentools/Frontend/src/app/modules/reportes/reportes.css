@@ -49,3 +49,12 @@
   background-color: #f8f9fa;
 }
 
+/* Título general arriba */
+.reportes-header {
+  padding: 1rem 2rem; /* 1rem arriba/abajo, 2rem izquierda/derecha */
+}
+
+.reportes-header h2 {
+  margin: 0; /* eliminar margen por defecto del h2 */
+}
+

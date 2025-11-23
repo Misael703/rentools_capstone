@@ -18,7 +18,8 @@ export class Home implements OnInit {
     { title: 'Pagos', description: 'Ver pagos', icon: 'bi bi-coin', link: '/pagos' },
     { title: 'Devoluciones', description: 'Registrar devoluciones', icon: 'bi bi-cash', link: '/devoluciones' },
     { title: 'Reportes', description: 'Ver reportes', icon: 'bi bi-bar-chart-line', link: '/reportes' },
-    { title: 'Usuarios', description: 'Gestionar usuarios', icon: 'bi bi-person-gear', link: '/usuarios', role: 'admin' }
+    { title: 'Usuarios', description: 'Gestionar usuarios', icon: 'bi bi-person-gear', link: '/usuarios', role: 'admin' },
+    { title: 'Configuración Bsale', description: 'Gestionar Bsale', icon: 'bi bi-gear', link: '/configuracion-bsale', role: 'admin' }
   ];
 
   filteredCards: any[] = [];

@@ -1,0 +1,104 @@
+<h2 class="fw-bold titulo-config">Configuración Bsale</h2>
+<div class="configuracion-container">
+
+    <h3>Configuraciones del sistema</h3>
+
+    <!-- BUSCADOR -->
+    <div class="search-box">
+        <input type="text" [(ngModel)]="searchQuery" placeholder="Buscar productos..." />
+        <div class="search-buttons">
+            <button class="btn-search" (click)="searchProducts()">Buscar</button>
+            <button *ngIf="searchQuery" (click)="resetSearch()">Volver</button>
+        </div>
+    </div>
+
+    <!-- Tabla de productos cacheados -->
+    <table class="table" *ngIf="cachedProducts.length > 0; else noResults">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>ID Bsale</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let product of cachedProducts" [ngClass]="{'bg-config': product.en_configuracion}">
+                <td>{{ product.name }}</td>
+                <td>{{ product.product_id_bsale }}</td>
+                <td class="acciones">
+                    <button class="btn-add" [disabled]="product.en_configuracion" (click)="confirmAdd(product)">
+                        <i class="bi bi-plus-lg"></i> Añadir
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ng-template #noResults>
+        <p>No se encontraron productos.</p>
+        <button class="btn btn-secondary" (click)="resetSearch()">Volver a la tabla completa</button>
+    </ng-template>
+
+    <!-- Paginación -->
+    <div class="pagination" *ngIf="totalItems > pageSize">
+        <button [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)">Anterior</button>
+        <span>Página {{currentPage}} de {{totalPages}}</span>
+        <button [disabled]="currentPage >= totalPages" (click)="changePage(currentPage + 1)">Siguiente</button>
+    </div>
+    <!-- Tabla de productos configurados -->
+    <h3>Configuraciones Actuales</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>ID Bsale</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let config of configuredProducts">
+                <td>{{ config.product_name }}</td>
+                <td>{{ config.product_id_bsale }}</td>
+                <td class="acciones">
+                    <button class="btn-delete" (click)="confirmDelete(config)">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+
+<!-- ===================== MODAL AÑADIR ===================== -->
+<div class="modal-backdrop" *ngIf="showAddModal">
+    <div class="modal-content-custom">
+        <div class="modal-header">
+            <h5 class="modal-title">Confirmar Añadir</h5>
+        </div>
+        <div class="modal-body codigo-central">
+            <p>¿Desea añadir <strong>{{ selectedProductToAdd?.name }}</strong> a la configuración actual?</p>
+        </div>
+        <div class="modal-footer modal-footer-space">
+            <button class="btn btn-secondary" (click)="cancelModal()">Cancelar</button>
+            <button class="btn btn-primary" (click)="addToConfig()">Añadir</button>
+        </div>
+    </div>
+</div>
+
+<!-- ===================== MODAL ELIMINAR ===================== -->
+<div class="modal-backdrop" *ngIf="showDeleteModal">
+    <div class="modal-content-custom">
+        <div class="modal-header">
+            <h5 class="modal-title">Confirmar Eliminar</h5>
+        </div>
+        <div class="modal-body detalle-izquierda">
+            <p>¿Desea eliminar <strong>{{ selectedConfigToRemove?.product_name }}</strong> de la configuración actual?
+            </p>
+        </div>
+        <div class="modal-footer modal-footer-space">
+            <button class="btn btn-secondary" (click)="cancelModal()">Cancelar</button>
+            <button class="btn btn-danger" (click)="removeFromConfig()">Eliminar</button>
+        </div>
+    </div>
+</div>

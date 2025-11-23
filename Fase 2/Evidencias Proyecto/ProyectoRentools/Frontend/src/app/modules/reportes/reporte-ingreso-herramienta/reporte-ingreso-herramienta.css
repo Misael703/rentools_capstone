@@ -1,23 +1,28 @@
-/* Encabezado de tabla */
-.table-header-columns th {
-  background-color: #ffbd59;
-  color: white;
+.card {
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff;
+  border: 1px solid #dee2e6;
+}
+
+.card-title {
   font-weight: bold;
 }
 
-/* Ajuste general de tabla */
-.table th, .table td {
-  vertical-align: middle;
-  font-size: 0.95rem; /* más compacta */
-  padding: 0.5rem;
+.card-text {
+  margin-top: 10px;
 }
 
-/* Estilo filtro por fecha */
-.filtro-fecha {
-  min-width: 200px;
+.chart-container {
+  width: 100%;
+  max-width: 320px;
+  /* un poco más grande para que la torta no se vea aplastada */
+  height: 320px;
+  margin: 0 auto;
 }
 
-.filtro-fecha .form-label {
-  font-weight: 600;
-  font-size: 0.95rem;
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
