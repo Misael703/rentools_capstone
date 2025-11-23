@@ -51,10 +51,11 @@
   <table class="table table-bordered table-hover">
     <thead>
       <tr class="table-header-title text-center">
-        <th colspan="8">Listado de Herramientas</th>
+        <th colspan="9">Listado de Herramientas</th>
       </tr>
       <tr class="table-header-columns text-center">
         <th>SKU Bsale</th>
+        <th>Producto Bsale</th>
         <th>Nombre</th>
         <th>Días mínimo</th>
         <th>Garantía</th>
@@ -68,6 +69,7 @@
     <tbody>
       <tr *ngFor="let herramienta of listaFiltrada">
         <td class="align-middle text-center">{{ herramienta.sku_bsale }}</td>
+        <td class="align-middle">{{ herramienta.product_name_bsale }}</td>
         <td class="align-middle">{{ herramienta.nombre }}</td>
         <td class="align-middle text-center">{{ herramienta.dias_minimo }}</td>
         <td class="align-middle text-end">${{ herramienta.garantia }}</td>
@@ -138,6 +140,8 @@
       <p><strong>Nombre:</strong> {{ selectedDetalle.nombre }}</p>
 
       <p><strong>SKU Bsale:</strong> {{ selectedDetalle.sku_bsale }}</p>
+
+      <p><strong>Producto Bsale:</strong> {{ selectedDetalle.product_name_bsale }}</p>
 
       <p><strong>Días mínimo:</strong> {{ selectedDetalle.dias_minimo }}</p>
 

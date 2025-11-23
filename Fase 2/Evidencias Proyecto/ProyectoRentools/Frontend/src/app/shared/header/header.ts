@@ -18,14 +18,15 @@ export class Header implements OnInit {
     { title: 'Pagos', link: '/pagos', icon: 'bi bi-coin' },
     { title: 'Devoluciones', link: '/devoluciones', icon: 'bi bi-cash' },
     { title: 'Reportes', link: '/reportes', icon: 'bi bi-bar-chart-line' },
-    { title: 'Usuarios', link: '/usuarios', icon: 'bi bi-person-gear', role: 'admin' }
+    { title: 'Usuarios', link: '/usuarios', icon: 'bi bi-person-gear', role: 'admin' },
+    { title: 'Configuración Bsale', link: '/configuracion-bsale', icon: 'bi bi-gear', role: 'admin' }
   ];
 
   filteredSidebar: any[] = [];
   user: any = null;
   mostrarTarjeta = false;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router) { }
 
   ngOnInit(): void {
     const userData = localStorage.getItem('user');

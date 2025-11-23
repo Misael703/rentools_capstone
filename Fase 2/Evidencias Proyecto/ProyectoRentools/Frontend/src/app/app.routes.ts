@@ -20,6 +20,8 @@ import { ReporteDevoluciones } from './modules/reportes/reporte-devoluciones/rep
 import { ReporteIngresoHerramienta } from './modules/reportes/reporte-ingreso-herramienta/reporte-ingreso-herramienta';
 import { ReporteRankingHerramientas } from './modules/reportes/reporte-ranking-herramientas/reporte-ranking-herramientas';
 
+import { ConfiguracionBsale } from './modules/configuracion-bsale/configuracion-bsale';
+
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
@@ -55,9 +57,10 @@ export const routes: Routes = [
           { path: 'contratos', loadComponent: () => import('./modules/reportes/reporte-contratos/reporte-contratos').then(m => m.ReporteContratos) },
           { path: 'devoluciones', loadComponent: () => import('./modules/reportes/reporte-devoluciones/reporte-devoluciones').then(m => m.ReporteDevoluciones) },
           { path: 'ingreso-herramienta', loadComponent: () => import('./modules/reportes/reporte-ingreso-herramienta/reporte-ingreso-herramienta').then(m => m.ReporteIngresoHerramienta) },
-          { path: 'ranking-herramientas', loadComponent: () => import('./modules/reportes/reporte-ranking-herramientas/reporte-ranking-herramientas').then(m => m.ReporteRankingHerramientas) }
+          { path: 'reporte-cliente', loadComponent: () => import('./modules/reportes/reporte-cliente/reporte-cliente').then(m => m.ReporteCliente) }
         ]
       },
+      { path: 'configuracion-bsale', component: ConfiguracionBsale, canActivate: [RoleGuard], data: { roles: ['admin'] } },
       { path: 'pagos', component: Pagos },
       {
         path: 'usuarios', component: Usuarios, canActivate: [RoleGuard],

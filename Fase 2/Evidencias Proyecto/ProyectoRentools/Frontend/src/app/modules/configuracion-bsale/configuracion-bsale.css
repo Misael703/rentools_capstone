@@ -1,0 +1,249 @@
+/* ===================== CONTENEDOR PRINCIPAL ===================== */
+.configuracion-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.titulo-config {
+    margin-left: 40px;  
+    margin-top: 40px; 
+}
+
+/* ===================== BUSCADOR ===================== */
+.search-box {
+    max-width: 350px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.search-box button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.search-box button:hover {
+    opacity: 0.9;
+}
+
+.search-buttons {
+    display: flex;
+    justify-content: flex-start;
+    /* o center si quieres al medio */
+    gap: 8px;
+    margin-top: 5px;
+}
+
+.btn-search {
+    background-color: #003366; /* azul oscuro */
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-search:hover {
+    background-color: #002244; /* un poco más oscuro al hover */
+}
+
+/* ===================== TABLA ===================== */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #ccc;
+}
+
+.table th {
+    background-color: #ffbd59;
+    /* Encabezado amarillo */
+    color: white;
+    font-weight: bold;
+}
+
+.table-header-title th {
+    background-color: #fd620e;
+    /* Encabezado principal naranja */
+    font-size: 1.1rem;
+}
+
+/* ===================== FILAS CONFIGURADAS ===================== */
+.bg-config,
+.bg-config td {
+    background-color: #ffcc80 !important; /* naranja claro */
+    color: black !important;
+}
+tr:hover {
+    background-color: #f0f0f0;
+    /* Hover suave en filas */
+}
+
+/* ===================== COLUMNA ACCIONES ===================== */
+td.acciones {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+td.acciones button,
+td.acciones i {
+    flex-shrink: 0;
+}
+
+/* ===================== BOTONES ===================== */
+.btn-add {
+    background-color: #90ee90;
+    /* verde claro */
+    border: none;
+    color: black;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-add:hover {
+    background-color: #76c776;
+}
+
+.btn-delete {
+    background-color: #f08080;
+    /* rojo claro */
+    border: none;
+    color: black;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-delete:hover {
+    background-color: #e06666;
+}
+
+/* ===================== PAGINACIÓN ===================== */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.pagination button {
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+.pagination button[disabled] {
+    background-color: #ccc;
+    cursor: default;
+}
+
+.pagination span {
+    font-weight: bold;
+}
+
+/* ===================== MODALES ===================== */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1050;
+}
+
+.modal-content-custom {
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    max-width: 450px;
+    width: 90%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: modalFadeIn 0.25s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    border-bottom: 0;
+    padding-top: 1rem;
+    padding-bottom: 0.25rem;
+    position: relative;
+}
+
+.modal-header .btn-close {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+}
+
+.codigo-central .codigo-text {
+    font-size: 1.4rem;
+    letter-spacing: 0.06em;
+}
+
+.detalle-izquierda p {
+    margin-bottom: 0.25rem;
+    text-align: left !important;
+}
+
+/* Modal más ancho en pantallas grandes */
+@media (min-width: 992px) {
+    .modal-dialog {
+        max-width: 560px;
+    }
+}
+
+.modal-footer-space {
+    display: flex;
+    justify-content: space-between; 
+}
