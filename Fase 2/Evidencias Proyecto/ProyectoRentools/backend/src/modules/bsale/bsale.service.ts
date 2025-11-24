@@ -583,6 +583,28 @@ export class BsaleService {
   }
 
   /**
+   * Elimina (desactiva) una variante en Bsale
+   * @param idBsale ID de la variante en Bsale
+   */
+  async deleteVariant(idBsale: number): Promise<void> {
+    try {
+      this.logger.log(`🗑️  Eliminando variante ${idBsale} en Bsale...`);
+
+      await firstValueFrom(
+        this.httpService.delete(
+          `${this.baseUrl}/variants/${idBsale}.json`,
+          { headers: this.getHeaders() }
+        )
+      );
+
+      this.logger.log(`✅ Variante ${idBsale} eliminada en Bsale`);
+
+    } catch (error) {
+      this.handleError(error, `deleteVariant(${idBsale})`);
+    }
+  }
+
+  /**
    * Verifica conexión con Bsale
    */
   async testConnection(): Promise<boolean> {
