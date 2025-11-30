@@ -172,18 +172,9 @@ export class HerramientasController {
   }
 
   /**
-   * PATCH /herramientas/:id/activate
-   * Reactiva una herramienta
-   */
-  @Patch(':id/activate')
-  @Roles('admin')
-  activate(@Param('id', ParseIntPipe) id: number) {
-    return this.herramientasService.activate(id);
-  }
-
-  /**
    * DELETE /herramientas/:id
-   * Soft delete: desactiva una herramienta
+   * Elimina la variante en Bsale y desactiva la herramienta localmente
+   * NOTA: No existe endpoint para reactivar porque Bsale no permite reactivar variantes eliminadas
    */
   @Delete(':id')
   @Roles('admin')

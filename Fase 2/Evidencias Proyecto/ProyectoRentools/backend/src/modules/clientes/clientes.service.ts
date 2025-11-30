@@ -525,43 +525,11 @@ export class ClientesService {
     }
   }
 
-  async remove(id: number): Promise<void> {
-    try {
-      const cliente = await this.findById(id);
-      await this.clienteRepository.remove(cliente);
-    } catch (error) {
-      if (error.status) {
-        throw error;
-      }
-      DatabaseErrorHandler.handle(error, 'cliente');
-    }
-  }
-
-  async softDelete(id: number): Promise<Cliente> {
+  async remove(id: number): Promise<Cliente> {
     try {
       const cliente = await this.findById(id);
       cliente.activo = false;
-      await this.clienteRepository.save(cliente);
-
-      // Actualizar estado en Bsale (state: 1 = inactivo)
-      if (cliente.id_bsale) {
-        try {
-          this.logger.log(`📤 Desactivando cliente ${cliente.rut} en Bsale...`);
-          
-          await this.bsaleService.updateClienteState(cliente.id_bsale, 1);
-          
-          // Actualizar fecha de sincronización
-          cliente.fecha_sincronizacion = new Date();
-          await this.clienteRepository.save(cliente);
-
-          this.logger.log(`✅ Cliente desactivado en Bsale`);
-
-        } catch (error) {
-          this.logger.warn(`⚠️  No se pudo desactivar en Bsale: ${error.message}`);
-        }
-      }
-
-      return cliente;
+      return await this.clienteRepository.save(cliente);
     } catch (error) {
       if (error.status) {
         throw error;
@@ -569,33 +537,12 @@ export class ClientesService {
       DatabaseErrorHandler.handle(error, 'cliente');
     }
   }
-
 
   async activate(id: number): Promise<Cliente> {
     try {
       const cliente = await this.findById(id);
       cliente.activo = true;
-      await this.clienteRepository.save(cliente);
-
-      // Actualizar estado en Bsale (state: 0 = activo)
-      if (cliente.id_bsale) {
-        try {
-          this.logger.log(`📤 Activando cliente ${cliente.rut} en Bsale...`);
-          
-          await this.bsaleService.updateClienteState(cliente.id_bsale, 0);
-          
-          // Actualizar fecha de sincronización
-          cliente.fecha_sincronizacion = new Date();
-          await this.clienteRepository.save(cliente);
-
-          this.logger.log(`✅ Cliente activado en Bsale`);
-
-        } catch (error) {
-          this.logger.warn(`⚠️  No se pudo activar en Bsale: ${error.message}`);
-        }
-      }
-
-      return cliente;
+      return await this.clienteRepository.save(cliente);
     } catch (error) {
       if (error.status) {
         throw error;

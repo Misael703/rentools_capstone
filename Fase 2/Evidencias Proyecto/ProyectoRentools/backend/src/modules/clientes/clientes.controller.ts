@@ -180,7 +180,7 @@ export class ClientesController {
 
   /**
    * PATCH /clientes/activar/:id
-   * Activa un cliente desactivado
+   * Activa un cliente desactivado (marca activo = true)
    */
   @Patch('activar/:id')
   @Roles('admin')
@@ -195,34 +195,19 @@ export class ClientesController {
   }
 
   /**
-   * PATCH /clientes/desactivar/:id
-   * Desactiva un cliente (soft delete)
-   */
-  @Patch('desactivar/:id')
-  @Roles('admin')
-  @HttpCode(HttpStatus.OK)
-  async deactivate(@Param('id', ParseIntPipe) id: number) {
-    const cliente = await this.clientesService.softDelete(id);
-    return {
-      message: 'Cliente desactivado correctamente',
-      success: true,
-      data: cliente,
-    };
-  }
-
-  /**
    * DELETE /clientes/:id
-   * Elimina permanentemente un cliente
-   * ⚠️ Solo usar si no tiene contratos asociados
+   * Desactiva un cliente (soft delete - marca activo = false)
+   * No elimina el registro de la base de datos
    */
   @Delete(':id')
   @Roles('admin')
   @HttpCode(HttpStatus.OK)
   async remove(@Param('id', ParseIntPipe) id: number) {
-    await this.clientesService.remove(id);
+    const cliente = await this.clientesService.remove(id);
     return {
-      message: 'Cliente eliminado correctamente',
+      message: 'Cliente desactivado correctamente',
       success: true,
+      data: cliente,
     };
   }
 }

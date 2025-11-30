@@ -506,20 +506,32 @@ export class HerramientasService {
   }
 
   /**
-   * Soft delete: marca la herramienta como inactiva
-   * NOTA: El estado activo/inactivo se maneja SOLO localmente.
-   * Bsale no soporta reactivación de variantes, por lo que no sincronizamos el estado.
+   * Soft delete: marca la herramienta como inactiva y elimina la variante en Bsale
+   * IMPORTANTE: Elimina la variante en Bsale primero, luego desactiva localmente
    */
   async remove(id: number): Promise<void> {
     try {
       const herramienta = await this.findOne(id);
+
+      // Eliminar en Bsale primero (si existe id_bsale)
+      if (herramienta.id_bsale) {
+        try {
+          await this.bsaleService.deleteVariant(herramienta.id_bsale);
+          this.logger.log(`✅ Variante ${herramienta.id_bsale} eliminada en Bsale`);
+        } catch (error) {
+          this.logger.error(`❌ Error eliminando en Bsale: ${error.message}`);
+          throw new BadRequestException(
+            `Error al eliminar la variante en Bsale: ${error.message}`
+          );
+        }
+      }
 
       // Desactivar localmente
       herramienta.activo = false;
       herramienta.updated_at = new Date();
 
       await this.herramientaRepository.save(herramienta);
-      this.logger.log(`✅ Herramienta ID ${id} desactivada (solo local)`);
+      this.logger.log(`✅ Herramienta ID ${id} desactivada localmente`);
 
     } catch (error) {
       if (error.status) {
@@ -529,42 +541,6 @@ export class HerramientasService {
     }
   }
 
-  /**
-   * Reactiva una herramienta
-   * NOTA: Valida que Bsale permita la activación (state !== 1)
-   */
-  async activate(id: number): Promise<Herramienta> {
-    try {
-      const herramienta = await this.findOne(id);
-
-      // Verificar estado en Bsale antes de activar
-      if (herramienta.id_bsale) {
-        const variantEnBsale = await this.bsaleService.findVariantBySku(herramienta.sku_bsale);
-
-        if (variantEnBsale && variantEnBsale.state === 1) {
-          throw new BadRequestException(
-            `No puedes activar esta herramienta porque está inactiva en Bsale (state=1). ` +
-            `Contacta al administrador de Bsale para reactivarla primero.`
-          );
-        }
-      }
-
-      // Activar localmente
-      herramienta.activo = true;
-      herramienta.updated_at = new Date();
-
-      const updated = await this.herramientaRepository.save(herramienta);
-      this.logger.log(`✅ Herramienta ID ${id} reactivada`);
-
-      return updated;
-
-    } catch (error) {
-      if (error.status) {
-        throw error;
-      }
-      DatabaseErrorHandler.handle(error, 'herramienta');
-    }
-  }
 
   /**
    * Desactiva todas las herramientas de un producto específico
@@ -806,14 +782,12 @@ export class HerramientasService {
 
       if (herramientaExistente) {
         // Actualizar existente
-        // IMPORTANTE: Solo actualizar 'activo' si la herramienta está inactiva en Bsale
-        // Si está activa en tu sistema pero inactiva en Bsale, respetamos Bsale
-        // Si está activa en tu sistema y activa en Bsale, mantenemos activa
-        const debeSincronizarActivo = variant.state === 1; // Solo forzar inactivo si Bsale dice inactivo
-
+        // IMPORTANTE: Siempre sincronizar 'activo' según Bsale
+        // Si Bsale dice activo (state=0), se reactiva la herramienta
+        // Si Bsale dice inactivo (state=1), se desactiva la herramienta
         Object.assign(herramientaExistente, {
           ...datosSync,
-          activo: debeSincronizarActivo ? false : herramientaExistente.activo, // Preservar estado local si Bsale está activo
+          activo: activoSegunBsale, // Siempre respetar el estado de Bsale
           updated_at: new Date(),
         });
 
