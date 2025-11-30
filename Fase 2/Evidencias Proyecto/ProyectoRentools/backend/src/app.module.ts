@@ -10,6 +10,7 @@ import { SeedModule } from './seed/seed.module';
 import { ClientesModule } from './modules/clientes/clientes.module';
 import { HerramientasModule } from './modules/herramientas/herramientas.module';
 import { BsaleModule } from './modules/bsale/bsale.module';
+import { ContratosModule } from './modules/contratos/contratos.module';
 import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ClientesModule,
     HerramientasModule,
     BsaleModule,
+    ContratosModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
