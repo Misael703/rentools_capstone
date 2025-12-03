@@ -558,19 +558,41 @@ PATCH {{base_url}}/contratos/1
 
 **Descripción:** Finaliza un contrato, calcula el monto final y cambia estado a 'finalizado'
 
+**IMPORTANTE:** Este endpoint **NO devuelve stock**. El stock debe ser devuelto previamente por el módulo de Devoluciones. Este método se llama automáticamente cuando el módulo de Devoluciones confirma que se devolvieron TODAS las herramientas.
+
 **Headers:**
 ```
 Authorization: Bearer {{jwt_token}}
+Content-Type: application/json
 ```
 
-**Ejemplo:**
+**Ejemplo 1: Sin recargos adicionales**
 ```
 PATCH {{base_url}}/contratos/1/finalizar
 ```
 
-**No requiere body**
+**Body (vacío o sin recargos):**
+```json
+{}
+```
 
-**Respuesta Exitosa (200 OK):**
+**Ejemplo 2: Con recargos por días extra o daños**
+```
+PATCH {{base_url}}/contratos/1/finalizar
+```
+
+**Body (JSON):**
+```json
+{
+  "recargosAdicionales": 15000
+}
+```
+> El módulo de Devoluciones calculará este monto basado en:
+> - Días extra de arriendo
+> - Multas por daños a herramientas
+> - Descuentos especiales (si aplican)
+
+**Respuesta Exitosa (200 OK) - Sin recargos:**
 ```json
 {
   "id_contrato": 1,
@@ -582,6 +604,18 @@ PATCH {{base_url}}/contratos/1/finalizar
 }
 ```
 
+**Respuesta Exitosa (200 OK) - Con recargos:**
+```json
+{
+  "id_contrato": 1,
+  "estado": "finalizado",
+  "monto_estimado": 280000,
+  "monto_final": 295000,  // 280000 + 15000 recargos
+  "fecha_termino_real": "2025-12-15T10:30:00.000Z",
+  ...resto del contrato
+}
+```
+
 **Error (400 Bad Request):**
 ```json
 {
@@ -589,6 +623,14 @@ PATCH {{base_url}}/contratos/1/finalizar
   "message": "Solo se puede finalizar un contrato activo",
   "error": "Bad Request"
 }
+```
+
+**Flujo de negocio completo:**
+```
+1. Cliente devuelve herramientas → POST /devoluciones (devuelve stock)
+2. Si se devolvieron todas → Módulo Devoluciones calcula recargos
+3. Módulo Devoluciones llama → PATCH /contratos/1/finalizar { recargosAdicionales: 15000 }
+4. Contrato finalizado con monto_final = monto_estimado + recargos
 ```
 
 ---
