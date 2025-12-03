@@ -416,11 +416,31 @@ export class ContratosService {
   }
 
   /**
-   * Calcula el monto final del contrato
-   * Se llama cuando se devuelven TODAS las herramientas
-   * Por ahora usa el monto estimado, pero puede integrarse con devoluciones
+   * Calcula el monto final del contrato (sin devolver stock)
+   *
+   * IMPORTANTE: Este método NO devuelve stock porque eso es responsabilidad
+   * del módulo de Devoluciones. Este método se llama automáticamente cuando
+   * el módulo de Devoluciones confirma que se devolvieron TODAS las herramientas.
+   *
+   * El monto_final puede incluir:
+   * - Monto base del contrato (monto_estimado)
+   * - Recargos por días extra (calculados en Devoluciones)
+   * - Multas por daños (calculados en Devoluciones)
+   * - Descuentos especiales (si aplican)
+   *
+   * Por ahora solo usa monto_estimado, pero el módulo de Devoluciones
+   * puede pasar recargos adicionales cuando se implemente.
    */
-  async calcularMontoFinal(id: number): Promise<Contrato> {
+  async calcularMontoFinal(
+    id: number,
+    recargosAdicionales: number = 0,
+  ): Promise<Contrato> {
+    this.logger.log(`🏁 Finalizando contrato #${id}`);
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
       const contrato = await this.findOne(id);
 
@@ -430,20 +450,26 @@ export class ContratosService {
         );
       }
 
-      // Por ahora, el monto final es igual al estimado
-      // Esto se puede extender cuando se implemente el módulo de devoluciones
-      contrato.monto_final = contrato.monto_estimado;
+      // Calcular monto final
+      // monto_estimado + recargos por días extra + multas por daños
+      contrato.monto_final = contrato.monto_estimado + recargosAdicionales;
       contrato.estado = EstadoContrato.FINALIZADO;
       contrato.fecha_termino_real = new Date();
 
-      await this.contratoRepository.save(contrato);
+      await queryRunner.manager.save(contrato);
+
+      await queryRunner.commitTransaction();
 
       this.logger.log(
-        `✅ Contrato #${id} finalizado con monto: $${contrato.monto_final}`,
+        `✅ Contrato #${id} finalizado. Monto final: $${contrato.monto_final}` +
+          (recargosAdicionales > 0
+            ? ` (incluye $${recargosAdicionales} en recargos)`
+            : ''),
       );
 
       return this.findOne(id);
     } catch (error) {
+      await queryRunner.rollbackTransaction();
       if (
         error instanceof NotFoundException ||
         error instanceof BadRequestException
@@ -454,6 +480,8 @@ export class ContratosService {
         `❌ Error finalizando contrato #${id}: ${error.message}`,
       );
       DatabaseErrorHandler.handle(error, 'contrato');
+    } finally {
+      await queryRunner.release();
     }
   }
 

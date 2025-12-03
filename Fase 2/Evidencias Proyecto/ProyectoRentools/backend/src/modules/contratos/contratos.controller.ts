@@ -124,11 +124,25 @@ export class ContratosController {
   /**
    * PATCH /contratos/:id/finalizar
    * Finaliza un contrato y calcula el monto final
+   *
+   * NOTA: Este endpoint NO devuelve stock. El stock debe ser devuelto
+   * previamente por el módulo de Devoluciones.
+   *
+   * Body (opcional):
+   * {
+   *   "recargosAdicionales": 5000  // Recargos por días extra, daños, etc.
+   * }
    */
   @Patch(':id/finalizar')
   @Roles('admin', 'vendedor')
-  finalizar(@Param('id', ParseIntPipe) id: number) {
-    return this.contratosService.calcularMontoFinal(id);
+  finalizar(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('recargosAdicionales') recargosAdicionales?: number,
+  ) {
+    return this.contratosService.calcularMontoFinal(
+      id,
+      recargosAdicionales || 0,
+    );
   }
 
   /**

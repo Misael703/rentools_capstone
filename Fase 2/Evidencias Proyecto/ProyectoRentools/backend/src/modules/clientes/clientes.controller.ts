@@ -14,7 +14,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ClientesService } from './clientes.service';
-import { CreateClienteDto, UpdateClienteDto, SearchClienteDto } from './dto/index';
+import { CreateClienteDto, UpdateClienteDto, SearchClienteDto, AutocompleteClienteDto } from './dto/index';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../rol/guards/roles.guard';
 import { Roles } from '../rol/decorators/roles.decorator';
@@ -81,6 +81,28 @@ export class ClientesController {
       inactivos,
       porcentajeActivos: total > 0 ? ((activos / total) * 100).toFixed(2) : 0,
     };
+  }
+
+  /**
+   * GET /clientes/search
+   * Búsqueda optimizada para autocompletado
+   * Busca en: nombre, apellido, nombre completo, razón social y RUT
+   * Se activa después de 3 caracteres
+   * Retorna máximo 10 resultados formateados para dropdown
+   *
+   * Query params:
+   * - query: término de búsqueda (mínimo 3 caracteres)
+   * - limit: cantidad de resultados (máximo 20, default 10)
+   *
+   * Ejemplos:
+   * - GET /clientes/search?query=juan
+   * - GET /clientes/search?query=12345678
+   * - GET /clientes/search?query=empresa&limit=5
+   */
+  @Get('search')
+  @Roles('admin', 'vendedor')
+  async autocomplete(@Query() filters: AutocompleteClienteDto) {
+    return this.clientesService.autocomplete(filters);
   }
 
   /**

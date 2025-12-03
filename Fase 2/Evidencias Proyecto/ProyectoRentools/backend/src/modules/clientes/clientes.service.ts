@@ -9,7 +9,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Cliente } from './entities/cliente.entity';
-import { CreateClienteDto, UpdateClienteDto, SearchClienteDto } from './dto/index';
+import { CreateClienteDto, UpdateClienteDto, SearchClienteDto, AutocompleteClienteDto } from './dto/index';
 import { TipoCliente } from './enums/tipo-cliente.enum';
 import { RutValidator } from 'src/common/utils/rut.validator';
 import { DatabaseErrorHandler } from 'src/common/utils/database-errors.handler';
@@ -451,6 +451,95 @@ export class ClientesService {
       };
     } catch (error) {
       DatabaseErrorHandler.handle(error, 'clientes');
+    }
+  }
+
+  /**
+   * Búsqueda optimizada para autocompletado
+   * Busca en: nombre, apellido, nombre completo, razón social y RUT
+   * Devuelve resultados formateados listos para mostrar en dropdown
+   */
+  async autocomplete(filters: AutocompleteClienteDto) {
+    try {
+      const limit = filters?.limit || 10;
+      const query = filters?.query?.trim();
+
+      if (!query || query.length < 3) {
+        return [];
+      }
+
+      const queryBuilder = this.clienteRepository
+        .createQueryBuilder('cliente')
+        .select([
+          'cliente.id_cliente',
+          'cliente.tipo_cliente',
+          'cliente.nombre',
+          'cliente.apellido',
+          'cliente.razon_social',
+          'cliente.rut',
+          'cliente.email',
+          'cliente.telefono',
+        ])
+        .where('cliente.activo = :activo', { activo: true });
+
+      // Limpiar RUT si parece ser un RUT (contiene números y guión o k)
+      const esRut = /[\d-kK]/.test(query);
+      const rutLimpio = esRut ? RutValidator.clean(query) : null;
+
+      // Búsqueda OR en múltiples campos
+      queryBuilder.andWhere(
+        `(
+          cliente.nombre ILIKE :query OR
+          cliente.apellido ILIKE :query OR
+          CONCAT(cliente.nombre, ' ', cliente.apellido) ILIKE :query OR
+          cliente.razon_social ILIKE :query OR
+          ${rutLimpio ? 'cliente.rut LIKE :rut' : 'FALSE'}
+        )`,
+        {
+          query: `%${query}%`,
+          ...(rutLimpio && { rut: `%${rutLimpio}%` }),
+        },
+      );
+
+      const clientes = await queryBuilder
+        .orderBy('cliente.tipo_cliente', 'ASC') // Personas primero, empresas después
+        .addOrderBy('cliente.nombre', 'ASC')
+        .limit(limit)
+        .getMany();
+
+      // Formatear resultados para el frontend
+      return clientes.map((cliente) => ({
+        id_cliente: cliente.id_cliente,
+        tipo_cliente: cliente.tipo_cliente,
+        label: this.formatClienteLabel(cliente),
+        nombre: cliente.nombre,
+        apellido: cliente.apellido,
+        razon_social: cliente.razon_social,
+        rut: RutValidator.format(cliente.rut),
+        email: cliente.email,
+        telefono: cliente.telefono,
+      }));
+    } catch (error) {
+      this.logger.error(`Error en autocomplete: ${error.message}`);
+      DatabaseErrorHandler.handle(error, 'clientes');
+    }
+  }
+
+  /**
+   * Formatea el label del cliente para mostrar en el dropdown
+   * - Persona: "Juan Pérez (12.345.678-9)"
+   * - Empresa: "Empresa S.A. (76.123.456-7)"
+   */
+  private formatClienteLabel(cliente: Cliente): string {
+    const rutFormateado = RutValidator.format(cliente.rut);
+
+    if (cliente.tipo_cliente === TipoCliente.PERSONA_NATURAL) {
+      const nombreCompleto = `${cliente.nombre} ${cliente.apellido}`.trim();
+      return `${nombreCompleto} (${rutFormateado})`;
+    } else {
+      // Empresa
+      const nombre = cliente.razon_social || cliente.nombre;
+      return `${nombre} (${rutFormateado})`;
     }
   }
 
