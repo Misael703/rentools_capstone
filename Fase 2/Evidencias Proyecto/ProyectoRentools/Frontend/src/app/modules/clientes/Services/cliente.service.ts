@@ -112,6 +112,21 @@ export class ClientesService {
     return this.http.get<Cliente>(`${this.apiUrl}/rut/${rut}`, this.getHeaders());
   }
 
+  // Método para buscar clientes con filtro parcial usando SearchClienteDto
+  buscarClientesParcial(rutParcial: string, limit = 10): Observable<Cliente[]> {
+    const params = new HttpParams()
+      .set('rut', rutParcial)
+      .set('page', '1')
+      .set('limit', limit.toString());
+
+    // Nota: destructuramos tu objeto para pasarlo correctamente
+    return this.http.get<{ data: Cliente[]; total: number; page: number; limit: number; totalPages: number }>(
+      this.apiUrl,
+      { ...this.getHeaders(), params } // <--- aquí se mezcla headers con params
+    ).pipe(
+      map(resp => resp.data || [])
+    );
+  }
   /** Crear un cliente */
   create(cliente: Partial<Cliente>): Observable<Cliente> {
     return this.http.post<Cliente>(this.apiUrl, cliente, this.getHeaders());

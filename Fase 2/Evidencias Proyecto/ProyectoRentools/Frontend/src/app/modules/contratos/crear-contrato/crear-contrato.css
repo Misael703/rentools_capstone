@@ -1,0 +1,358 @@
+/* ==============================
+   Contenedor general
+============================== */
+.container-crear {
+  width: 90%;
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.titulo {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* ==============================
+   Box / sección
+============================== */
+.box {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+h3 {
+  font-size: 1.3rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+/* ==============================
+   Inputs / Selects / Textareas compactos
+============================== */
+.input-compact {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.row-compact div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  /* agrega espacio entre label e input */
+}
+
+.fila.align-center+.tabla {
+  margin-top: 12px;
+  /* ajusta el espacio entre buscador y tabla */
+}
+
+/* ==============================
+   Grillas
+============================== */
+.fila {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.grid-2-compact {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.grid-3-compact {
+  display: grid;
+  grid-template-columns: 1fr;
+  /* selector ocupa toda la fila */
+  gap: 10px;
+}
+
+.grid-3-compact .row-compact {
+  display: flex;
+  gap: 10px;
+}
+
+.grid-3-compact .row-compact input {
+  width: 100px;
+  /* ancho compacto */
+  padding: 6px 8px;
+  border-radius: 5px;
+  border: 1px solid #aaa;
+}
+
+/* ==============================
+   Botones
+============================== */
+.btn-accion,
+.btn-crear,
+.btn-secondary,
+.btn-eliminar,
+.btn-aceptar {
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.btn-accion {
+  background: #0077ff;
+  color: #fff;
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+.btn-accion:hover {
+  background: #005fcc;
+}
+
+.btn-crear {
+  background: #00aa55;
+  color: white;
+  padding: 8px 18px;
+  font-size: 1rem;
+}
+
+.btn-crear:hover {
+  background: #008f44;
+}
+
+.btn-secondary {
+  background: #999999;
+  color: white;
+  padding: 8px 18px;
+  font-size: 1rem;
+}
+
+.btn-secondary:hover {
+  background: #777777;
+}
+
+.btn-eliminar {
+  background: #dd3333;
+  color: white;
+  padding: 5px 10px;
+  font-size: 0.85rem;
+}
+
+.btn-eliminar:hover {
+  background: #bb0000;
+}
+
+.btn-aceptar {
+  background-color: #fd620e;
+  color: white;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-aceptar:hover {
+  background-color: #e05500;
+}
+
+/* Botones compactos para fila final */
+.btn-compact {
+  padding: 6px 14px;
+  font-size: 0.95rem;
+}
+
+/* ==============================
+   Tablas
+============================== */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #000;
+  /* borde general negro */
+}
+
+.tabla tbody td,
+.tabla thead th {
+  text-align: center;
+  /* centra todo el contenido */
+  vertical-align: middle;
+}
+
+.tabla th,
+.tabla td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.detalle-tabla th,
+/* Resumen tabla específica */
+.detalle-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #000;
+  /* borde general */
+}
+
+.detalle-tabla td {
+  padding: 8px 12px;
+  border: 1px solid #000;
+}
+
+/* Encabezados principales */
+.table-header-title th {
+  background-color: #fd620e !important;
+  color: white !important;
+  font-weight: bold;
+  font-size: 1.05rem;
+  text-align: center;
+}
+
+/* Encabezados de columnas */
+.table-header-columns th {
+  background-color: #ffbd59 !important;
+  color: white !important;
+  font-weight: bold;
+  font-size: 0.95rem;
+  text-align: left;
+}
+
+/* ==============================
+   Mensajes
+============================== */
+.error {
+  color: red;
+  margin-top: 8px;
+}
+
+.exito {
+  color: green;
+  margin-top: 8px;
+}
+
+/* ==============================
+   Usuario actual
+============================== */
+.usuario-box {
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #eef6ff;
+  border-left: 4px solid #0077ff;
+  font-size: 0.95rem;
+}
+
+/* ==============================
+   Modal de éxito
+============================== */
+.modal-exito {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.modal-contenido {
+  background: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  width: 320px;
+  border: 2px solid #000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.icono-exito {
+  font-size: 4rem;
+  color: green;
+  margin-bottom: 15px;
+}
+
+/* ==============================
+   Botones finales alineados
+============================== */
+.fila.justify-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.input-rut {
+  width: 200px;
+  /* ancho reducido */
+}
+
+.fila.align-center {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.detalle-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #000;
+  /* borde general */
+}
+
+.detalle-tabla td {
+  padding: 8px 12px;
+  border: 1px solid #000;
+  text-align: left;
+}
+
+.tabla-resumen td:nth-child(1) {
+  background-color: #d9edd3;
+  /* verde claro apagado */
+  font-weight: bold;
+  text-align: center;
+}
+
+.fila.align-center {
+  position: relative;
+  /* importante para que el ul se posicione respecto a este contenedor */
+}
+
+.dropdown-sugerencias {
+  position: absolute;
+  top: 100%;
+  /* justo debajo del input */
+  left: 0;
+  width: 100%;
+  /* igual ancho que el input */
+  max-height: 200px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 1000;
+  padding: 0;
+  margin: 2px 0 0 0;
+  list-style: none;
+}
+
+.dropdown-sugerencias li {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.dropdown-sugerencias li:hover {
+  background-color: #f0f0f0;
+}

@@ -1,88 +1,266 @@
 <div class="container mt-4">
 
-  <!-- Título y botón -->
+  <!-- Título + Botón crear -->
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="fw-bold">Gestión Contrato</h2>
-
-    <button class="btn btn-success d-flex align-items-center">
-      <i class="bi bi-plus-lg me-2"></i> Nuevo Contrato
+    <h2 class="fw-bold">Gestión de Contratos</h2>
+    <button class="btn btn-success d-flex align-items-center" (click)="crearContrato()">
+      <i class="bi bi-plus-lg me-2"></i> Crear Contrato
     </button>
   </div>
 
-  <!-- Tabla -->
-  <table class="table table-bordered table-hover text-center">
-    <thead>
-      <!-- Fila título -->
-      <tr class="table-header-title">
-        <th colspan="9">Lista de Contratos</th>
-      </tr>
+  <!-- FILTROS -->
+  <div class="filtros-container">
+    <input type="text" placeholder="Buscar por nombre cliente" [(ngModel)]="filtroClienteNombre"
+      (input)="aplicarFiltros()" />
 
-      <!-- Encabezados -->
+    <select [(ngModel)]="filtroEstado" (change)="aplicarFiltros()">
+      <option value="">Estado</option>
+      <option value="activo">Activo</option>
+      <option value="finalizado">Finalizado</option>
+      <option value="vencido">Vencido</option>
+      <option value="cancelado">Cancelado</option>
+    </select>
+
+    <select [(ngModel)]="filtroEntrega" (change)="aplicarFiltros()">
+      <option value="">Entrega</option>
+      <option value="retiro">Retiro</option>
+      <option value="despacho">Despacho</option>
+    </select>
+
+    <input type="date" [(ngModel)]="filtroFechaDesde" (change)="aplicarFiltros()" />
+    <input type="date" [(ngModel)]="filtroFechaHasta" (change)="aplicarFiltros()" />
+
+    <button class="btn btn-secondary" (click)="limpiarFiltros()">Limpiar</button>
+  </div>
+
+  <!-- TABLA -->
+  <table class="table table-bordered table-hover text-center align-middle">
+    <thead>
+      <tr class="table-header-title">
+        <th colspan="8">Listado de Contratos</th>
+      </tr>
       <tr class="table-header-columns">
-        <th>ID Cliente</th>
+        <th>ID</th>
         <th>Cliente</th>
-        <th>Herramientas</th>
+        <th>Usuario</th>
         <th>Fecha Inicio</th>
         <th>Fecha Término</th>
-        <th>Garantía Asociada</th>
         <th>Monto Estimado</th>
         <th>Estado</th>
-        <th class="actions-column">Acciones</th>
+        <th>Acciones</th>
       </tr>
     </thead>
 
     <tbody>
-      <!-- FILA 1 -->
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td class="actions-column">
-          <span class="action-icon bg-info"><i class="bi bi-binoculars"></i></span>
-          <span class="action-icon bg-warning"><i class="bi bi-file-earmark-arrow-down"></i></span>
-          <span class="action-icon bg-secondary"><i class="bi bi-info-circle"></i></span>
-        </td>
-      </tr>
+      <tr *ngFor="let contrato of contratos">
+        <!-- ID Contrato -->
+        <td>{{ contrato.id_contrato }}</td>
 
-      <!-- FILA 2 -->
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td class="actions-column">
-          <span class="action-icon bg-info"><i class="bi bi-binoculars"></i></span>
-          <span class="action-icon bg-warning"><i class="bi bi-file-earmark-arrow-down"></i></span>
-          <span class="action-icon bg-secondary"><i class="bi bi-info-circle"></i></span>
+        <!-- Nombre del cliente -->
+        <td>
+          {{ contrato.cliente?.tipo_cliente === 'empresa' ? contrato.cliente?.razon_social : (contrato.cliente?.nombre +
+          ' ' + contrato.cliente?.apellido) }}
         </td>
-      </tr>
 
-      <!-- FILA 3 -->
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
+        <!-- Usuario que creó el contrato -->
+        <td>{{ contrato.usuario?.nombre }}</td>
+
+        <!-- Fecha Inicio -->
+        <td>{{ contrato.fecha_inicio | date:'dd/MM/yyyy' }}</td>
+
+        <!-- Fecha Término Estimada -->
+        <td>{{ contrato.fecha_termino_estimada | date:'dd/MM/yyyy' }}</td>
+
+        <!-- Monto estimado -->
+        <td>${{ contrato.monto_estimado }}</td>
+
+        <!-- Estado -->
+        <td [ngClass]="{
+    'text-success': contrato.estado === 'activo',
+    'text-danger': contrato.estado === 'cancelado',
+    'text-warning': contrato.estado === 'vencido',
+    'text-primary': contrato.estado === 'finalizado'
+  }">
+          {{ contrato.estado }}
+        </td>
+
+        <!-- Acciones -->
         <td class="actions-column">
-          <span class="action-icon bg-info"><i class="bi bi-binoculars"></i></span>
-          <span class="action-icon bg-warning"><i class="bi bi-file-earmark-arrow-down"></i></span>
-          <span class="action-icon bg-secondary"><i class="bi bi-info-circle"></i></span>
+          <!-- Solo detalle si contrato finalizado o cancelado -->
+          <span class="action-icon bg-primary text-white" (click)="verDetalles(contrato)">
+            <i class="bi bi-eye"></i>
+          </span>
+
+          <!-- Mostrar los demás solo si está activo o vencido -->
+          <ng-container *ngIf="contrato.estado === 'activo' || contrato.estado === 'vencido'">
+            <span class="action-icon bg-danger text-white" (click)="solicitarAccion('cancelar', contrato)">
+              <i class="bi bi-slash-circle"></i>
+            </span>
+
+            <span class="action-icon bg-warning text-white" (click)="abrirModalEditar(contrato)">
+              <i class="bi bi-pencil-square"></i>
+            </span>
+
+            <span class="action-icon bg-success text-white" *ngIf="contrato.estado === 'activo'"
+              (click)="solicitarAccion('finalizar', contrato)">
+              <i class="bi bi-check2-circle"></i>
+            </span>
+          </ng-container>
         </td>
       </tr>
     </tbody>
   </table>
 
+  <!-- PAGINACIÓN -->
+  <div class="text-center mt-3">
+    <button class="btn btn-secondary me-2" [disabled]="paginaActual === 1"
+      (click)="cambiarPagina('anterior')">Anterior</button>
+
+    <span>Página {{ paginaActual }} de {{ totalPaginas }}</span>
+
+    <button class="btn btn-secondary ms-2" [disabled]="paginaActual === totalPaginas"
+      (click)="cambiarPagina('siguiente')">Siguiente</button>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="cargando" class="text-center mt-3">
+    <i class="bi bi-arrow-repeat spin"></i> Cargando contratos...
+  </div>
+
+  <div *ngIf="!cargando && contratos.length === 0" class="text-center mt-3">
+    No hay contratos registrados.
+  </div>
+
+  <!-- ===========================
+       MODAL DETALLES CONTRATO
+       =========================== -->
+  <div class="modal-backdrop" *ngIf="mostrarModal">
+    <div class="modal-content-custom">
+
+      <h4 class="text-center mb-2">Detalles del Contrato</h4>
+
+      <!-- Estado con color debajo del título -->
+      <p class="text-center mb-3 fw-bold" [ngClass]="{
+      'text-success': contratoSeleccionado?.estado === 'activo',
+      'text-danger': contratoSeleccionado?.estado === 'cancelado',
+      'text-warning': contratoSeleccionado?.estado === 'vencido',
+      'text-primary': contratoSeleccionado?.estado === 'finalizado'
+    }">
+        {{ contratoSeleccionado?.estado | titlecase }}
+      </p>
+
+      <div *ngIf="contratoSeleccionado">
+        <p><strong>ID Contrato:</strong> {{ contratoSeleccionado.id_contrato }}</p>
+        <p><strong>Cliente:</strong>
+          {{ contratoSeleccionado.cliente?.tipo_cliente === 'empresa' ? contratoSeleccionado.cliente?.razon_social :
+          (contratoSeleccionado.cliente?.nombre + ' ' + contratoSeleccionado.cliente?.apellido) }}
+        </p>
+        <p *ngIf="contratoSeleccionado.cliente?.rut"><strong>RUT:</strong> {{ contratoSeleccionado.cliente?.rut }}</p>
+        <p><strong>Usuario:</strong> {{ contratoSeleccionado.usuario?.nombre }}</p>
+
+        <!-- Fechas -->
+        <p><strong>Inicio:</strong> {{ contratoSeleccionado.fecha_inicio | date:'dd/MM/yyyy' }}</p>
+
+        <!-- Si contrato finalizado -->
+        <ng-container *ngIf="contratoSeleccionado.estado === 'finalizado'; else activoCanceladoVencido">
+          <p><strong>Fin estimado:</strong> {{ contratoSeleccionado.fecha_termino_estimada | date:'dd/MM/yyyy' }}</p>
+          <p><strong>Fin real:</strong> {{ contratoSeleccionado.fecha_termino_real | date:'dd/MM/yyyy' }}</p>
+          <p><strong>Monto estimado:</strong> ${{ contratoSeleccionado.monto_estimado }}</p>
+          <p><strong>Monto final:</strong> ${{ contratoSeleccionado.monto_final }}</p>
+        </ng-container>
+
+        <!-- Si contrato activo, cancelado o vencido -->
+        <ng-template #activoCanceladoVencido>
+          <p><strong>Fin estimado:</strong> {{ contratoSeleccionado.fecha_termino_estimada | date:'dd/MM/yyyy' }}</p>
+          <p><strong>Monto estimado:</strong> ${{ contratoSeleccionado.monto_estimado }}</p>
+          <p><strong>Garantía:</strong> ${{ contratoSeleccionado.monto_garantia }}</p>
+          <p><strong>Observaciones:</strong> {{ contratoSeleccionado.observaciones || '-' }}</p>
+        </ng-template>
+
+        <h5 class="mt-3">Herramientas:</h5>
+        <ul>
+          <li *ngFor="let d of contratoSeleccionado.detalles">
+            {{ d.nombre_herramienta }} (x{{ d.cantidad }}) - {{ d.dias_arriendo }} días
+          </li>
+        </ul>
+      </div>
+
+      <button class="btn btn-secondary w-100 mt-3" (click)="cerrarModal()">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- ===========================
+       MODAL CONFIRMACION
+       =========================== -->
+  <div class="modal-confirm-backdrop" *ngIf="mostrarModalConfirmar">
+    <div class="modal-confirm-box">
+      <i class="bi modal-icon" [ngClass]="{
+        'eliminar bi-trash-fill': tipoAccion === 'cancelar',
+        'activar bi-check-circle-fill': tipoAccion === 'finalizar',
+        'editar bi-pencil-fill': tipoAccion === 'editar'
+      }"></i>
+
+      <h3 class="modal-title">
+        {{ tipoAccion === 'cancelar' ? 'Cancelar Contrato'
+        : tipoAccion === 'finalizar' ? 'Finalizar Contrato'
+        : 'Editar Contrato' }}
+      </h3>
+
+      <p class="modal-text">
+        ¿Estás seguro que deseas <strong>{{ tipoAccion }}</strong> el contrato
+        <strong>#{{ contratoAccion?.id_contrato }}</strong>?
+      </p>
+
+      <div class="modal-btns">
+        <button class="btn-cancelar" (click)="cerrarModalAccion()">Cancelar</button>
+        <button class="btn-confirmar" (click)="confirmarAccion()">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===========================
+     MODAL EDITAR CONTRATO
+     =========================== -->
+<div class="modal-backdrop" *ngIf="mostrarModalEditar">
+  <div class="modal-content-custom">
+
+    <h4 class="text-center mb-3">Editar Contrato #{{ contratoEditar?.id_contrato }}</h4>
+
+    <div *ngIf="contratoEditar">
+      <!-- Tipo de entrega -->
+      <label for="tipoEntrega" class="form-label">Tipo de entrega</label>
+      <select id="tipoEntrega" class="form-select" [(ngModel)]="updateContratoData.tipo_entrega">
+        <option [ngValue]="null">Seleccione</option>
+        <option [ngValue]="'retiro'">Retiro</option>
+        <option [ngValue]="'despacho'">Despacho</option>
+      </select>
+
+      <!-- Observaciones -->
+      <label for="observaciones" class="form-label mt-2">Observaciones</label>
+      <textarea id="observaciones" class="form-control" [(ngModel)]="updateContratoData.observaciones"></textarea>
+
+      <!-- Monto garantía -->
+      <label for="montoGarantia" class="form-label mt-2">Monto garantía</label>
+      <input id="montoGarantia" type="number" class="form-control" [(ngModel)]="updateContratoData.monto_garantia">
+
+    </div>
+
+    <div class="mt-3 d-flex justify-content-between">
+      <button class="btn btn-secondary" (click)="cerrarModalEditar()">Cancelar</button>
+      <button class="btn btn-primary" (click)="guardarEdicion()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- =======================
+       Contrato modificado con éxito
+  ======================== -->
+<div *ngIf="mostrarModalExitoEditar" class="modal-exito">
+  <div class="modal-contenido">
+    <i class="bi bi-check-circle-fill icono-exito"></i>
+    <p>Contrato editado exitosamente</p>
+    <button class="btn-aceptar" (click)="aceptarExitoEditar()">Aceptar</button>
+  </div>
 </div>

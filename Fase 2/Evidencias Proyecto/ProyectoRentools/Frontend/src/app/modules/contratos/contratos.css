@@ -1,46 +1,220 @@
 /* Título de tabla */
 .table-header-title th {
-  background-color: #fd620e !important; /* Naranja */
+  background-color: #fd620e !important;
   color: white !important;
   font-weight: bold;
   font-size: 1.1rem;
-  text-align: center;
 }
 
-/* Encabezados de columnas */
+/* Encabezados */
 .table-header-columns th {
   background-color: #ffbd59 !important;
   color: white !important;
   font-weight: bold;
-  text-align: center;
 }
 
-
-/* Ajuste general de tabla */
-.table th, .table td {
+.table th,
+.table td {
   vertical-align: middle;
 }
 
-/* Acción icons */
+/* Iconos */
 .action-icon {
   display: inline-flex;
   width: 32px;
   height: 32px;
   border-radius: 6px;
-  margin: 0 4px; /* Separación entre iconos */
+  margin: 0 4px;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: black;
-  transition: transform 0.2s;
+  transition: 0.2s;
 }
 
 .action-icon:hover {
   transform: scale(1.15);
 }
 
-/* Reducir ancho columna Acciones */
+/* Columna Acciones */
 .actions-column {
-  width: 140px;
+  width: 150px;
   white-space: nowrap;
+}
+
+/* Modal detalle */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modal-content-custom {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Contenedor filtros */
+.filtros-container {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filtros-container input,
+.filtros-container select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.filtros-container input:focus,
+.filtros-container select:focus {
+  border-color: #fd620e;
+  box-shadow: 0 0 6px rgba(253, 98, 14, 0.3);
+}
+
+/* Modal Confirmación */
+.modal-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+}
+
+.modal-confirm-box {
+  background: white;
+  padding: 25px 30px;
+  width: 95%;
+  max-width: 420px;
+  border-radius: 12px;
+  text-align: center;
+  animation: fadeIn 0.25s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.modal-icon {
+  font-size: 55px;
+  margin-bottom: 10px;
+}
+
+.modal-icon.eliminar {
+  color: #dc3545;
+}
+
+.modal-icon.activar {
+  color: #28a745;
+}
+
+.modal-icon.desactivar {
+  color: #fd620e;
+}
+
+.modal-btns {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.btn-cancelar,
+.btn-confirmar {
+  flex: 1;
+  padding: 10px 0;
+  border-radius: 8px;
+  border: none;
+  color: white;
+}
+
+.btn-cancelar {
+  background: #6c757d;
+}
+
+.btn-confirmar {
+  background: #fd620e;
+}
+
+.btn-cancelar:hover,
+.btn-confirmar:hover {
+  opacity: 0.85;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Modal de éxito */
+.modal-exito {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5); /* fondo semi-transparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+
+.modal-exito .modal-contenido {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 10px;
+  text-align: center;
+  width: 350px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.modal-exito .icono-exito {
+  font-size: 3rem;
+  color: #28a745; /* verde para éxito */
+  margin-bottom: 1rem;
+}
+
+.modal-exito .btn-aceptar {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.modal-exito .btn-aceptar:hover {
+  background-color: #218838;
 }

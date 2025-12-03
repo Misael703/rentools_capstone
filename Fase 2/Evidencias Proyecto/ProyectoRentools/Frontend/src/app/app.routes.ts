@@ -47,6 +47,7 @@ export const routes: Routes = [
             .then(m => m.EditarInventario)
       },
       { path: 'contratos', component: Contratos },
+      {path: 'contratos/crear', loadComponent: () => import('./modules/contratos/crear-contrato/crear-contrato').then(m => m.CrearContrato) },
       { path: 'devoluciones', component: Devoluciones },
       { path: 'clientes', component: Clientes },
       { path: 'clientes/crear', loadComponent: () => import('./modules/clientes/crear-cliente/crear-cliente').then(m => m.CrearCliente) },

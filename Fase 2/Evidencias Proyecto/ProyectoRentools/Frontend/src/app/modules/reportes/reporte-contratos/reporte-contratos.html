@@ -1,22 +1,60 @@
-<div class="table-responsive">
-  <table class="table table-bordered table-hover text-center">
-    <thead class="table-header-columns">
-      <tr>
-        <th>Contratos activos</th>
-        <th>Contratos atrasados</th>
-        <th>Contratos finalizados</th>
-        <th>Contratos a punto de finalizar</th>
-        <th>Ganancias por contrato</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
+<div class="container mt-4">
+  <!-- Fila de KPI -->
+  <div class="row g-3 mb-4">
+    <!-- Total Contratos -->
+    <div class="col-md-3">
+      <div class="card text-white bg-primary h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Total Contratos</h5>
+          <p class="card-text fs-3">{{ estadisticas?.totalContratos || 0 }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monto Total en Arriendo -->
+    <div class="col-md-3">
+      <div class="card text-white bg-success h-100">
+        <div class="card-body text-center">
+          <h5 class="card-title">Monto Total en Arriendo</h5>
+          <p class="card-text fs-3">{{ estadisticas?.montoTotalEnArriendo | currency:'CLP' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contratos Activos -->
+    <div class="col-md-3">
+      <div class="card text-white" style="background-color: #198754; height: 100%;">
+        <div class="card-body text-center">
+          <h5 class="card-title">Contratos Activos</h5>
+          <p class="card-text fs-3">{{ estadisticas?.porEstado?.activos }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contratos Cancelados -->
+    <div class="col-md-3">
+      <div class="card text-white" style="background-color: #ffc107; height: 100%;">
+        <div class="card-body text-center">
+          <h5 class="card-title">Contratos Cancelados</h5>
+          <p class="card-text fs-3">{{ estadisticas?.porEstado?.cancelados }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráfico de dona -->
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm border rounded p-3">
+        <h5 class="card-title text-center mb-3">Contratos por Estado</h5>
+        <div class="chart-container">
+          <canvas baseChart 
+                  [data]="doughnutChartData" 
+                  [options]="doughnutChartOptions" 
+                  [type]="'doughnut'">
+          </canvas>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

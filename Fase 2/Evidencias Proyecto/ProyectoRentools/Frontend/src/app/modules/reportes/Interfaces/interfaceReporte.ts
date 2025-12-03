@@ -36,3 +36,22 @@ export interface EstadisticasHerramientas {
   sinStock: number;
   valorInventario: number;
 }
+
+export interface ContratoPorMes {
+  mes: string;        // Ej: "2025-12"
+  cantidad: string;   // Ej: "14"
+}
+
+export interface PorEstado {
+  activos: number;
+  finalizados: number;
+  vencidos: number;
+  cancelados: number;
+}
+
+export interface EstadisticasContratos {
+  totalContratos: number;
+  porEstado: PorEstado;
+  montoTotalEnArriendo: number;
+  contratosPorMes: ContratoPorMes[];
+}
