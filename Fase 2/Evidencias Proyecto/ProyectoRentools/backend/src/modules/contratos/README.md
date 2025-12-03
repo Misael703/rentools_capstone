@@ -314,15 +314,31 @@ Finaliza un contrato y calcula el monto final.
 
 **Permisos:** `admin`, `vendedor`
 
+**IMPORTANTE:** Este endpoint **NO devuelve stock**. El stock debe ser devuelto previamente por el módulo de Devoluciones. Este método se llama automáticamente cuando el módulo de Devoluciones confirma que se devolvieron TODAS las herramientas.
+
+**Body (opcional):**
+```json
+{
+  "recargosAdicionales": 5000  // Recargos por días extra, multas por daños, etc.
+}
+```
+
 **Proceso:**
 1. Valida que el contrato esté activo
-2. Calcula el monto final (actualmente = monto_estimado)
+2. Calcula el monto final: `monto_estimado + recargosAdicionales`
 3. Cambia estado a `finalizado`
 4. Registra `fecha_termino_real`
+5. **NO toca el stock** (ya devuelto por módulo de Devoluciones)
 
 **Respuesta exitosa (200):** Contrato finalizado completo
 
-**Nota:** Este endpoint está preparado para integrarse con un futuro módulo de devoluciones que calcule multas, daños, días extras, etc.
+**Flujo de negocio:**
+```
+1. Cliente devuelve herramientas → Módulo Devoluciones registra devolución + devuelve stock
+2. Si se devolvieron TODAS → Módulo Devoluciones calcula recargos
+3. Módulo Devoluciones llama a finalizar(id, recargos)
+4. Contrato cambia a FINALIZADO con monto_final calculado
+```
 
 ---
 
