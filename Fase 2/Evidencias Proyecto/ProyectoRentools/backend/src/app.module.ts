@@ -11,6 +11,7 @@ import { ClientesModule } from './modules/clientes/clientes.module';
 import { HerramientasModule } from './modules/herramientas/herramientas.module';
 import { BsaleModule } from './modules/bsale/bsale.module';
 import { ContratosModule } from './modules/contratos/contratos.module';
+import { DevolucionesModule } from './modules/devoluciones/devoluciones.module';
 import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     HerramientasModule,
     BsaleModule,
     ContratosModule,
+    DevolucionesModule,
     ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
