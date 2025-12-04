@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Cliente } from '../Interfaces/cliente.interfaces';
+import { Cliente, ClienteAutocomplete } from '../Interfaces/cliente.interfaces';
 import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
@@ -163,4 +163,19 @@ export class ClientesService {
     }
     return cliente.nombre_fantasia || cliente.razon_social || '';
   }
+
+  autocomplete(query: string, limit: number = 10): Observable<ClienteAutocomplete[]> {
+    const params = new HttpParams()
+      .set('query', query)
+      .set('limit', limit.toString());
+
+    return this.http.get<ClienteAutocomplete[]>(
+      `${this.apiUrl}/search`,
+      {
+        ...this.getHeaders(),
+        params
+      }
+    );
+  }
+
 }

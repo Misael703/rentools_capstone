@@ -23,11 +23,9 @@ export class CrearContrato implements OnInit {
   // -----------------------
   // Cliente
   // -----------------------
-  clienteRut = '';
   clienteSeleccionado: any | null = null; // el Cliente viene del ClientesService
-  clientesSugeridos: any[] = [];          // Para autocompletado
-  mostrarSugerencias = false;
-
+  busquedaCliente = '';
+  sugerenciasClientes: any[] = [];
   // -----------------------
   // Fechas / datos contrato
   // -----------------------
@@ -123,62 +121,36 @@ export class CrearContrato implements OnInit {
     return fechaUTC.toISOString(); // formato ISO completo
   }
   // -----------------------
-  // Buscar cliente por RUT
+  // Buscar cliente (autocompletado)
   // -----------------------
-  buscarClientePorRut(): void {
-    this.mensajeError = '';
-    if (!this.clienteRut || this.clienteRut.trim().length === 0) {
-      this.mensajeError = 'Ingresa un RUT válido.';
-      this.clienteSeleccionado = null;
+  autocompleteClientes(): void {
+    const q = this.busquedaCliente.trim();
+
+    if (q.length < 2) {
+      this.sugerenciasClientes = [];
       return;
     }
 
-    this.cargando = true;
-    this.clientesService.getByRut(this.clienteRut.trim()).subscribe({
-      next: (cliente) => {
-        this.clienteSeleccionado = cliente;
-        this.cargando = false;
-        this.mostrarSugerencias = false; // Ocultar sugerencias
+    this.clientesService.autocomplete(q).subscribe({
+      next: (resp) => {
+        this.sugerenciasClientes = resp || [];
       },
-      error: (err: any) => {
-        this.cargando = false;
-        this.clienteSeleccionado = null;
-        this.mensajeError = err?.error?.message || 'Cliente no encontrado';
-        this.mostrarSugerencias = false;
+      error: () => {
+        this.sugerenciasClientes = [];
       }
     });
   }
 
-  onRutInputChange(): void {
-    const rutParcial = this.clienteRut.trim();
-    if (rutParcial.length === 0) {
-      this.clientesSugeridos = [];
-      this.mostrarSugerencias = false;
-      return;
-    }
+  seleccionarClienteAutocomplete(cliente: any): void {
+    this.clienteSeleccionado = cliente;
+    this.busquedaCliente = cliente.rut + ' - ' +
+      (cliente.tipo_cliente === 'empresa'
+        ? cliente.razon_social
+        : cliente.nombre + ' ' + cliente.apellido);
 
-    // Llamada al servicio de búsqueda parcial
-    this.clientesService.buscarClientesParcial(rutParcial, 10).subscribe({
-      next: (clientes) => {
-        this.clientesSugeridos = clientes;
-        this.mostrarSugerencias = clientes.length > 0;
-      },
-      error: (err: any) => {
-        console.error('Error autocompletando clientes:', err);
-        this.clientesSugeridos = [];
-        this.mostrarSugerencias = false;
-      }
-    });
+    this.sugerenciasClientes = [];
   }
 
-  // -----------------------
-  // Seleccionar un cliente de las sugerencias
-  // -----------------------
-  seleccionarCliente(cliente: any): void {
-    this.clienteRut = cliente.rut;        // Completa el input
-    this.clienteSeleccionado = cliente;   // Guarda como seleccionado
-    this.mostrarSugerencias = false;      // Oculta dropdown
-  }
 
   // -----------------------
   // Agregar detalle al carrito

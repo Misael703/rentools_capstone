@@ -15,19 +15,24 @@
         <h3><i class="bi bi-person"></i> Cliente</h3>
 
         <div class="fila align-center" style="position: relative;">
-            <input type="text" placeholder="Ingresar RUT" [(ngModel)]="clienteRut" (input)="onRutInputChange()"
-                class="input-rut" />
+            <input type="text" class="input-rut input-cliente"
+            placeholder="Buscar cliente por nombre, razón social o RUT"
+            [(ngModel)]="busquedaCliente"
+            (input)="autocompleteClientes()"
+            />
 
-            <button (click)="buscarClientePorRut()" class="btn-accion btn-compact">Buscar</button>
-
-            <!-- Dropdown de sugerencias -->
-            <ul *ngIf="mostrarSugerencias" class="dropdown-sugerencias">
-                <li *ngFor="let c of clientesSugeridos" (click)="seleccionarCliente(c)">
-                    {{ c.rut }} - {{ c.tipo_cliente === 'empresa' ? c.razon_social : c.nombre + ' ' + c.apellido }}
+            <!-- Dropdown sugerencias -->
+            <ul class="dropdown-sugerencias" *ngIf="sugerenciasClientes.length > 0">
+                <li *ngFor="let c of sugerenciasClientes" (click)="seleccionarClienteAutocomplete(c)">
+                    {{
+                    c.tipo_cliente === 'empresa'
+                    ? c.razon_social
+                    : (c.nombre + ' ' + c.apellido)
+                    }}
+                    ({{ c.rut }})
                 </li>
             </ul>
         </div>
-
         <table *ngIf="clienteSeleccionado" class="tabla detalle-tabla">
             <thead class="table-header-title">
                 <tr>

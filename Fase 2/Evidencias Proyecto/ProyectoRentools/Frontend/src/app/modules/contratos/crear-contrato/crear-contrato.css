@@ -330,29 +330,39 @@ h3 {
   /* importante para que el ul se posicione respecto a este contenedor */
 }
 
-.dropdown-sugerencias {
-  position: absolute;
-  top: 100%;
-  /* justo debajo del input */
-  left: 0;
-  width: 100%;
-  /* igual ancho que el input */
-  max-height: 200px;
-  overflow-y: auto;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  z-index: 1000;
-  padding: 0;
-  margin: 2px 0 0 0;
-  list-style: none;
+
+/* Aumenta tamaño y largo */
+.input-cliente {
+    height: 42px;           /* más alto */
+    width: 450px;           /* más largo */
+    padding: 8px 12px;
+    font-size: 15px;
 }
 
+/* Dropdown */
+.dropdown-sugerencias {
+    position: absolute;
+    top: 45px; /* justo debajo del input */
+    left: 0;
+    width: 420px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 999;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Cada resultado */
 .dropdown-sugerencias li {
-  padding: 6px 10px;
-  cursor: pointer;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
 }
 
 .dropdown-sugerencias li:hover {
-  background-color: #f0f0f0;
+    background-color: #f5f5f5;
 }
