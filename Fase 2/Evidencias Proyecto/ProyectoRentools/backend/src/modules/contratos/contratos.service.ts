@@ -10,6 +10,7 @@ import { Contrato } from './entities/contrato.entity';
 import { DetalleContrato } from './entities/detalle-contrato.entity';
 import { CreateContratoDto, UpdateContratoDto, SearchContratoDto } from './dto';
 import { DatabaseErrorHandler } from '../../common/utils/database-errors.handler';
+import { parseLocalDate } from '../../common/utils/date.helper';
 import { HerramientasService } from '../herramientas/herramientas.service';
 import { ClientesService } from '../clientes/clientes.service';
 import { UsuarioService } from '../usuario/usuario.service';
@@ -42,9 +43,9 @@ export class ContratosService {
       `📝 Creando contrato para cliente ${createContratoDto.id_cliente}`,
     );
 
-    // Validar fechas
-    const fechaInicio = new Date(createContratoDto.fecha_inicio);
-    const fechaTermino = new Date(createContratoDto.fecha_termino_estimada);
+    // Validar fechas (parsear como fecha local para evitar problemas de zona horaria)
+    const fechaInicio = parseLocalDate(createContratoDto.fecha_inicio);
+    const fechaTermino = parseLocalDate(createContratoDto.fecha_termino_estimada);
 
     if (fechaTermino <= fechaInicio) {
       throw new BadRequestException(

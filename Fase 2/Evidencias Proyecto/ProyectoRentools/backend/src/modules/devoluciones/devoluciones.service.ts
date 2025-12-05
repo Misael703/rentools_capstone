@@ -17,6 +17,7 @@ import {
   SearchDevolucionDto,
 } from './dto';
 import { DatabaseErrorHandler } from '../../common/utils/database-errors.handler';
+import { parseLocalDate } from '../../common/utils/date.helper';
 import { EstadoContrato } from '../contratos/enums/estado-contrato.enum';
 
 @Injectable()
@@ -97,9 +98,9 @@ export class DevolucionesService {
       );
     }
 
-    // 7. Validar fecha de devolución
-    const fechaDevolucion = new Date(createDevolucionDto.fecha_devolucion);
-    const fechaInicio = new Date(contrato.fecha_inicio);
+    // 7. Validar fecha de devolución (parsear como fecha local)
+    const fechaDevolucion = parseLocalDate(createDevolucionDto.fecha_devolucion);
+    const fechaInicio = new Date(contrato.fecha_inicio); // Ya es Date de BD
 
     if (fechaDevolucion < fechaInicio) {
       throw new BadRequestException(
@@ -257,9 +258,9 @@ export class DevolucionesService {
           );
         }
 
-        // 6. Validar fecha de devolución
-        const fechaDevolucion = new Date(devolucionDto.fecha_devolucion);
-        const fechaInicio = new Date(contrato.fecha_inicio);
+        // 6. Validar fecha de devolución (parsear como fecha local)
+        const fechaDevolucion = parseLocalDate(devolucionDto.fecha_devolucion);
+        const fechaInicio = new Date(contrato.fecha_inicio); // Ya es Date de BD
 
         if (fechaDevolucion < fechaInicio) {
           throw new BadRequestException(
