@@ -1,0 +1,288 @@
+{
+  "info": {
+    "name": "RenTools - Módulo de Pagos",
+    "description": "Colección completa de endpoints para el módulo de Pagos de RenTools",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Crear Pago",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id_contrato\": 1,\n  \"fecha_pago\": \"2024-12-04\",\n  \"monto\": 50000,\n  \"metodo_pago\": \"efectivo\",\n  \"referencia\": \"PAGO-001\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/pagos",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos"]
+        },
+        "description": "Crea un nuevo pago para un contrato.\n\n**Validaciones:**\n- Debe haber al menos una devolución registrada\n- El monto no puede exceder el saldo disponible (monto_cobrado - total_pagado)"
+      }
+    },
+    {
+      "name": "2. Listar Todos los Pagos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pagos?page=1&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Lista todos los pagos con paginación.\n\n**Query params opcionales:**\n- page: número de página\n- limit: resultados por página\n- id_contrato: filtrar por contrato\n- metodo_pago: filtrar por método de pago\n- fecha_pago: filtrar por fecha específica\n- fecha_desde: filtrar desde fecha\n- fecha_hasta: filtrar hasta fecha"
+      }
+    },
+    {
+      "name": "3. Buscar Pagos por Contrato",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pagos?id_contrato=1",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos"],
+          "query": [
+            {
+              "key": "id_contrato",
+              "value": "1"
+            }
+          ]
+        },
+        "description": "Busca todos los pagos de un contrato específico usando filtros."
+      }
+    },
+    {
+      "name": "4. Buscar Pagos por Método",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pagos?metodo_pago=efectivo",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos"],
+          "query": [
+            {
+              "key": "metodo_pago",
+              "value": "efectivo"
+            }
+          ]
+        },
+        "description": "Busca pagos filtrados por método de pago.\n\n**Métodos válidos:**\n- efectivo\n- tarjeta_debito\n- tarjeta_credito\n- transferencia"
+      }
+    },
+    {
+      "name": "5. Buscar Pagos por Rango de Fechas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pagos?fecha_desde=2024-12-01&fecha_hasta=2024-12-31",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos"],
+          "query": [
+            {
+              "key": "fecha_desde",
+              "value": "2024-12-01"
+            },
+            {
+              "key": "fecha_hasta",
+              "value": "2024-12-31"
+            }
+          ]
+        },
+        "description": "Busca pagos en un rango de fechas."
+      }
+    },
+    {
+      "name": "6. Obtener Pago por ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pagos/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos", "1"]
+        },
+        "description": "Obtiene un pago específico por ID con todas sus relaciones (contrato, cliente)."
+      }
+    },
+    {
+      "name": "7. Obtener Pagos de un Contrato",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pagos/contrato/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos", "contrato", "1"]
+        },
+        "description": "Obtiene todos los pagos de un contrato específico.\n\n**Retorna:**\n- Lista de pagos\n- Total pagado"
+      }
+    },
+    {
+      "name": "8. Obtener Resumen de Pagos de un Contrato",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pagos/contrato/1/resumen",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos", "contrato", "1", "resumen"]
+        },
+        "description": "Obtiene un resumen completo de pagos de un contrato.\n\n**Retorna:**\n- Información del contrato\n- Lista de pagos\n- Resumen con:\n  - Monto total a pagar\n  - Monto total pagado\n  - Saldo pendiente\n  - Estado de pago (sin_pagos, pago_parcial, pagado_completo)\n  - Cantidad de pagos"
+      }
+    },
+    {
+      "name": "9. Obtener Estadísticas de Pagos",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pagos/stats",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos", "stats"]
+        },
+        "description": "Obtiene estadísticas generales de pagos.\n\n**Retorna:**\n- Total recaudado\n- Cantidad de pagos\n- Recaudado por método de pago\n- Recaudado por mes\n\n**Nota:** Solo disponible para rol admin"
+      }
+    },
+    {
+      "name": "10. Actualizar Pago (solo referencia)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"referencia\": \"PAGO-001-ACTUALIZADO\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/pagos/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos", "1"]
+        },
+        "description": "Actualiza un pago.\n\n**Importante:** Solo se puede actualizar el campo 'referencia'. NO se puede cambiar monto, fecha ni método de pago."
+      }
+    },
+    {
+      "name": "11. Eliminar Pago",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/pagos/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos", "1"]
+        },
+        "description": "Elimina un pago.\n\n**Validaciones:**\n- No se puede eliminar un pago que tiene un DTE asociado\n\n**Nota:** Solo disponible para rol admin"
+      }
+    },
+    {
+      "name": "EJEMPLOS - Pago con Tarjeta de Crédito",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id_contrato\": 1,\n  \"fecha_pago\": \"2024-12-04\",\n  \"monto\": 100000,\n  \"metodo_pago\": \"tarjeta_credito\",\n  \"referencia\": \"TRANS-TC-123456\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/pagos",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos"]
+        }
+      }
+    },
+    {
+      "name": "EJEMPLOS - Pago con Transferencia",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id_contrato\": 1,\n  \"fecha_pago\": \"2024-12-04\",\n  \"monto\": 50000,\n  \"metodo_pago\": \"transferencia\",\n  \"referencia\": \"REF-BANCO-789012\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/pagos",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos"]
+        }
+      }
+    },
+    {
+      "name": "EJEMPLOS - Pago Parcial",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"id_contrato\": 1,\n  \"fecha_pago\": \"2024-12-04\",\n  \"monto\": 25000,\n  \"metodo_pago\": \"efectivo\",\n  \"referencia\": null\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/pagos",
+          "host": ["{{baseUrl}}"],
+          "path": ["pagos"]
+        },
+        "description": "Ejemplo de pago parcial. El cliente puede ir pagando en cuotas a medida que devuelve herramientas."
+      }
+    }
+  ]
+}
