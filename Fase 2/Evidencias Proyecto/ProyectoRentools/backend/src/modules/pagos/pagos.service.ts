@@ -13,6 +13,7 @@ import { DevolucionHerramienta } from '../devoluciones/entities/devolucion-herra
 import { DetalleContrato } from '../contratos/entities/detalle-contrato.entity';
 import { CreatePagoDto, UpdatePagoDto, SearchPagoDto } from './dto';
 import { DatabaseErrorHandler } from '../../common/utils/database-errors.handler';
+import { parseLocalDate } from '../../common/utils/date.helper';
 
 @Injectable()
 export class PagosService {
@@ -55,9 +56,9 @@ export class PagosService {
         throw new BadRequestException('El monto debe ser mayor a 0');
       }
 
-      // 3. Validar fecha de pago
-      const fechaPago = new Date(createPagoDto.fecha_pago);
-      const fechaInicio = new Date(contrato.fecha_inicio);
+      // 3. Validar fecha de pago (parsear como fecha local)
+      const fechaPago = parseLocalDate(createPagoDto.fecha_pago);
+      const fechaInicio = new Date(contrato.fecha_inicio); // Ya es Date de BD
 
       if (fechaPago < fechaInicio) {
         throw new BadRequestException(
