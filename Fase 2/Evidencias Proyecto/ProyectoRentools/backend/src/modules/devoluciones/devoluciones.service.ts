@@ -9,6 +9,7 @@ import { Repository, DataSource, In } from 'typeorm';
 import { DevolucionHerramienta } from './entities/devolucion-herramienta.entity';
 import { DetalleContrato } from '../contratos/entities/detalle-contrato.entity';
 import { Contrato } from '../contratos/entities/contrato.entity';
+import { Pago } from '../pagos/entities/pago.entity';
 import {
   CreateDevolucionDto,
   CreateDevolucionMasivaDto,
@@ -405,6 +406,27 @@ export class DevolucionesService {
         (sum, d) => sum + d.monto_cobrado,
         0,
       );
+
+      // INFORMAR SOBRE EL ESTADO DE PAGO (no bloquear la devolución)
+      const pagos = await queryRunner.manager.find(Pago, {
+        where: { id_contrato },
+      });
+
+      const totalPagado = pagos.reduce((sum, p) => sum + p.monto, 0);
+      const saldoPendiente = montoFinal - totalPagado;
+
+      if (saldoPendiente > 0) {
+        this.logger.warn(
+          `⚠️ Contrato #${id_contrato} finalizado con saldo pendiente. ` +
+            `Monto total: $${montoFinal}, Pagado: $${totalPagado}, ` +
+            `Saldo pendiente: $${saldoPendiente}. ` +
+            `El pago completo será requerido para emitir DTE y devolver garantía.`,
+        );
+      } else {
+        this.logger.log(
+          `💰 Contrato #${id_contrato} totalmente pagado. Puede proceder a emitir DTE y devolver garantía.`,
+        );
+      }
 
       // Obtener la fecha de devolución más reciente
       const fechaTerminoReal = devoluciones.reduce((latest, d) => {
