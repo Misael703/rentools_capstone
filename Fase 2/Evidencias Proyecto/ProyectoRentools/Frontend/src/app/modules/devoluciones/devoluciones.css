@@ -1,6 +1,219 @@
-/* Título fila principal */
+/* ===========================
+   TABLA ESTILOS
+=========================== */
+
 .table-header-title th {
-  background-color: #fd620e; /* Naranja principal */
+  background-color: #fd620e;
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.table-header-columns th {
+  background-color: #ffbd59;
+  color: white;
+  font-weight: bold;
+}
+
+.table th, .table td {
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+/* ===========================
+   MODAL CUSTOM
+=========================== */
+
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1000;
+}
+
+.modal-custom {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 420px;
+  z-index: 1001;
+}
+
+.modal-content-custom {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.25);
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding: 0.3rem 0.5rem;
+}
+
+.pagination-btn {
+  background-color: #1e88e5;
+  color: #fff;
+  border: none;
+  padding: 0.3rem 0.6rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: #1565c0;
+  transform: translateY(-1px);
+}
+
+.pagination-btn:disabled {
+  background-color: #e0e0e0;
+  color: #888;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-weight: 500;
+  font-size: 0.9rem;
+  min-width: 100px;
+  text-align: center;
+}
+
+/* Fondo del modal */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* Contenedor del modal */
+.modal-contenido {
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  max-width: 700px;
+  width: 95%;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  overflow-x: auto; /* Permite scroll si la tabla es ancha */
+}
+
+/* Botón de cerrar */
+.modal-contenido .btn {
+  margin-top: 15px;
+}
+
+/* Estilo de la tabla dentro del modal */
+.modal-contenido table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Título de fila principal */
+.modal-contenido .table-header-title th{
+  background-color: #fd620e; /* Naranja */
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 10px;
+}
+
+/* Encabezado de columnas */
+.modal-contenido .table-header-columns th{
+  background-color: #ffbd59;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  padding: 8px;
+}
+
+/* Ajuste general de celdas */
+.modal-contenido table th, 
+.modal-contenido table td {
+  vertical-align: middle;
+  font-size: 0.95rem;
+  padding: 6px 8px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+/* Filas hover */
+.modal-contenido table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Fondo del modal (backdrop) */
+.modal-backdrop-custom {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4); /* Sombra detrás */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+/* Contenedor principal del modal */
+.modal-content {
+  background-color: white; /* Fondo blanco */
+  border-radius: 0.5rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  max-width: 800px;
+  width: 90%;
+  overflow: hidden;
+}
+
+/* Encabezado del modal */
+.modal-header {
+  background-color: #fd620e; /* Naranja */
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border-bottom: none;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Footer */
+.modal-footer {
+  border-top: none;
+  padding: 0.5rem 1rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Tabla dentro del modal */
+.table-responsive {
+  max-height: 300px;
+  overflow-y: auto;
+  margin: 1rem 0;
+}
+
+/* Título de fila principal */
+.table-header-title th {
+  background-color: #fd620e; /* Naranja */
   color: white;
   font-weight: bold;
   font-size: 1.1rem;
@@ -8,13 +221,29 @@
 
 /* Encabezado de columnas */
 .table-header-columns th {
-  background-color: #ffbd59;
+  background-color: #ffbd59; /* Amarillo */
   color: white;
   font-weight: bold;
 }
 
-/* Ajuste de tabla */
+/* Ajuste general de la tabla */
 .table th, .table td {
   vertical-align: middle;
   font-size: 0.95rem;
+}
+
+/* Scroll personalizado para tabla */
+.table-responsive::-webkit-scrollbar {
+  width: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+
+/* Botón cerrar modal pequeño */
+.btn-close {
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
 }

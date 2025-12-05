@@ -1,73 +1,297 @@
 <div class="container mt-4">
 
-  <!-- Título + Botón -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="fw-bold">Gestión de Devoluciones</h2>
+  <!-- ============================= -->
+  <!-- TÍTULO -->
+  <!-- ============================= -->
+  <h2 class="fw-bold mb-4">Gestión de Devoluciones</h2>
 
-    <button class="btn btn-success d-flex align-items-center">
-      <i class="bi bi-plus-lg me-2"></i>
-      Registrar Devolución
-    </button>
+
+  <!-- ================================================= -->
+  <!-- SECCIÓN 1: TABLA DE CONTRATOS ACTIVOS -->
+  <!-- ================================================= -->
+  <div class="card shadow-sm mb-4 p-3">
+
+    <h4 class="mb-3 fw-bold">Contratos Activos</h4>
+
+    <table class="table table-bordered table-hover text-center">
+      <thead>
+        <tr class="table-header-title">
+          <th colspan="8">Lista de Contratos Activos</th>
+        </tr>
+
+        <tr class="table-header-columns">
+          <th>ID Contrato</th>
+          <th>Cliente</th>
+          <th>RUT</th>
+          <th>Fecha Inicio</th>
+          <th>Fecha Término</th>
+          <th>Monto Estimado</th>
+          <th>Monto Garantía</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let contrato of contratosActivos">
+          <td>{{ contrato.id_contrato }}</td>
+          <td>{{ contrato.cliente?.nombre || contrato.cliente?.razon_social }}</td>
+          <td>{{ contrato.cliente?.rut}}</td>
+          <td>{{ contrato.fecha_inicio }}</td>
+          <td>{{ contrato.fecha_termino_estimada }}</td>
+          <td>{{ contrato.monto_estimado }}</td>
+          <td>{{ contrato.monto_garantia }}</td>
+
+
+          <td>
+            <!-- Ver devoluciones -->
+            <button class="btn btn-primary btn-sm me-1" (click)="verResumenDevolucion(contrato.id_contrato)">
+              <i class="bi bi-list-ul"></i>
+            </button>
+            <button class="btn btn-secondary btn-sm me-2" (click)="verDetalleDevoluciones(contrato.id_contrato)">
+              <i class="bi bi-eye"></i>
+            </button>
+            <button class="btn btn-success btn-sm" (click)="crearDevolucion(contrato)">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+
+    </table>
+
+    <div class="pagination-container">
+      <button (click)="cargarContratosActivos(1)" [disabled]="paginaActualContratos === 1">Primera</button>
+      <button (click)="cambiarPaginaContratos(paginaActualContratos - 1)"
+        [disabled]="paginaActualContratos === 1">Anterior</button>
+      <span>Página {{paginaActualContratos}} de {{totalPaginasContratos}}</span>
+      <button (click)="cambiarPaginaContratos(paginaActualContratos + 1)"
+        [disabled]="paginaActualContratos === totalPaginasContratos">Siguiente</button>
+      <button (click)="cargarContratosActivos(totalPaginasContratos)"
+        [disabled]="paginaActualContratos === totalPaginasContratos">Última</button>
+    </div>
+
   </div>
 
-  <!-- Tabla -->
-  <table class="table table-bordered table-hover text-center">
-    <thead>
 
-      <!-- Fila Título -->
-      <tr class="table-header-title">
-        <th colspan="7">Lista de Devoluciones</th>
-      </tr>
+  <!-- ================================================= -->
+  <!-- SECCIÓN 2: FILTROS DE DEVOLUCIONES -->
+  <!-- ================================================= -->
+  <div class="card shadow-sm p-3 mb-4">
 
-      <!-- Fila Encabezados -->
-      <tr class="table-header-columns">
-        <th>ID Contrato</th>
-        <th>Cliente</th>
-        <th>Herramientas</th>
-        <th>Estado Devolución</th>
-        <th>Descripción Estado</th>
-        <th>Cantidad Afectada</th>
-        <th>Garantía Aplicada</th>
-      </tr>
+    <h4 class="fw-bold mb-3">Filtrar Devoluciones</h4>
 
-    </thead>
+    <div class="row g-3">
 
-    <tbody>
+      <!-- Fecha -->
+      <div class="col-md-3">
+        <label class="form-label fw-bold">Fecha devolución</label>
+        <input type="date" class="form-control" [(ngModel)]="filtros.fecha_devolucion">
+      </div>
 
-      <!-- Fila 1 -->
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
+      <!-- Estado -->
+      <div class="col-md-3">
+        <label class="form-label fw-bold">Estado</label>
+        <select class="form-control" [(ngModel)]="filtros.estado">
+          <option *ngFor="let e of estados" [ngValue]="e.value">
+            {{ e.label }}
+          </option>
+        </select>
+      </div>
 
-      <!-- Fila 2 -->
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
+      <!-- Botón -->
+      <div class="col-md-3 d-flex gap-2 align-items-end">
+        <button class="btn btn-dark btn-sm" style="height: 40px;" (click)="filtrarDevoluciones('')">
+          <i class="bi bi-search"></i> Buscar
+        </button>
+        <button class="btn btn-secondary btn-sm" style="height: 40px;" (click)="limpiarFiltros()">
+          <i class="bi bi-x-circle"></i> Limpiar
+        </button>
+      </div>
+    </div>
+  </div>
 
-      <!-- Fila 3 -->
-      <tr>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-      </tr>
 
-    </tbody>
-  </table>
+  <!-- ================================================= -->
+  <!-- SECCIÓN 3: TABLA DE DEVOLUCIONES -->
+  <!-- ================================================= -->
+  <div class="card shadow-sm p-3">
 
+    <h4 class="mb-3 fw-bold">Listado de Devoluciones</h4>
+
+    <table class="table table-bordered table-hover text-center">
+      <thead>
+        <tr class="table-header-title">
+          <th colspan="7">Resultados</th>
+        </tr>
+
+        <tr class="table-header-columns">
+          <th>ID</th>
+          <th>Contrato</th>
+          <th>Herramienta</th>
+          <th>Estado</th>
+          <th>Observaciones</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        <tr *ngFor="let d of devolucionesFiltradas">
+          <td>{{ d.id_devolucion }}</td>
+          <td>{{ d.detalle?.id_contrato}}</td>
+          <td>{{ d.detalle?.herramienta?.nombre }}</td>
+          <td>{{ d.estado }}</td>
+          <td>{{ d.observaciones || '-' }}</td>
+          <td>{{ d.fecha_devolucion}}</td>
+          <td>
+            <button class="btn btn-warning btn-sm" (click)="abrirModalEditar(d)">
+              <i class="bi bi-pencil"></i> Editar
+            </button>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+    <div class="d-flex justify-content-center mt-3">
+      <button class="btn btn-outline-primary me-2" (click)="cambiarPaginaDevoluciones(paginaActualDevoluciones - 1)"
+        [disabled]="paginaActualDevoluciones === 1">Anterior</button>
+      <span class="align-self-center">Página {{paginaActualDevoluciones}} de {{totalPaginasDevoluciones}}</span>
+      <button class="btn btn-outline-primary ms-2" (click)="cambiarPaginaDevoluciones(paginaActualDevoluciones + 1)"
+        [disabled]="paginaActualDevoluciones === totalPaginasDevoluciones">Siguiente</button>
+    </div>
+
+  </div>
+
+
+
+  <!-- ================================================= -->
+  <!-- MODAL EDITAR DEVOLUCIÓN -->
+  <!-- ================================================= -->
+
+  <div class="modal-backdrop-custom" *ngIf="devolucionSeleccionada"></div>
+
+  <div class="modal-custom" *ngIf="devolucionSeleccionada">
+    <div class="modal-content-custom p-3">
+
+      <h4 class="fw-bold mb-3">Editar Devolución</h4>
+
+      <label class="form-label fw-bold">Estado</label>
+      <select class="form-control mb-3" [(ngModel)]="devolucionSeleccionada.estado">
+        <option *ngFor="let e of estados" [ngValue]="e.value">
+          {{ e.label }}
+        </option>
+      </select>
+
+      <label class="form-label fw-bold">Observaciones</label>
+      <textarea class="form-control mb-3" rows="3" [(ngModel)]="devolucionSeleccionada.observaciones"></textarea>
+
+      <div class="d-flex justify-content-end">
+        <button class="btn btn-secondary me-2" (click)="cerrarModal()">
+          Cerrar
+        </button>
+        <button class="btn btn-primary" (click)="guardarEdicion()">
+          Guardar
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- ================================================= -->
+<!-- MODAL DETALLE DEVOLUCIONES -->
+<div *ngIf="mostrarModalDetalle" class="modal-backdrop">
+  <div class="modal-contenido">
+    <h3 class="fw-bold mb-3">Detalle de Devoluciones</h3>
+
+    <table class="table">
+      <thead>
+        <tr class="table-header-title">
+          <th colspan="6">Devoluciones del contrato</th>
+        </tr>
+        <tr class="table-header-columns">
+          <th>Herramienta</th>
+          <th>Cantidad</th>
+          <th>Estado</th>
+          <th>Subtotal</th>
+          <th>Fecha devolución</th>
+          <th>Observaciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let d of detalleDevolucionesContrato">
+          <td>{{ d.detalle?.herramienta?.nombre || d.detalle?.herramienta?.nombre }}</td>
+          <td>{{ d.cantidad_devuelta }}</td>
+          <td>{{ d.estado }}</td>
+          <td>{{ d.monto_cobrado }}</td>
+          <td>{{ d.fecha_devolucion }}</td>
+          <td>{{ d.observaciones || '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="text-end mt-3">
+      <button class="btn btn-secondary" (click)="cerrarModalDetalle()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================= -->
+<!-- MODAL RESUMEN DEVOLUCIÓN -->
+<!-- Modal Resumen Devoluciones -->
+<div *ngIf="mostrarModalResumen" class="modal-backdrop-custom">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content shadow-sm p-3">
+
+      <!-- Header -->
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">Resumen de Devoluciones</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalResumen()"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body p-2">
+
+        <!-- Totales -->
+        <div class="mb-3">
+          <h6 class="fw-bold">Totales del Contrato</h6>
+          <div class="d-flex flex-wrap gap-3">
+            <span>Total herramientas: <strong>{{ resumenContrato?.total_herramientas }}</strong></span>
+            <span>Total devueltas: <strong>{{ resumenContrato?.total_devueltas }}</strong></span>
+            <span>Total pendientes: <strong>{{ resumenContrato?.total_pendientes }}</strong></span>
+            <span>Porcentaje devuelto: <strong>{{ resumenContrato?.porcentaje_devuelto }}%</strong></span>
+          </div>
+        </div>
+
+        <!-- Tabla de herramientas -->
+        <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+          <table class="table table-striped table-sm align-middle mb-0">
+            <thead class="table-dark">
+              <tr>
+                <th>Nombre</th>
+                <th class="text-center">Contratadas</th>
+                <th class="text-center">Devueltas</th>
+                <th class="text-center">Pendientes</th>
+                <th class="text-center">Estado</th>
+                <th class="text-center">Monto cobrado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let h of herramientasResumen">
+                <td>{{ h.nombre_herramienta }}</td>
+                <td class="text-center">{{ h.cantidad_contratada }}</td>
+                <td class="text-center">{{ h.cantidad_devuelta }}</td>
+                <td class="text-center">{{ h.cantidad_pendiente }}</td>
+                <td class="text-center text-capitalize">{{ h.estado_devolucion }}</td>
+                <td class="text-center">{{ h.monto_cobrado }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

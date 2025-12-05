@@ -156,4 +156,15 @@ export class ContratosService {
   getStats(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/stats`, this.getHeaders());
   }
+
+  // ============================================================
+  //Obetener contratos activos
+  obtenerContratosActivos(page: number = 1, limit: number = 10): Observable<any> {
+    const params = new HttpParams()
+      .set('estado', 'activo')
+      .set('page', page)
+      .set('limit', limit);
+
+    return this.http.get<any>(this.apiUrl, { params });
+  }
 }

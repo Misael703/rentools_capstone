@@ -1,0 +1,174 @@
+<div class="devolucion-container" *ngIf="!loading; else loadingTemplate">
+
+    <!-- Header -->
+    <div class="page-header">
+        <h1>Devolución de Herramientas</h1>
+        <p class="subtitle">Contrato #{{ contratoId }}</p>
+    </div>
+
+    <!-- Resumen del Contrato -->
+    <div class="resumen-contrato card" *ngIf="resumen">
+        <div class="card-header">
+            <h2>Resumen del Contrato</h2>
+        </div>
+        <div class="card-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="label">Estado:</span>
+                    <span class="value estado-activo" [class.estado-activo]="resumen.contrato.estado === 'activo'">
+                        {{ resumen.contrato.estado | titlecase }}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Monto Estimado:</span>
+                    <span class="value">${{ resumen.contrato.monto_estimado | number:'1.0-0' }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="label">Monto Cobrado:</span>
+                    <span class="value">${{ resumen.contrato.monto_cobrado_hasta_ahora | number:'1.0-0' }}</span>
+                </div>
+            </div>
+
+            <!-- Progreso -->
+            <div class="progress-section">
+                <div class="progress-info">
+                    <span>Progreso de Devolución</span>
+                    <span class="percentage">{{ porcentajeProgreso | number:'1.1-1' }}%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="porcentajeProgreso"></div>
+                </div>
+                <div class="progress-details">
+                    {{ resumen.resumen.total_devueltas }} de {{ resumen.resumen.total_herramientas }} herramientas
+                    devueltas
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario de Devolución -->
+    <form [formGroup]="devolucionForm" (ngSubmit)="registrarDevolucion()" class="devolucion-form">
+
+        <!-- Fecha -->
+        <div class="card fecha-section">
+            <label for="fechaDevolucion">Fecha de Devolución:</label>
+            <input type="date" id="fechaDevolucion" [(ngModel)]="fechaDevolucion" [max]="fechaHoy"
+                (change)="validarFecha()" [ngModelOptions]="{ standalone: true }" class="form-control" required />
+            <p class="mensaje-error" *ngIf="mensajeError">{{ mensajeError }}</p>
+        </div>
+
+        <!-- Herramientas -->
+        <div class="herramientas-section">
+            <h2>Herramientas Pendientes de Devolución</h2>
+            <div *ngIf="herramientasFA.length === 0" class="empty-state">
+                <p> Todas las herramientas han sido devueltas</p>
+            </div>
+
+            <div formArrayName="herramientas" class="herramientas-list">
+                <div *ngFor="let herramienta of herramientasFA.controls; let i = index" [formGroupName]="i"
+                    class="herramienta-card" [class.selected]="herramienta.get('seleccionada')?.value">
+
+                    <!-- Header -->
+                    <div class="herramienta-header">
+                        <label class="checkbox-label">
+                            <input type="checkbox" formControlName="seleccionada" />
+                            <span class="herramienta-nombre">{{ resumen.herramientas[i].nombre_herramienta }}</span>
+                        </label>
+                    </div>
+
+                    <!-- Info general -->
+                    <div class="herramienta-info">
+                        <span><strong>Contratadas:</strong> {{ resumen.herramientas[i].cantidad_contratada }}</span>
+                        <span><strong>Devueltas:</strong> {{ resumen.herramientas[i].cantidad_devuelta }}</span>
+                        <span class="pendiente"><strong>Pendientes:</strong> {{
+                            resumen.herramientas[i].cantidad_pendiente }}</span>
+                    </div>
+
+                    <!-- Formulario interno -->
+                    <div class="herramienta-form" *ngIf="herramienta.get('seleccionada')?.value">
+
+                        <div class="cantidad-control">
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                (click)="decrementarCantidad(i)">
+                                <i class="bi bi-dash"></i>
+                            </button>
+
+                            <input [formControlName]="'cantidad_devuelta'" [min]="1"
+                                [max]="resumen.herramientas[i].cantidad_pendiente" class="cantidad-input text-center" readonly />
+
+                            <button type="button" class="btn btn-outline-secondary btn-sm"
+                                (click)="incrementarCantidad(i)">
+                                <i class="bi bi-plus"></i>
+                            </button>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Estado:</label>
+                            <select formControlName="estado" class="form-control">
+                                <option *ngFor="let estado of estadosDevolucion" [value]="estado.value">
+                                    {{ estado.label }}
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Observaciones:</label>
+                            <textarea formControlName="observaciones" rows="3" class="form-control"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen selección -->
+        <div class="selection-summary card" *ngIf="haySeleccionadas">
+            <h3>Resumen de Devolución</h3>
+            <table class="resumen-tabla table">
+                <thead class="table-header-title">
+                    <tr>
+                        <th>Herramientas seleccionadas</th>
+                        <th>Total unidades a devolver</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ cantidadSeleccionadas }}</td>
+                        <td>{{ totalADecolver }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Botones -->
+        <div class="action-buttons">
+            <button type="button" class="btn btn-secondary" (click)="cancelar()"
+                [disabled]="submitting">Cancelar</button>
+            <button type="submit" class="btn btn-primary" [disabled]="!haySeleccionadas || submitting">
+                <span *ngIf="!submitting">Registrar Devolución</span>
+                <span *ngIf="submitting">Procesando...</span>
+            </button>
+        </div>
+
+        <!-- Mensaje de error -->
+        <p class="mensaje-error" *ngIf="mensajeError">{{ mensajeError }}</p>
+    </form>
+</div>
+
+<!-- Loading -->
+<ng-template #loadingTemplate>
+    <div class="loading-container">
+        <div class="spinner"></div>
+        <p>Cargando información del contrato...</p>
+    </div>
+</ng-template>
+
+<!-- Modal de éxito -->
+<div *ngIf="mostrarMensaje" class="modal-exito">
+    <div class="modal-contenido">
+        <i class="bi bi-check-circle-fill icono-exito"></i>
+        <h2>¡Devolución exitosa!</h2>
+        <p>{{ mensajeExito }}</p>
+        <button class="btn-aceptar" (click)="cerrarMensaje()">Aceptar</button>
+    </div>
+</div>
