@@ -36,3 +36,44 @@ export interface EstadisticasHerramientas {
   sinStock: number;
   valorInventario: number;
 }
+
+export interface ContratoPorMes {
+  mes: string;        // Ej: "2025-12"
+  cantidad: string;   // Ej: "14"
+}
+
+export interface PorEstado {
+  activos: number;
+  finalizados: number;
+  vencidos: number;
+  cancelados: number;
+}
+
+export interface EstadisticasContratos {
+  totalContratos: number;
+  porEstado: PorEstado;
+  montoTotalEnArriendo: number;
+  contratosPorMes: ContratoPorMes[];
+}
+
+// Estadísticas por método de pago
+export interface PorMetodoPago {
+  metodo: 'efectivo' | 'tarjeta_debito' | 'tarjeta_credito' | 'transferencia';
+  total: number;
+  cantidad: number;
+}
+
+// Estadísticas por mes
+export interface PorMes {
+  mes: string;       // Ej: "2025-12"
+  total: number;
+  cantidad: number;
+}
+
+// Estadísticas generales de pagos
+export interface EstadisticasPagos {
+  total_recaudado: number;
+  cantidad_pagos: number;
+  por_metodo_pago: PorMetodoPago[];
+  por_mes: PorMes[];
+}

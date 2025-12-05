@@ -33,3 +33,15 @@ export interface CreateClienteForm {
   ciudad?: string;
   comuna?: string;
 }
+
+export interface ClienteAutocomplete {
+  id_cliente: number;
+  tipo_cliente: 'persona_natural' | 'empresa';
+  label: string;
+  rut: string;
+
+  // opcionales
+  nombre?: string | null;
+  apellido?: string | null;
+  razon_social?: string | null;
+}

@@ -1,20 +1,253 @@
-/* Título de fila principal */
-.table-header-title th{
-  background-color: #fd620e; /* Naranja */
+/* ---------- CONTENEDOR GENERAL ---------- */
+.container-pagos {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.titulo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* ---------- FORMULARIO DE FILTROS ---------- */
+.filtros-card {
+  background: #fff4e6;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #fd620e;
+}
+
+.fila {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 180px;
+}
+
+.campo label {
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 3px;
+}
+
+.campo input,
+.campo select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+/* ---------- BOTONES DE FILTROS ---------- */
+.botones-filtros {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-primary {
+  background-color: #fd620e;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.btn-secondary {
+  background-color: #777;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* ---------- TABLA (TU CSS + mejoras) ---------- */
+.table-header-title th {
+  background-color: #fd620e;
   color: white;
   font-weight: bold;
   font-size: 1.1rem;
 }
 
-/* Encabezado de columnas */
-.table-header-columns th{
+.table-header-columns th {
   background-color: #ffbd59;
   color: white;
   font-weight: bold;
 }
 
-/* Ajuste general */
-.table th, .table td {
+/* Centrar contenido de tabla */
+.table-pagos th,
+.table-pagos td {
+  text-align: center;
   vertical-align: middle;
-  font-size: 0.95rem;
+}
+
+/* Botón de eliminar */
+.btn-eliminar {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: #dc3545; /* rojo */
+  font-size: 1.2rem;
+  transition: transform 0.2s;
+}
+
+.btn-eliminar:hover {
+  transform: scale(1.2);
+}
+
+/* ---------- PAGINACIÓN ---------- */
+.paginacion {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+}
+
+.paginacion button {
+  padding: 6px 12px;
+  border: none;
+  background-color: #fd620e;
+  color: white;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.paginacion button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* ---------- LOADER ---------- */
+.loader {
+  margin: 20px auto;
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #fd620e;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 6px;
+  min-width: 300px;
+  max-width: 500px;
+  width: 90%;
+  position: relative;
+}
+
+.modal-content .close {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Overlay semi-transparente */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+}
+
+/* Contenedor central del modal */
+.modal-content {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  width: 400px;
+  max-width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  z-index: 1001;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header con título e ícono */
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* Body */
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal-body input {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+/* Footer con botones */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.modal-footer .btn {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
 }

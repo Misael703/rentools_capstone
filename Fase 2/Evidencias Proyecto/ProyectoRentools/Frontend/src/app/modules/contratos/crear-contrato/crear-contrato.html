@@ -1,0 +1,215 @@
+<div class="container-crear">
+
+    <h2 class="titulo">Crear Contrato</h2>
+
+    <!-- Usuario actual -->
+    <div class="usuario-box" *ngIf="usuarioActual">
+        <span>Usuario actual:</span>
+        <strong>{{ usuarioActual.nombre }} ({{ usuarioActual.email }})</strong>
+    </div>
+
+    <!-- =======================
+       BUSCAR CLIENTE
+  ======================== -->
+    <section class="box">
+        <h3><i class="bi bi-person"></i> Cliente</h3>
+
+        <div class="fila align-center" style="position: relative;">
+            <input type="text" class="input-rut input-cliente"
+            placeholder="Buscar cliente por nombre, razón social o RUT"
+            [(ngModel)]="busquedaCliente"
+            (input)="autocompleteClientes()"
+            />
+
+            <!-- Dropdown sugerencias -->
+            <ul class="dropdown-sugerencias" *ngIf="sugerenciasClientes.length > 0">
+                <li *ngFor="let c of sugerenciasClientes" (click)="seleccionarClienteAutocomplete(c)">
+                    {{
+                    c.tipo_cliente === 'empresa'
+                    ? c.razon_social
+                    : (c.nombre + ' ' + c.apellido)
+                    }}
+                    ({{ c.rut }})
+                </li>
+            </ul>
+        </div>
+        <table *ngIf="clienteSeleccionado" class="tabla detalle-tabla">
+            <thead class="table-header-title">
+                <tr>
+                    <th colspan="2">Información Cliente</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Nombre:</td>
+                    <td>
+                        {{ clienteSeleccionado.tipo_cliente === 'empresa'
+                        ? clienteSeleccionado.razon_social
+                        : (clienteSeleccionado.nombre + ' ' + clienteSeleccionado.apellido) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>RUT:</td>
+                    <td>{{ clienteSeleccionado.rut }}</td>
+                </tr>
+                <tr>
+                    <td>Tipo:</td>
+                    <td>{{ clienteSeleccionado.tipo_cliente === 'empresa' ? 'Empresa' : 'Persona Natural' }}</td>
+                </tr>
+                <tr>
+                    <td>Teléfono:</td>
+                    <td>{{ clienteSeleccionado.telefono }}</td>
+                </tr>
+                <tr>
+                    <td>Correo:</td>
+                    <td>{{ clienteSeleccionado.email }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+    </section>
+
+    <!-- =======================
+       FECHAS + ENTREGA
+  ======================== -->
+    <section class="box">
+        <h3><i class="bi bi-calendar-event"></i> Datos del Contrato</h3>
+
+        <div class="grid-2-compact">
+            <div>
+                <label>Fecha inicio</label>
+                <input type="date" [(ngModel)]="fecha_inicio" class="input-compact" />
+            </div>
+            <div>
+                <label>Fecha término estimada</label>
+                <input type="date" [(ngModel)]="fecha_termino_estimada" class="input-compact" />
+            </div>
+        </div>
+
+        <div class="grid-2-compact mt-2">
+            <div>
+                <label>Tipo de entrega</label>
+                <select [(ngModel)]="tipo_entrega" class="input-compact">
+                    <option value="retiro">Retiro</option>
+                    <option value="despacho">Despacho</option>
+                </select>
+            </div>
+            <div>
+                <label>Observaciones</label>
+                <input type="text" [(ngModel)]="observaciones" class="input-compact" />
+            </div>
+        </div>
+    </section>
+
+    <!-- =======================
+       AGREGAR DETALLE HERRAMIENTAS
+  ======================== -->
+    <section class="box">
+        <h3><i class="bi bi-tools"></i> Agregar Herramientas</h3>
+
+        <div class="grid-3-compact">
+            <div>
+                <label>Herramienta</label>
+                <select [(ngModel)]="herramientaSeleccionadaId" class="input-compact">
+                    <option [ngValue]="null">Seleccionar...</option>
+                    <option *ngFor="let h of herramientasDisponibles" [ngValue]="h.id_herramienta">
+                        {{ h.nombre }} (Stock: {{ h.stock }})
+                    </option>
+                </select>
+            </div>
+
+            <div class="row-compact">
+                <div>
+                    <label>Cantidad</label>
+                    <input type="number" min="1" [(ngModel)]="cantidadSeleccionada" />
+                </div>
+                <div>
+                    <label>Días arriendo</label>
+                    <input type="number" min="1" [(ngModel)]="diasSeleccionados" />
+                </div>
+            </div>
+        </div>
+
+        <button (click)="agregarDetalle()" class="btn-accion btn-compact mt-2">
+            Agregar al contrato
+        </button>
+
+        <p class="error" *ngIf="mensajeError">{{ mensajeError }}</p>
+    </section>
+
+    <!-- =======================
+       LISTA DE DETALLES
+  ======================== -->
+    <section class="box" *ngIf="detalles.length > 0">
+        <h3><i class="bi bi-list-ul"></i> Herramientas Seleccionadas</h3>
+
+        <table class="tabla detalle-tabla">
+            <thead class="table-header-columns">
+                <tr>
+                    <th>Herramienta</th>
+                    <th>Cant.</th>
+                    <th>Días</th>
+                    <th>Subtotal</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let d of detalles; let i = index">
+                    <td>{{ d.herramienta?.nombre }}</td>
+                    <td>{{ d.cantidad }}</td>
+                    <td>{{ d.dias_arriendo }}</td>
+                    <td>${{ d.subtotal }}</td>
+                    <td>
+                        <button class="btn-eliminar" (click)="removerDetalle(i)">Quitar</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- =======================
+       RESUMEN
+  ======================== -->
+    <section class="box" *ngIf="detalles.length > 0">
+        <h3><i class="bi bi-clipboard-check"></i> Resumen</h3>
+
+        <table class="tabla detalle-tabla tabla-resumen">
+            <tbody>
+                <tr>
+                    <td>Subtotal herramientas:</td>
+                    <td>${{ calcularSubtotalVista() }}</td>
+                </tr>
+                <tr>
+                    <td>Garantía total:</td>
+                    <td>${{ calcularGarantiaVista() }}</td>
+                </tr>
+                <tr>
+                    <td>Total contrato:</td>
+                    <td>${{ calcularTotalVista() }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <!-- =======================
+       BOTONES CREAR Y CANCELAR
+  ======================== -->
+    <div class="fila justify-between mt-3">
+        <button class="btn-crear btn-compact" (click)="crearContrato()" [disabled]="cargando">
+            {{ cargando ? 'Creando...' : 'Crear contrato' }}
+        </button>
+        <button class="btn-secondary btn-compact" (click)="cancelar()">Cancelar</button>
+    </div>
+
+    <p class="exito" *ngIf="mensajeExito">{{ mensajeExito }}</p>
+</div>
+
+<!-- Modal de contrato creado exitosamente -->
+<div *ngIf="mostrarModalExito" class="modal-exito">
+    <div class="modal-contenido">
+        <i class="bi bi-check-circle-fill icono-exito"></i>
+        <p>Contrato creado correctamente</p>
+        <button class="btn-aceptar" (click)="aceptarExito()">Aceptar</button>
+    </div>
+</div>

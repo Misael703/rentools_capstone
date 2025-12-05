@@ -1,0 +1,426 @@
+/* Contenedor principal */
+.devolucion-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #333;
+}
+
+/* Header */
+.page-header {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.page-header h1 {
+    font-size: 2rem;
+    margin-bottom: 5px;
+    color: #fd620e;
+}
+
+.page-header .subtitle {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* Tarjetas genéricas */
+.card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    background: #f8f9fa;
+    padding: 15px 20px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #333;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+/* =================== Resumen del Contrato =================== */
+.resumen-contrato .info-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.resumen-contrato .info-item {
+    flex: 1 1 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.resumen-contrato .info-item .label {
+    font-size: 0.875rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.resumen-contrato .info-item .value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.resumen-contrato .info-item .value.estado-activo {
+    color: #28a745;
+}
+
+/* Barra de progreso */
+.resumen-contrato .progress-section {
+    margin-top: 10px;
+}
+
+.resumen-contrato .progress-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.resumen-contrato .progress-bar {
+    height: 30px;
+    background: #e9ecef;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.resumen-contrato .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    transition: width 0.3s ease;
+}
+
+.resumen-contrato .progress-details {
+    font-size: 0.875rem;
+    color: #666;
+    text-align: center;
+}
+
+/* =================== Fecha de devolución =================== */
+.fecha-section {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    width: fit-content;
+}
+
+.fecha-section label {
+    font-weight: 500;
+}
+
+.fecha-section input[type="date"] {
+    width: 150px;
+    /* más pequeño */
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #ced4da;
+}
+
+/* =================== Herramientas =================== */
+.herramientas-section h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.herramientas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.herramienta-card {
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.herramienta-card.selected {
+    border: 2px solid #007bff;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
+.herramienta-header {
+    padding: 15px 20px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    margin: 0;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+.herramienta-nombre {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Badges de info */
+.herramienta-info {
+    padding: 15px 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.herramienta-info span {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background: #e9ecef;
+    color: #333;
+}
+
+.herramienta-info span.pendiente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+/* Formulario interno */
+.herramienta-form {
+    padding: 20px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.herramienta-form .form-group {
+    margin-bottom: 20px;
+}
+
+.herramienta-form label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.cantidad-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cantidad-input {
+    width: 60px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.cantidad-control button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+}
+
+
+/* =================== Resumen de selección =================== */
+.selection-summary {
+    padding: 25px;
+    margin-top: 25px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+.selection-summary h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+/* =================== Botones =================== */
+.action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 12px 30px;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #5a6268;
+}
+
+.btn-primary {
+    background: #007bff;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+/* =================== Loading =================== */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* =================== Modal de éxito =================== */
+/* Fondo semitransparente y centrar modal */
+.modal-exito {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Fondo gris semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Contenido del modal */
+.modal-contenido {
+    background: #28a745;
+    /* Verde éxito */
+    color: white;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    width: 350px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Icono de éxito */
+.icono-exito {
+    font-size: 4rem;
+    color: white;
+    margin-bottom: 15px;
+}
+
+/* Botón Aceptar */
+.btn-aceptar {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    background: white;
+    color: #28a745;
+}
+
+/* =================== Responsive =================== */
+@media (max-width: 768px) {
+
+    .info-grid,
+    .summary-grid {
+        flex-direction: column;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+/* Estilo resumen tabla */
+.resumen-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.resumen-tabla th,
+.resumen-tabla td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+    font-size: 0.95rem;
+    vertical-align: middle;
+}
+
+.table-header-title th {
+    background-color: #fd620e;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.table-header-columns th {
+    background-color: #ffbd59;
+    color: white;
+    font-weight: bold;
+}

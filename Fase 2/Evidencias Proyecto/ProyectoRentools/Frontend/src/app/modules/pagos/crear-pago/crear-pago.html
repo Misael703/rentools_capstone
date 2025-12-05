@@ -1,0 +1,110 @@
+<div class="container-crear">
+    <div class="titulo">Registrar Pago</div>
+
+    <!-- =============================
+       LOADING
+  ============================== -->
+    <div *ngIf="loading">
+        Cargando datos del contrato...
+    </div>
+
+    <div *ngIf="!loading">
+
+        <!-- =============================
+         RESUMEN DEL CONTRATO
+    ============================== -->
+        <div class="box">
+            <h3>Resumen del Contrato #{{ resumen.id_contrato }}</h3>
+
+            <table class="detalle-tabla tabla-resumen">
+                <tr>
+                    <td>Monto total a pagar</td>
+                    <td>${{ resumen.monto_total_a_pagar | number:'1.0-0' }}</td>
+                </tr>
+                <tr>
+                    <td>Monto pagado</td>
+                    <td>${{ resumen.monto_total_pagado | number:'1.0-0' }}</td>
+                </tr>
+                <tr>
+                    <td>Saldo pendiente</td>
+                    <td>
+                        <b>${{ resumen.saldo_pendiente | number:'1.0-0' }}</b>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Estado del Pago</td>
+                    <td>{{ resumen.estado_pago }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- =============================
+         FORMULARIO DE PAGO
+    ============================== -->
+        <div class="box">
+            <h3>Datos del Pago</h3>
+
+            <form [formGroup]="pagoForm" (ngSubmit)="registrarPago()">
+
+                <div class="grid-2-compact">
+
+                    <!-- MONTO -->
+                    <div class="row-compact">
+                        <label>Monto a pagar</label>
+                        <input type="number" formControlName="monto" class="input-compact" placeholder="Monto" />
+                    </div>
+
+                    <!-- MÉTODO -->
+                    <div class="row-compact">
+                        <label>Método de Pago</label>
+                        <select formControlName="metodo_pago" class="input-compact">
+                            <option *ngFor="let m of metodos" [value]="m.value">
+                                {{ m.label }}
+                            </option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <!-- REFERENCIA -->
+                <div class="row-compact" style="margin-top: 10px;">
+                    <label>Referencia (opcional)</label>
+                    <input type="text" formControlName="referencia" class="input-compact"
+                        placeholder="N° operación bancaria, voucher, etc." />
+                </div>
+
+                <!-- ERRORES -->
+                <div class="error" *ngIf="mensajeError">
+                    {{ mensajeError }}
+                </div>
+
+                <!-- BOTONES -->
+                <div class="fila justify-between" style="margin-top: 20px;">
+                    <button type="button" class="btn-secondary btn-compact" (click)="cancelar()"
+                        [disabled]="submitting">
+                        Cancelar
+                    </button>
+
+                    <button type="submit" class="btn-crear btn-compact" [disabled]="submitting">
+                        Registrar Pago
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- =============================
+       MODAL ÉXITO
+  ============================== -->
+    <div class="modal-exito" *ngIf="mostrarMensaje">
+        <div class="modal-contenido">
+            <div class="icono-exito">✔️</div>
+            <h3>Pago registrado exitosamente</h3>
+
+            <button class="btn-aceptar" (click)="cerrarMensaje()">
+                Aceptar
+            </button>
+        </div>
+    </div>
+</div>
