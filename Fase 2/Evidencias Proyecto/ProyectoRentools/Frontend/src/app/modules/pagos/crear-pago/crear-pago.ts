@@ -142,12 +142,21 @@ export class CrearPago implements OnInit {
   registrarPago(): void {
     if (this.pagoForm.invalid || !this.validarMontos()) return;
 
-    // 🟢 Tomar fecha local y fijarla a T03:00:00.000Z
-    const fechaPago = `${new Date().toISOString().split('T')[0]}T03:00:00.000Z`;
+    // -----------------------------
+    // Obtener fecha local en formato YYYY-MM-DD
+    // -----------------------------
+    const formatDateForAPI = (fecha: Date) => {
+      const year = fecha.getFullYear();
+      const month = String(fecha.getMonth() + 1).padStart(2, '0');
+      const day = String(fecha.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    const fechaPago = formatDateForAPI(new Date());
 
     const dto: CreatePago = {
       id_contrato: this.contratoId,
-      fecha_pago: fechaPago,
+      fecha_pago: fechaPago,  // ✅ Solo YYYY-MM-DD
       monto: this.pagoForm.value.monto,
       metodo_pago: this.pagoForm.value.metodo_pago,
       referencia: this.pagoForm.value.referencia || undefined,
@@ -168,7 +177,6 @@ export class CrearPago implements OnInit {
         },
       });
   }
-
   cerrarMensaje(): void {
     this.mostrarMensaje = false;
     this.router.navigate(['/pagos']);

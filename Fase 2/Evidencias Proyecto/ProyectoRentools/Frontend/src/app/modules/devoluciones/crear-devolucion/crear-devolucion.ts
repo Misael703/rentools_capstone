@@ -188,7 +188,12 @@ export class CrearDevolucion implements OnInit {
       return;
     }
 
-    const fechaEnviar = `${this.fechaDevolucion}T03:00:00.000Z`;
+    const formatDateForAPI = (fecha: string) => {
+      const [year, month, day] = fecha.split('-');
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+    };
+
+    const fechaEnviar = formatDateForAPI(this.fechaDevolucion);
 
     const devoluciones = this.herramientasFA.value
       .filter((h: any) => h.seleccionada)
@@ -208,14 +213,22 @@ export class CrearDevolucion implements OnInit {
       .pipe(finalize(() => this.submitting = false))
       .subscribe({
         next: res => {
-          const totalDev = res.data?.devoluciones.length ?? 0;
-          this.mensajeExito = `¡Devolución registrada!`;
+          const totalDevActual = devoluciones.reduce((sum: number, h: { cantidad_devuelta: number }) => sum + h.cantidad_devuelta, 0);
+
+          const totalDevAcumuladas = this.resumen.resumen.total_devueltas + totalDevActual;
+
+          const totalPendiente = this.resumen.resumen.total_herramientas;
+
+          this.mensajeExito = '¡Devolución registrada!';
           this.mostrarMensaje = true;
 
-          // ------------------------------------------------
-          // 2) Ir automáticamente al formulario de pago
-          // ------------------------------------------------
-          this.router.navigate([`/pagos/crear/${this.contratoId}`]);
+          if (totalDevAcumuladas >= totalPendiente) {
+            // Devolución completa → ir a pagos
+            this.router.navigate([`/pagos/crear/${this.contratoId}`]);
+          } else {
+            // Devolución parcial → volver a listado de devoluciones
+            this.router.navigate(['/devoluciones']);
+          }
         },
         error: err => {
           this.mensajeError = err.error?.message || 'Error al registrar devoluciones.';

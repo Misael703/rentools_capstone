@@ -296,25 +296,29 @@ export class CrearContrato implements OnInit {
     }
 
     // ----------------------
-    // Ajuste de fechas
+    // Validar que la fecha de término sea posterior a la fecha de inicio
     // ----------------------
-    const ajustarFecha = (fecha: string) => {
-      // fecha = "YYYY-MM-DD"
+    if (this.fecha_termino_estimada <= this.fecha_inicio) {
+      this.mensajeError = 'La fecha de término debe ser posterior a la fecha de inicio.';
+      return;
+    }
+
+    // ----------------------
+    // Helper para formatear fecha como YYYY-MM-DD
+    // ----------------------
+    const formatDateForAPI = (fecha: string) => {
       const [year, month, day] = fecha.split('-');
-      return `${year}-${month}-${day}`;
+      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
     };
 
-    const fechaInicio = ajustarFecha(this.fecha_inicio);
-    const fechaTermino = ajustarFecha(this.fecha_termino_estimada);
-
     // ----------------------
-    // Envío al backend
+    // Preparar DTO para enviar al backend
     // ----------------------
     const dto: CreateContratoDto = {
       id_cliente: this.clienteSeleccionado.id_cliente ?? this.clienteSeleccionado.id,
       tipo_entrega: this.tipo_entrega as any,
-      fecha_inicio: this.convertirFechaAUTC(this.fecha_inicio),
-      fecha_termino_estimada: this.convertirFechaAUTC(this.fecha_termino_estimada),
+      fecha_inicio: formatDateForAPI(this.fecha_inicio),
+      fecha_termino_estimada: formatDateForAPI(this.fecha_termino_estimada),
       observaciones: this.observaciones?.trim() || undefined,
       detalles: this.detalles.map(d => ({
         id_herramienta: d.id_herramienta,
