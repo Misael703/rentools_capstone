@@ -17,6 +17,7 @@ import {
   SearchDevolucionDto,
 } from './dto';
 import { DatabaseErrorHandler } from '../../common/utils/database-errors.handler';
+import { parseLocalDate, formatDate } from '../../common/utils/date.helper';
 import { EstadoContrato } from '../contratos/enums/estado-contrato.enum';
 
 @Injectable()
@@ -97,9 +98,13 @@ export class DevolucionesService {
       );
     }
 
-    // 7. Validar fecha de devolución
-    const fechaDevolucion = new Date(createDevolucionDto.fecha_devolucion);
-    const fechaInicio = new Date(contrato.fecha_inicio);
+    // 7. Validar fecha de devolución (parsear como fecha local)
+    const fechaDevolucion = parseLocalDate(createDevolucionDto.fecha_devolucion);
+    // Normalizar fecha de inicio a fecha local para evitar problemas de zona horaria
+    const fechaInicioStr = contrato.fecha_inicio instanceof Date
+      ? formatDate(contrato.fecha_inicio)
+      : String(contrato.fecha_inicio).split('T')[0];
+    const fechaInicio = parseLocalDate(fechaInicioStr);
 
     if (fechaDevolucion < fechaInicio) {
       throw new BadRequestException(
@@ -107,11 +112,11 @@ export class DevolucionesService {
       );
     }
 
-    // 8. Calcular días reales
+    // 8. Calcular días reales (usando Math.floor para no sumar días extra)
     const diffTime = Math.abs(
       fechaDevolucion.getTime() - fechaInicio.getTime(),
     );
-    const diasReales = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diasReales = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
     // 9. Calcular monto cobrado
     const montoCobrado =
@@ -257,9 +262,13 @@ export class DevolucionesService {
           );
         }
 
-        // 6. Validar fecha de devolución
-        const fechaDevolucion = new Date(devolucionDto.fecha_devolucion);
-        const fechaInicio = new Date(contrato.fecha_inicio);
+        // 6. Validar fecha de devolución (parsear como fecha local)
+        const fechaDevolucion = parseLocalDate(devolucionDto.fecha_devolucion);
+        // Normalizar fecha de inicio a fecha local para evitar problemas de zona horaria
+        const fechaInicioStr = contrato.fecha_inicio instanceof Date
+          ? formatDate(contrato.fecha_inicio)
+          : String(contrato.fecha_inicio).split('T')[0];
+        const fechaInicio = parseLocalDate(fechaInicioStr);
 
         if (fechaDevolucion < fechaInicio) {
           throw new BadRequestException(
@@ -268,11 +277,11 @@ export class DevolucionesService {
           );
         }
 
-        // 7. Calcular días reales
+        // 7. Calcular días reales (usando Math.floor para no sumar días extra)
         const diffTime = Math.abs(
           fechaDevolucion.getTime() - fechaInicio.getTime(),
         );
-        const diasReales = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        const diasReales = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
         // 8. Calcular monto cobrado
         const montoCobrado =

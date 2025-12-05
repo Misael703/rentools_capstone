@@ -1,0 +1,617 @@
+{
+	"info": {
+		"_postman_id": "garantias-rentools-collection",
+		"name": "RenTools - Garantías",
+		"description": "Colección completa de endpoints para el módulo de Garantías de RenTools.\n\n## Flujo de negocio:\n1. Crear pago de garantía al inicio del contrato\n2. Calcular monto de devolución al finalizar\n3. Crear devolución de garantía\n4. Ver resumen completo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Garantía Pago",
+			"item": [
+				{
+					"name": "1. Crear Pago de Garantía",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_contrato\": 1,\n  \"fecha_pago\": \"2024-12-05\",\n  \"monto\": 100000,\n  \"metodo_pago\": \"efectivo\",\n  \"referencia\": \"REF-001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/garantias/pago",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "pago"]
+						},
+						"description": "Crea un pago de garantía para un contrato.\n\n**Validaciones:**\n- Contrato existe y está activo\n- NO existe otra garantía para ese contrato\n- monto > 0\n- monto = contrato.monto_garantia\n\n**Métodos de pago:**\n- efectivo\n- tarjeta_debito\n- tarjeta_credito\n- transferencia"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Listar Pagos de Garantía",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/pago?page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "pago"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Número de página"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Items por página (max 100)"
+								},
+								{
+									"key": "id_contrato",
+									"value": "1",
+									"disabled": true,
+									"description": "Filtrar por contrato"
+								},
+								{
+									"key": "metodo_pago",
+									"value": "efectivo",
+									"disabled": true,
+									"description": "Filtrar por método de pago"
+								},
+								{
+									"key": "fecha_desde",
+									"value": "2024-12-01",
+									"disabled": true,
+									"description": "Fecha desde (YYYY-MM-DD)"
+								},
+								{
+									"key": "fecha_hasta",
+									"value": "2024-12-31",
+									"disabled": true,
+									"description": "Fecha hasta (YYYY-MM-DD)"
+								}
+							]
+						},
+						"description": "Lista todos los pagos de garantía con filtros opcionales y paginación."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Obtener Pago por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/pago/:id",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "pago", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID de la garantía pago"
+								}
+							]
+						},
+						"description": "Obtiene una garantía pago específica por su ID."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Obtener Pago por Contrato",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/pago/contrato/:id_contrato",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "pago", "contrato", ":id_contrato"],
+							"variable": [
+								{
+									"key": "id_contrato",
+									"value": "1",
+									"description": "ID del contrato"
+								}
+							]
+						},
+						"description": "Obtiene la garantía pago de un contrato específico.\n\nRetorna null si no existe."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Verificar Garantía Pagada",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/pago/contrato/:id_contrato/verificar",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "pago", "contrato", ":id_contrato", "verificar"],
+							"variable": [
+								{
+									"key": "id_contrato",
+									"value": "1",
+									"description": "ID del contrato"
+								}
+							]
+						},
+						"description": "Verifica si un contrato tiene garantía pagada.\n\n**Response:**\n```json\n{\n  \"id_contrato\": 1,\n  \"garantia_pagada\": true\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "6. Actualizar Pago de Garantía",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"referencia\": \"REF-001-ACTUALIZADO\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/garantias/pago/:id",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "pago", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID de la garantía pago"
+								}
+							]
+						},
+						"description": "Actualiza una garantía pago.\n\n**Campos editables:**\n- referencia (solo este campo por seguridad)"
+					},
+					"response": []
+				},
+				{
+					"name": "7. Eliminar Pago de Garantía",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/pago/:id",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "pago", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID de la garantía pago"
+								}
+							]
+						},
+						"description": "Elimina una garantía pago.\n\n**Validaciones:**\n- NO debe tener devolución asociada\n\n**Response:** 204 No Content"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gestionar los pagos de garantía al inicio del contrato."
+		},
+		{
+			"name": "Garantía Devolución",
+			"item": [
+				{
+					"name": "1. Calcular Monto de Devolución",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion/calcular/:id_contrato",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion", "calcular", ":id_contrato"],
+							"variable": [
+								{
+									"key": "id_contrato",
+									"value": "1",
+									"description": "ID del contrato"
+								}
+							]
+						},
+						"description": "Calcula el monto sugerido de devolución basándose en el estado de las herramientas.\n\n**Porcentajes:**\n- BUEN_ESTADO: 100%\n- REPARACION_MENOR: 75%\n- DANADA: 50%\n- NO_DEVUELTA: 0%\n\n**Response:**\n```json\n{\n  \"monto_sugerido\": 50000,\n  \"razon\": \"Se encontraron herramientas dañadas\",\n  \"detalle\": [\n    {\n      \"herramienta\": \"Escalera 5m\",\n      \"cantidad_devuelta\": 1,\n      \"estado\": \"buen_estado\",\n      \"observaciones\": null\n    },\n    {\n      \"herramienta\": \"Taladro Bosch\",\n      \"cantidad_devuelta\": 1,\n      \"estado\": \"danada\",\n      \"observaciones\": \"Motor quemado\"\n    }\n  ]\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Obtener Info para Devolución",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion/info/:id_contrato",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion", "info", ":id_contrato"],
+							"variable": [
+								{
+									"key": "id_contrato",
+									"value": "1",
+									"description": "ID del contrato"
+								}
+							]
+						},
+						"description": "Obtiene toda la información necesaria para la pantalla de devolución.\n\n**Response:**\n```json\n{\n  \"garantia_pagada\": { ... },\n  \"ya_devuelta\": false,\n  \"devolucion\": null,\n  \"calculo_automatico\": {\n    \"monto_sugerido\": 50000,\n    \"razon\": \"...\",\n    \"detalle\": [ ... ]\n  },\n  \"puede_devolver\": true\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "3. Crear Devolución (Monto Automático)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_contrato\": 1,\n  \"fecha_devolucion\": \"2024-12-05\",\n  \"metodo_devolucion\": \"efectivo\",\n  \"observaciones\": \"Devolución automática basada en estado de herramientas\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion"]
+						},
+						"description": "Crea una devolución de garantía con cálculo automático de monto.\n\n**Validaciones:**\n- Contrato existe y está finalizado\n- Existe garantía pago previa\n- NO existe otra devolución\n\n**Si no se envía `monto_devuelto`, se calcula automáticamente.**"
+					},
+					"response": []
+				},
+				{
+					"name": "4. Crear Devolución (Monto Manual)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_contrato\": 1,\n  \"fecha_devolucion\": \"2024-12-05\",\n  \"monto_devuelto\": 50000,\n  \"metodo_devolucion\": \"efectivo\",\n  \"referencia\": \"DEV-001\",\n  \"observaciones\": \"Descuento del 50% por taladro dañado\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion"]
+						},
+						"description": "Crea una devolución de garantía con monto manual.\n\n**Validaciones:**\n- monto_devuelto >= 0\n- monto_devuelto <= garantia_pago.monto"
+					},
+					"response": []
+				},
+				{
+					"name": "5. Listar Devoluciones",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion?page=1&limit=10",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Número de página"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Items por página (max 100)"
+								},
+								{
+									"key": "id_contrato",
+									"value": "1",
+									"disabled": true,
+									"description": "Filtrar por contrato"
+								},
+								{
+									"key": "metodo_devolucion",
+									"value": "efectivo",
+									"disabled": true,
+									"description": "Filtrar por método"
+								},
+								{
+									"key": "fecha_desde",
+									"value": "2024-12-01",
+									"disabled": true,
+									"description": "Fecha desde"
+								},
+								{
+									"key": "fecha_hasta",
+									"value": "2024-12-31",
+									"disabled": true,
+									"description": "Fecha hasta"
+								}
+							]
+						},
+						"description": "Lista todas las devoluciones con filtros y paginación."
+					},
+					"response": []
+				},
+				{
+					"name": "6. Obtener Devolución por ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion/:id",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID de la devolución"
+								}
+							]
+						},
+						"description": "Obtiene una devolución específica por su ID."
+					},
+					"response": []
+				},
+				{
+					"name": "7. Obtener Devolución por Contrato",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion/contrato/:id_contrato",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion", "contrato", ":id_contrato"],
+							"variable": [
+								{
+									"key": "id_contrato",
+									"value": "1",
+									"description": "ID del contrato"
+								}
+							]
+						},
+						"description": "Obtiene la devolución de un contrato específico.\n\nRetorna null si no existe."
+					},
+					"response": []
+				},
+				{
+					"name": "8. Actualizar Devolución",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"referencia\": \"DEV-001-ACTUALIZADO\",\n  \"observaciones\": \"Observaciones actualizadas\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion/:id",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID de la devolución"
+								}
+							]
+						},
+						"description": "Actualiza una devolución.\n\n**Campos editables:**\n- referencia\n- observaciones"
+					},
+					"response": []
+				},
+				{
+					"name": "9. Eliminar Devolución",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion/:id",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1",
+									"description": "ID de la devolución"
+								}
+							]
+						},
+						"description": "Elimina una devolución de garantía.\n\n**Response:** 204 No Content"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para gestionar las devoluciones de garantía al finalizar el contrato."
+		},
+		{
+			"name": "Resumen y Reportes",
+			"item": [
+				{
+					"name": "1. Resumen de Contrato",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/resumen/:id_contrato",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "resumen", ":id_contrato"],
+							"variable": [
+								{
+									"key": "id_contrato",
+									"value": "1",
+									"description": "ID del contrato"
+								}
+							]
+						},
+						"description": "Obtiene el resumen completo de garantías de un contrato.\n\n**Incluye:**\n- Garantía pagada\n- Garantía devuelta (si existe)\n- Estado de todas las herramientas\n- Monto sugerido (si no se ha devuelto)\n- Monto retenido\n- Si está pendiente de devolución\n\n**Response:**\n```json\n{\n  \"garantia_pagada\": {\n    \"id\": 1,\n    \"monto\": 100000,\n    \"fecha_pago\": \"2024-12-05\",\n    \"metodo_pago\": \"efectivo\",\n    \"referencia\": \"REF-001\"\n  },\n  \"garantia_devuelta\": {\n    \"id\": 1,\n    \"monto_devuelto\": 50000,\n    \"fecha_devolucion\": \"2024-12-05\",\n    \"metodo_devolucion\": \"efectivo\",\n    \"observaciones\": \"...\",\n    \"referencia\": \"DEV-001\"\n  },\n  \"estado_herramientas\": [\n    {\n      \"herramienta\": \"Escalera 5m\",\n      \"cantidad_devuelta\": 1,\n      \"estado\": \"buen_estado\",\n      \"observaciones\": null\n    },\n    {\n      \"herramienta\": \"Taladro Bosch\",\n      \"cantidad_devuelta\": 1,\n      \"estado\": \"danada\",\n      \"observaciones\": \"Motor quemado\"\n    }\n  ],\n  \"monto_sugerido\": 0,\n  \"retenido\": 50000,\n  \"pendiente_devolucion\": false\n}\n```"
+					},
+					"response": []
+				},
+				{
+					"name": "2. Estadísticas Generales (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/stats",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "stats"]
+						},
+						"description": "Obtiene estadísticas generales de garantías.\n\n**Solo para admin.**\n\n**Response:**\n```json\n{\n  \"total_pagos\": 150,\n  \"total_devoluciones\": 120,\n  \"pendientes_devolucion\": 30,\n  \"suma_pagos\": 15000000,\n  \"suma_devoluciones\": 11250000,\n  \"suma_retenida\": 3750000\n}\n```"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints para obtener resúmenes y estadísticas."
+		},
+		{
+			"name": "Flujo Completo - Ejemplo",
+			"item": [
+				{
+					"name": "Paso 1 - Pagar Garantía",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_contrato\": 1,\n  \"fecha_pago\": \"2024-12-05\",\n  \"monto\": 100000,\n  \"metodo_pago\": \"efectivo\",\n  \"referencia\": \"REF-FLUJO-001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/garantias/pago",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "pago"]
+						},
+						"description": "**PASO 1:** Pagar la garantía al inicio del contrato."
+					},
+					"response": []
+				},
+				{
+					"name": "Paso 2 - Verificar Pago",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/pago/contrato/1/verificar",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "pago", "contrato", "1", "verificar"]
+						},
+						"description": "**PASO 2:** Verificar que se pagó la garantía."
+					},
+					"response": []
+				},
+				{
+					"name": "Paso 3 - Calcular Monto a Devolver",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion/calcular/1",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion", "calcular", "1"]
+						},
+						"description": "**PASO 3:** Calcular cuánto devolver basándose en el estado de las herramientas.\n\n**Nota:** Antes de este paso debes:\n1. Registrar las devoluciones de herramientas\n2. Finalizar el contrato"
+					},
+					"response": []
+				},
+				{
+					"name": "Paso 4 - Devolver Garantía (Automático)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id_contrato\": 1,\n  \"fecha_devolucion\": \"2024-12-05\",\n  \"metodo_devolucion\": \"efectivo\",\n  \"observaciones\": \"Devolución automática\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/garantias/devolucion",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "devolucion"]
+						},
+						"description": "**PASO 4:** Devolver la garantía (monto calculado automáticamente)."
+					},
+					"response": []
+				},
+				{
+					"name": "Paso 5 - Ver Resumen Final",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/garantias/resumen/1",
+							"host": ["{{base_url}}"],
+							"path": ["garantias", "resumen", "1"]
+						},
+						"description": "**PASO 5:** Ver el resumen completo del contrato con toda la información de garantías."
+					},
+					"response": []
+				}
+			],
+			"description": "Flujo completo de ejemplo desde el pago hasta la devolución.\n\n## Orden:\n1. Crear contrato (módulo contratos)\n2. Pagar garantía ✓\n3. Verificar pago ✓\n4. Devolver herramientas (módulo devoluciones)\n5. Finalizar contrato (módulo contratos)\n6. Calcular monto a devolver ✓\n7. Devolver garantía ✓\n8. Ver resumen ✓"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{auth_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "auth_token",
+			"value": "TU_TOKEN_AQUI",
+			"type": "string"
+		}
+	]
+}
