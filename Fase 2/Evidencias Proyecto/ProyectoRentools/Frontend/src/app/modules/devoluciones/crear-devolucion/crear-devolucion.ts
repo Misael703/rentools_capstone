@@ -31,10 +31,9 @@ export class CrearDevolucion implements OnInit {
 
   fechaHoy: string = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
 
-  mostrarMensaje = false;        // <-- Modal de éxito
-  mensajeExito = '';             // <-- Texto dentro del modal
-
-  mensajeError = '';             // <-- Mostrar errores en pantalla
+  mostrarMensaje = false;
+  mensajeExito = '';
+  mensajeError = '';
 
   fechaDevolucion: string = new Date().toISOString().split('T')[0];
 
@@ -43,6 +42,7 @@ export class CrearDevolucion implements OnInit {
     { value: EstadoDevolucion.REPARACION_MENOR, label: 'Reparación menor' },
     { value: EstadoDevolucion.DANADA, label: 'Dañada' },
   ];
+
 
   constructor(
     private route: ActivatedRoute,
@@ -62,9 +62,6 @@ export class CrearDevolucion implements OnInit {
     });
   }
 
-  // ================================================================
-  // Cargar resumen del contrato
-  // ================================================================
   cargarResumen(): void {
     this.loading = true;
 
@@ -81,9 +78,6 @@ export class CrearDevolucion implements OnInit {
       });
   }
 
-  // ================================================================
-  // Crear formulario dinámico según herramientas pendientes
-  // ================================================================
   inicializarFormulario(): void {
     const pendientes = this.resumen.herramientas.filter(
       (h: any) => h.cantidad_pendiente > 0
@@ -114,22 +108,14 @@ export class CrearDevolucion implements OnInit {
     return `linear-gradient(to right, #007bff 0%, #007bff ${porcentaje}%, #ddd ${porcentaje}%, #ddd 100%)`;
   }
 
-  // Obtiene el FormArray de herramientas
   get herramientasFormArray(): FormArray {
     return this.devolucionForm.get('herramientas') as FormArray;
   }
 
-  /**
-   * Obtiene el FormGroup de una herramienta específica
-   */
   getHerramientaFormGroup(index: number): FormGroup {
     return this.herramientasFormArray.at(index) as FormGroup;
   }
 
-
-  // ================================================================
-  // Seleccionar herramienta
-  // ================================================================
   toggleSeleccion(i: number): void {
     const control = this.herramientasFA.at(i).get('seleccionada');
     control?.setValue(!control.value);
@@ -145,59 +131,6 @@ export class CrearDevolucion implements OnInit {
       .reduce((acc: number, h: any) => acc + h.cantidad_devuelta, 0);
   }
 
-  // ================================================================
-  // Guardar devoluciones
-  // ================================================================
-  registrarDevolucion(): void {
-    this.mensajeError = '';
-
-    if (!this.validarFecha()) return;
-    if (!this.haySeleccionadas) {
-      this.mensajeError = 'Debes seleccionar al menos una herramienta.';
-      return;
-    }
-    if (this.devolucionForm.invalid) {
-      this.mensajeError = 'Hay campos inválidos en el formulario.';
-      return;
-    }
-
-    const excede = this.herramientasFA.value.some((h: any, i: number) =>
-      h.cantidad_devuelta > this.resumen.herramientas[i].cantidad_pendiente
-    );
-    if (excede) {
-      this.mensajeError = 'La cantidad a devolver no puede exceder lo pendiente.';
-      return;
-    }
-
-    const fechaEnviar = `${this.fechaDevolucion}T03:00:00.000Z`;
-
-    const devoluciones = this.herramientasFA.value
-      .filter((h: any) => h.seleccionada)
-      .map((h: any) => ({
-        id_detalle: h.id_detalle,
-        cantidad_devuelta: h.cantidad_devuelta,
-        fecha_devolucion: fechaEnviar,
-        estado: h.estado,
-        observaciones: h.observaciones || undefined
-      }));
-
-    const dto: CreateDevolucionMasivaDto = { devoluciones };
-
-    this.submitting = true;
-
-    this.devolucionesService.createMasiva(dto)
-      .pipe(finalize(() => this.submitting = false))
-      .subscribe({
-        next: res => {
-          const totalDev = res.data?.devoluciones.length ?? 0;
-          this.mensajeExito = `¡Devolución exitosa! Se registraron ${totalDev} devoluciones.`;
-          this.mostrarMensaje = true;
-        },
-        error: err => {
-          this.mensajeError = err.error?.message || 'Error al registrar devoluciones.';
-        }
-      });
-  }
   validarFecha(): boolean {
     if (this.fechaDevolucion > this.fechaHoy) {
       this.mensajeError = 'No se puede seleccionar una fecha futura.';
@@ -239,19 +172,72 @@ export class CrearDevolucion implements OnInit {
       .filter(h => h.seleccionada).length;
   }
 
+  // ================================================================
+  // REGISTRAR DEVOLUCIONES (NUEVA LÓGICA)
+  // ================================================================
+  registrarDevolucion(): void {
+    this.mensajeError = '';
 
-  // ================================================================
-  // Modal de éxito
-  // ================================================================
+    if (!this.validarFecha()) return;
+    if (!this.haySeleccionadas) {
+      this.mensajeError = 'Debes seleccionar al menos una herramienta.';
+      return;
+    }
+    if (this.devolucionForm.invalid) {
+      this.mensajeError = 'Hay campos inválidos en el formulario.';
+      return;
+    }
+
+    const fechaEnviar = `${this.fechaDevolucion}T03:00:00.000Z`;
+
+    const devoluciones = this.herramientasFA.value
+      .filter((h: any) => h.seleccionada)
+      .map((h: any) => ({
+        id_detalle: h.id_detalle,
+        cantidad_devuelta: h.cantidad_devuelta,
+        fecha_devolucion: fechaEnviar,
+        estado: h.estado,
+        observaciones: h.observaciones || undefined
+      }));
+
+    const dto: CreateDevolucionMasivaDto = { devoluciones };
+
+    this.submitting = true;
+
+    this.devolucionesService.createMasiva(dto)
+      .pipe(finalize(() => this.submitting = false))
+      .subscribe({
+        next: res => {
+          const totalDev = res.data?.devoluciones.length ?? 0;
+          this.mensajeExito = `¡Devolución registrada!`;
+          this.mostrarMensaje = true;
+
+          // ------------------------------------------------
+          // 2) Ir automáticamente al formulario de pago
+          // ------------------------------------------------
+          this.router.navigate([`/pagos/crear/${this.contratoId}`]);
+        },
+        error: err => {
+          this.mensajeError = err.error?.message || 'Error al registrar devoluciones.';
+        }
+      });
+  }
   cerrarMensaje(): void {
     this.mostrarMensaje = false;
-    this.router.navigate(['/devoluciones']); // Aquí sí navegas
+
+    const todasDevueltas =
+      this.resumen.resumen.total_devueltas === this.resumen.resumen.total_herramientas;
+
+    if (todasDevueltas) {
+      // Ir directo a crear pago
+      this.router.navigate([`/pagos/crear/${this.contratoId}`]);
+    } else {
+      // Volver a listar devoluciones
+      this.router.navigate(['/devoluciones']);
+    }
   }
-  // ================================================================
-  // Cancelar
-  // ================================================================
+
   cancelar(): void {
     this.router.navigate(['/devoluciones']);
   }
-
 }

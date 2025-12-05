@@ -70,6 +70,12 @@ export const routes: Routes = [
       { path: 'configuracion-bsale', component: ConfiguracionBsale, canActivate: [RoleGuard], data: { roles: ['admin'] } },
       { path: 'pagos', component: Pagos },
       {
+        path: 'pagos/crear/:id_contrato',
+        loadComponent: () =>
+          import('./modules/pagos/crear-pago/crear-pago')
+            .then(m => m.CrearPago)
+      },
+      {
         path: 'usuarios', component: Usuarios, canActivate: [RoleGuard],
         data: { roles: ['admin'] }
       },

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ClienteReporte, EstadisticasClientes, EstadisticasContratos, EstadisticasHerramientas } from '../Interfaces/interfaceReporte';
+import { ClienteReporte, EstadisticasClientes, EstadisticasContratos, EstadisticasHerramientas, EstadisticasPagos } from '../Interfaces/interfaceReporte';
 import { ClientesService } from '../../clientes/Services/cliente.service';
 
 @Injectable({
@@ -30,5 +30,10 @@ export class ReportesService {
     //  Estadísticas de contratos
     getEstadisticasContratos(): Observable<EstadisticasContratos> {
         return this.http.get<EstadisticasContratos>(`${this.apiBaseUrl}contratos/stats`);
+    }
+
+    // Estadísticas de pagos
+    getEstadisticasPagos(): Observable<EstadisticasPagos> {
+        return this.http.get<EstadisticasPagos>(`${this.apiBaseUrl}pagos/stats`);
     }
 }

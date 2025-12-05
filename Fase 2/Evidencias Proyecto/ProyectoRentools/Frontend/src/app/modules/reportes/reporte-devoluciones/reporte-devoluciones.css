@@ -1,33 +1,21 @@
-/* Encabezado */
-.table thead th {
-  background-color: #ffbd59; /* Amarillo */
-  color: white;
-  font-weight: bold;
-}
-
-/* Primera celda del encabezado → Método de Pago */
-.table thead th:first-child {
-  background-color: #fd620e; /* Mismo naranja que Monto a devolver */
-}
-
-/* Primera columna del cuerpo → Monto a devolver */
-.table tbody td:first-child {
-  background-color: #fd620e;
-  color: white;
-  font-weight: bold;
-}
-
-/* Celdas vacías */
-.table tbody td:not(:first-child) {
-  background-color: white;
-}
-
-/* Tarjeta de monto total */
-.total-devolucion-card {
-  background-color: #dc3545; /* Rojo */
-  color: white;
-  border: 2px solid black;
+.card {
   border-radius: 12px;
-  display: inline-block; /* Ajusta tamaño al contenido */
-  min-width: 200px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
+
+.card-title {
+  font-weight: bold;
+}
+
+.card-text {
+  margin-top: 10px;
+}
+
+.chart-container {
+  width: 100%;
+  height: 300px;
+  margin: 0 auto;
+}
+
+.bg-primary { background-color: #0d6efd !important; }
+.bg-success { background-color: #198754 !important; }
